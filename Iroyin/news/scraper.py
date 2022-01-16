@@ -14,12 +14,21 @@ class PunchScraper:
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        value = soup.find_all('h3', {'class': 'entry-title'})
-
-        headlines = [{'title': i.text, 'url': i.find('a')['href']} for i in value]
-
+        
+        value = soup.find_all('article', {'class': 'entry-item-simple'})
+        headlines=[]
+        
+        for i in value:
+            try:
+                img=i.find('img').get('src')
+                news=i.find('h3', {'class': 'entry-title'}).text
+                link= i.find('h3', {'class': 'entry-title'}).find('a')['href']
+                headlines.append({'title':news, 'url':link, 'img':img})
+            except:
+                pass
+        
         return headlines
-
+print(PunchScraper('politics').scrape())
 
 class VanguardScraper:
     def __init__(self, topic) -> None:
