@@ -16,7 +16,7 @@ class PunchScraper:
         soup = BeautifulSoup(request.text, 'html.parser')
         value = soup.find_all('h3', {'class': 'entry-title'})
 
-        headlines = [{'headline': i.text, 'url': i.find('a')['href']} for i in value]
+        headlines = [{'title': i.text, 'url': i.find('a')['href']} for i in value]
 
         return headlines
 
@@ -34,7 +34,7 @@ class VanguardScraper:
 
         print(soup)
 
-        headlines = [{'headline': i.text, 'url': i.find('a')['href']} for i in value]
+        headlines = [{'title': i.text, 'url': i.find('a')['href']} for i in value]
 
         return headlines
 
@@ -50,7 +50,7 @@ class GoalDotComScraper:
         soup = BeautifulSoup(request.text, 'html.parser')
         news=soup.find_all('h3', {'class':'widget-news-card__title'})
 
-        headlines = [{'headline': article['title'], 'url': self.url+article.find('a')['href']} for article in news]
+        headlines = [{'title': article['title'], 'url': self.url+article.find('a')['href']} for article in news]
 
 
 
@@ -68,7 +68,7 @@ class SkySportScraper:
         soup = BeautifulSoup(request.text, 'html.parser')
         news=soup.find_all('a', {'class':'news-list__headline-link'})
 
-        headlines = [{'headline': article.text.strip(), 'url': article['href']} for article in news]
+        headlines = [{'title': article.text.strip(), 'url': article['href']} for article in news]
 
 
 
@@ -86,7 +86,7 @@ class EPLScraper:
         news=soup.find_all('a', {'class':'thumbnail thumbLong'})
 
 
-        headlines = [{'headline': article.find('span', {'class':'title'}).text, 'url': self.url+article['href']} for article in news]
+        headlines = [{'title': article.find('span', {'class':'title'}).text, 'url': self.url+article['href']} for article in news]
 
 
 
@@ -104,7 +104,7 @@ class LaLigaScraper:
         soup = BeautifulSoup(request.text, 'html.parser')
         news=soup.find_all('div', {'class':'styled__NewInfoContainer-sc-9rnm90-0'})
 
-        headlines = [{'headline': article.find('h3', {'class':'styled__TextHeaderStyled-sc-1edycnf-0'}).text, 'url': article.find('a')['href']} for 
+        headlines = [{'title': article.find('h3', {'class':'styled__TextHeaderStyled-sc-1edycnf-0'}).text, 'url': article.find('a')['href']} for 
 article in news]
 
         return headlines;

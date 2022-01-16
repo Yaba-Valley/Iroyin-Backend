@@ -11,7 +11,7 @@ class News(models.Model):
     
     def serialize(self):
         
-        return {'newsId': self.id, 'title': self.title, 'url': self.url }
+        return {'title': self.title, 'url': self.url }
     
 
 class User(models.Model):

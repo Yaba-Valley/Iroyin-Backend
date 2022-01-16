@@ -4,6 +4,7 @@ from django.http import JsonResponse, Http404
 from .scraper import PunchScraper
 import json
 from .models import News, User
+from .recommend import Machine
 
 # Create your views here.
 
@@ -13,7 +14,7 @@ def index(request):
         
         me = User.objects.get(username = 'jeremiah')
         
-        punchScraper = PunchScraper('politics')
+        punchScraper = PunchScraper('sports')
         
         
         data = punchScraper.scrape()
@@ -21,30 +22,20 @@ def index(request):
         newsSeen = [news.serialize() for news in me.newsSeen.all()]
         newsInteracted = [news.serialize() for news in me.newsIntereactedWith.all()]
     
-        ids, titles, urls,interactions=[],[],[],[]
+        trainingData = prepareDataForModel(data=newsSeen, newsInteracted=newsInteracted)
         
-        for i in range(len(newsSeen)):
-            #print(newsSeen[i])
-            ids.append(newsSeen[i]['newsId'])
-            titles.append(newsSeen[i]['title'])
-            urls.append(newsSeen[i]['url'])
-            
-            if newsSeen[i] in newsInteracted:
-                interactions.append(1)
-            else:
-                interactions.append(0)
+        data_to_predict_with = prepareDataForModel(data = data, newsInteracted=None)
         
-        trainingData = {'ids': ids, 'titles': titles, 'urls': urls, 'interactions': interactions}
-        print('trainging data:', trainingData)
+        recommend_news=Machine(trainingData).recommend(data_to_predict_with)
         
-        # data = model.predict(trainingData, dataFromScraper)
-        
-        for news in data:
+        print(recommend_news)
+                
+        for i in range(len(recommend_news['titles'])):
             try:
-                existing_news = get_object_or_404(News, url = news['url'])
+                existing_news = get_object_or_404(News, url = recommend_news['urls'][i])
                 me.newsSeen.add(existing_news)
             except Http404:
-                me.newsSeen.add(News.objects.create(title = news['headline'], url = news['url']))
+                me.newsSeen.add(News.objects.create(title = recommend_news['titles'][i], url = recommend_news['urls'][i]))
                 
         me.save()
             
@@ -54,12 +45,25 @@ def index(request):
         pass
         
     
-    return JsonResponse(json.dumps(data), safe=False)
+    return JsonResponse(json.dumps({'SCRAPED': data, 'RECOMMENDED': recommend_news}), safe=False)
 
 
-def prepareDataForModel(user):
-    newsSeen = list(user.newsSeen.all())
-    newInteractedWith = list(user.newsIntereactedWith.all())
-
-    # for news in newsSeen:
-        # if(+)
+def prepareDataForModel (data, newsInteracted):
+    
+    titles, urls,interactions=[],[],[]
+        
+    for i in range(len(data)):
+        #print(data[i])
+        titles.append(data[i]['title'])
+        urls.append(data[i]['url'])
+        
+        if newsInteracted is not None:
+            if data[i] in newsInteracted:
+                interactions.append(1)
+            else:
+                interactions.append(0)
+        
+    if newsInteracted is not None:
+        return {'titles': titles, 'urls': urls, 'interactions': interactions}
+    
+    return {'titles': titles, 'urls': urls }
