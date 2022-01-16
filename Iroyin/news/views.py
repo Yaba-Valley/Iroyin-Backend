@@ -4,6 +4,7 @@ from django.http import JsonResponse, Http404
 from .scraper import PunchScraper
 import json
 from .models import News, User
+from .recommend import Machine
 
 # Create your views here.
 
@@ -36,6 +37,8 @@ def index(request):
         
         trainingData = {'ids': ids, 'titles': titles, 'urls': urls, 'interactions': interactions}
         print('trainging data:', trainingData)
+        
+        recommend_news=Machine(trainingData).recommend()
         
         # data = model.predict(trainingData, dataFromScraper)
         
