@@ -17,11 +17,13 @@ class Machine:
             self.model.fit(self.data['titles'], self.data['interactions'])
             probability=self.model.predict_proba(scrape['titles'])[:,1]
             scrape['probability']= probability
-            recommended_item= scrape.sort_values(by=['probability'], ascending=False).drop(['probability', 'interactions'], axis=1)
+            recommended_item= scrape.sort_values(by=['probability'], ascending=False).drop(['probability'], axis=1)
             recommended_item= recommended_item.iloc[:20, :]
-            print('ml', recommended_item.to_dict(orient='list'))
+            print('\n\n\n\n\n')
+            print('ml', recommended_item)
             return recommended_item.to_dict(orient='list')
-        except:
+        except Exception as e:
+            print(e)
             return scrape.iloc[:20, :].to_dict(orient = 'list')
 
         
