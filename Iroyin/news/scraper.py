@@ -1,3 +1,4 @@
+from cmath import e
 from bs4 import BeautifulSoup
 import requests
 #import cfscrape
@@ -28,7 +29,6 @@ class PunchScraper:
                 pass
         
         return headlines
-print(PunchScraper('politics').scrape())
 
 class VanguardScraper:
     def __init__(self, topic) -> None:
@@ -50,21 +50,32 @@ class VanguardScraper:
 
 class GoalDotComScraper:
     def __init__(self) -> None:
-        # the breaking news section of goal dot com (nigeria version)
         self.url = 'https://www.goal.com/en-ng/news/1'
 
     def scrape(self):
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news=soup.find_all('h3', {'class':'widget-news-card__title'})
+        value=soup.find_all('tr')
+        headlines=[]
 
-        headlines = [{'title': article['title'], 'url': self.url+article.find('a')['href']} for article in news]
+
+        for i in value:
+            try:
+                img=i.find('img').get('src')
+                news=i.find('h3',{'class':'widget-news-card__title'})['title']
+                link= self.url+i.find('a')['href']
+                headlines.append({'title':news, 'url':link, 'img':img})
+            except Exception as e:
+                pass
+        
 
 
 
         return headlines
 
+
+print(GoalDotComScraper().scrape())
 
 class SkySportScraper:
     def __init__(self) -> None:
@@ -116,7 +127,7 @@ class LaLigaScraper:
         headlines = [{'title': article.find('h3', {'class':'styled__TextHeaderStyled-sc-1edycnf-0'}).text, 'url': article.find('a')['href']} for 
 article in news]
 
-        return headlines;
+        return headlines
 
 
 class BundesligaScraper:
