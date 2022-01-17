@@ -3,8 +3,9 @@ import requests
 #import cfscrape
 
 
-def main ():
+def main():
     pass
+
 
 class PunchScraper:
     def __init__(self, topic) -> None:
@@ -14,21 +15,21 @@ class PunchScraper:
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        
+
         value = soup.find_all('article', {'class': 'entry-item-simple'})
-        headlines=[]
-        
+        headlines = []
+
         for i in value:
             try:
-                img=i.find('img').get('src')
-                news=i.find('h3', {'class': 'entry-title'}).text
-                link= i.find('h3', {'class': 'entry-title'}).find('a')['href']
-                headlines.append({'title':news, 'url':link, 'img':img})
+                img = i.find('img').get('src')
+                news = i.find('h3', {'class': 'entry-title'}).text
+                link = i.find('h3', {'class': 'entry-title'}).find('a')['href']
+                headlines.append({'title': news, 'url': link, 'img': img})
             except:
                 pass
-        
+
         return headlines
-print(PunchScraper('politics').scrape())
+
 
 class VanguardScraper:
     def __init__(self, topic) -> None:
@@ -43,7 +44,8 @@ class VanguardScraper:
 
         print(soup)
 
-        headlines = [{'title': i.text, 'url': i.find('a')['href']} for i in value]
+        headlines = [
+            {'title': i.text, 'url': i.find('a')['href']} for i in value]
 
         return headlines
 
@@ -57,11 +59,10 @@ class GoalDotComScraper:
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news=soup.find_all('h3', {'class':'widget-news-card__title'})
+        news = soup.find_all('h3', {'class': 'widget-news-card__title'})
 
-        headlines = [{'title': article['title'], 'url': self.url+article.find('a')['href']} for article in news]
-
-
+        headlines = [{'title': article['title'], 'url': self.url +
+                      article.find('a')['href']} for article in news]
 
         return headlines
 
@@ -75,13 +76,13 @@ class SkySportScraper:
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news=soup.find_all('a', {'class':'news-list__headline-link'})
+        news = soup.find_all('a', {'class': 'news-list__headline-link'})
 
-        headlines = [{'title': article.text.strip(), 'url': article['href']} for article in news]
-
-
+        headlines = [{'title': article.text.strip(), 'url': article['href']}
+                     for article in news]
 
         return headlines
+
 
 class EPLScraper:
     def __init__(self) -> None:
@@ -92,12 +93,10 @@ class EPLScraper:
 
         request = requests.get(self.url+'/news')
         soup = BeautifulSoup(request.text, 'html.parser')
-        news=soup.find_all('a', {'class':'thumbnail thumbLong'})
+        news = soup.find_all('a', {'class': 'thumbnail thumbLong'})
 
-
-        headlines = [{'title': article.find('span', {'class':'title'}).text, 'url': self.url+article['href']} for article in news]
-
-
+        headlines = [{'title': article.find(
+            'span', {'class': 'title'}).text, 'url': self.url+article['href']} for article in news]
 
         return headlines
 
@@ -111,22 +110,71 @@ class LaLigaScraper:
 
         request = requests.get(self.url, verify=False)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news=soup.find_all('div', {'class':'styled__NewInfoContainer-sc-9rnm90-0'})
+        news = soup.find_all(
+            'div', {'class': 'styled__NewInfoContainer-sc-9rnm90-0'})
 
-        headlines = [{'title': article.find('h3', {'class':'styled__TextHeaderStyled-sc-1edycnf-0'}).text, 'url': article.find('a')['href']} for 
-article in news]
+        headlines = [{'title': article.find('h3', {'class': 'styled__TextHeaderStyled-sc-1edycnf-0'}).text, 'url': article.find('a')['href']} for
+                     article in news]
 
-        return headlines;
+        return headlines
 
 
 class BundesligaScraper:
     def __init__(self) -> None:
         self.url = 'https://www.bundesliga.com/en/bundesliga'
 
-
     def scrape(self):
         request = requests.get(self.url)
-        soup = BeautifulSoup(request.text, 'html.parser')
-        news = soup.find_all('')
 
-        return soup
+        """ 
+        I MISTAKENLY UPDATED THE SCRAPER CODE
+        """
+
+        # soup = BeautifulSoup(request.text, 'html.parser')
+        # news = soup.find_all('article', { 'class': 'post-card'})
+
+        # articles = []
+
+        # for article in news:
+        #     article_title = article.find('h2', {'class': 'post-card-title'}).text
+        #     article_image = article.find('img', {'class': 'post-card-image'})['src']
+        #     article_url = article.find('h2', {'class': 'post-card-title'}).find('a')['url']
+
+        #     articles.push({'title': article_title, 'img': article_image, 'url': article_url})
+
+        return articles
+
+
+class FreeCodeCampScraper:
+
+    def __init__(self) -> None:
+        self.url = 'https://www.freecodecamp.org'
+
+    def scrape(self):
+        print('the scraper is s')
+        request = requests.get(self.url + '/news')
+        soup = BeautifulSoup(request.text, 'html.parser')
+        news = soup.find_all('article', {'class': 'post-card'})
+
+        articles = []
+
+        for article in news:
+            article_title = article.find(
+                'h2', {'class': 'post-card-title'}).text
+            article_image = article.find(
+                'img', {'class': 'post-card-image'})['data-src']
+            article_url = article.find(
+                'h2', {'class': 'post-card-title'}).find('a')['href']
+
+            articles.append({'title': article_title, 'url': self.url +
+                            article_url, 'img': self.url + article_image})
+
+            print({'title': article_title, 'url': self.url +
+                  article_url, 'img': self.url + article_image})
+
+        return articles
+
+
+scraper = FreeCodeCampScraper()
+
+scraper.scrape()
