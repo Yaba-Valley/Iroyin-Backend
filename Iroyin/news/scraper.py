@@ -151,7 +151,6 @@ class FreeCodeCampScraper:
         self.url = 'https://www.freecodecamp.org'
 
     def scrape(self):
-        print('the scraper is s')
         request = requests.get(self.url + '/news')
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.find_all('article', {'class': 'post-card'})
@@ -175,6 +174,30 @@ class FreeCodeCampScraper:
         return articles
 
 
-scraper = FreeCodeCampScraper()
+class TechCrunchScraper:
+    def __init__(self):
+        self.url = 'https://techcrunch.com'
+        
+    def scrape(self):
+        request = requests.get(self.url)
+        soup  = BeautifulSoup(request.text, 'html.parser')
+        
+        news = soup.find_all('article', {'class': 'post-block'})
+        
+        articles = []
+        
+        print(news)
+        
+        for article in news:
+            article_title = article.find('a', {'class': 'post-block__title__link'}).text
+            article_url = article.find('a', {'class': 'post-block__title__link'})['href']
+            article_image = article.find('img')['src']
+            
+            articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+            
+        return articles
+        
+        
+scraper = TechCrunchScraper()
 
-scraper.scrape()
+print(scraper.scrape())
