@@ -83,12 +83,18 @@ class SkySportScraper:
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news = soup.find_all('a', {'class': 'news-list__headline-link'})
+        news = soup.find_all('div', {'class': 'news-list__item news-list__item--show-thumb-bp30'})
+        #news = soup.find_all('a', {'class': 'news-list__headline-link'})
+        #print(news)
 
-        headlines = [{'title': article.text.strip(), 'url': article['href']}
+        headlines = [{'title': article.find('a', {'class': 'news-list__headline-link'}).text.strip(), 'url': article.find('a', {'class': 'news-list__headline-link'})['href'], 'img':article.find('img')['data-src']}
                      for article in news]
 
         return headlines
+
+scraper = SkySportScraper()
+
+print(scraper.scrape())
 
 
 class EPLScraper:
@@ -205,6 +211,4 @@ class TechCrunchScraper:
         return articles
         
         
-scraper = TechCrunchScraper()
 
-print(scraper.scrape())
