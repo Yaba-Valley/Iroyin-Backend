@@ -108,11 +108,13 @@ class EPLScraper:
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.find_all('a', {'class': 'thumbnail thumbLong'})
 
-        headlines = [{'title': article.find(
-            'span', {'class': 'title'}).text, 'url': self.url+article['href']} for article in news]
+        headlines = [{'title': article.find('span', {'class': 'title'}).text, 'url': self.url+article['href'], 'img':article.find('img')['src'].strip()} for article in news]
 
         return headlines
 
+scraper = EPLScraper()
+
+print(scraper.scrape())
 
 class LaLigaScraper:
     def __init__(self) -> None:
