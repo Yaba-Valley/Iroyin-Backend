@@ -92,9 +92,6 @@ class SkySportScraper:
 
         return headlines
 
-scraper = SkySportScraper()
-
-print(scraper.scrape())
 
 
 class EPLScraper:
@@ -112,27 +109,34 @@ class EPLScraper:
 
         return headlines
 
-scraper = EPLScraper()
-
-print(scraper.scrape())
 
 class LaLigaScraper:
     def __init__(self) -> None:
-        # the breaking news section of goal dot com (nigeria version)
+        # images of laliga cannot be scraped cause of it JS abi CSS sha
         self.url = 'https://www.laliga.com/en-ES/news'
 
     def scrape(self):
 
         request = requests.get(self.url, verify=False)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news = soup.find_all(
-            'div', {'class': 'styled__NewInfoContainer-sc-9rnm90-0'})
+        news = soup.find_all('div', {'class': 'styled__LastNewContainer-ddibnj-4 buiYod'})
+        print(news[0])
 
-        headlines = [{'title': article.find('h3', {'class': 'styled__TextHeaderStyled-sc-1edycnf-0'}).text, 'url': article.find('a')['href']} for
-                     article in news]
+        headlines = []
+        try:
+            for article in news:
+                title=article.find('h3', {'class': 'styled__TextHeaderStyled-sc-1edycnf-0'}).text
+                url= article.find('a')['href']
+                #img=article.find('img')['src'].strip()
+                #headlines.append({'title':title , 'url':url ,'img':img})
+        except:
+            pass
 
         return headlines
 
+scraper = LaLigaScraper()
+
+print(scraper.scrape())
 
 class BundesligaScraper:
     def __init__(self) -> None:
