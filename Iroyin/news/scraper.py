@@ -124,8 +124,8 @@ class LaLigaScraper:
             for article in news:
                 title=article.find('h3', {'class': 'styled__TextHeaderStyled-sc-1edycnf-0'}).text
                 url= article.find('a')['href']
-                #img=article.find('img')['src'].strip()
-                #headlines.append({'title':title , 'url':url ,'img':img})
+                img=article.find('img')['src'].strip()
+                headlines.append({'title':title , 'url':url ,'img':img})
         except:
             pass
 
@@ -137,6 +137,7 @@ class BundesligaScraper:
 
     def scrape(self):
         request = requests.get(self.url)
+        return []
 
 class FreeCodeCampScraper:
 
@@ -160,9 +161,6 @@ class FreeCodeCampScraper:
 
             articles.append({'title': article_title, 'url': self.url +
                             article_url, 'img': self.url + article_image})
-
-            print({'title': article_title, 'url': self.url +
-                  article_url, 'img': self.url + article_image})
 
         return articles
 

@@ -1,1 +1,4 @@
 Punch Scraper works perfectly --- returns 25 news per page
+Vanguard Scraper doesn't work yet
+Goal.com scraper works perfectly
+Skysports scraper works perfectly
