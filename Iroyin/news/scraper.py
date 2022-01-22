@@ -4,10 +4,6 @@ import requests
 #import cfscrape
 
 
-def main():
-    pass
-
-
 class PunchScraper:
     def __init__(self, topic) -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
@@ -192,7 +188,3 @@ class TechCrunchScraper:
             articles.append({'title': article_title, 'url': article_url, 'img': article_image})
             
         return articles
-        
-        
-
-print(TechCrunchScraper().scrape())
