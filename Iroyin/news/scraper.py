@@ -134,35 +134,12 @@ class LaLigaScraper:
 
         return headlines
 
-scraper = LaLigaScraper()
-
-print(scraper.scrape())
-
 class BundesligaScraper:
     def __init__(self) -> None:
         self.url = 'https://www.bundesliga.com/en/bundesliga'
 
     def scrape(self):
         request = requests.get(self.url)
-
-        """ 
-        I MISTAKENLY UPDATED THE SCRAPER CODE
-        """
-
-        # soup = BeautifulSoup(request.text, 'html.parser')
-        # news = soup.find_all('article', { 'class': 'post-card'})
-
-        # articles = []
-
-        # for article in news:
-        #     article_title = article.find('h2', {'class': 'post-card-title'}).text
-        #     article_image = article.find('img', {'class': 'post-card-image'})['src']
-        #     article_url = article.find('h2', {'class': 'post-card-title'}).find('a')['url']
-
-        #     articles.push({'title': article_title, 'img': article_image, 'url': article_url})
-
-        # return articles
-
 
 class FreeCodeCampScraper:
 
@@ -218,3 +195,4 @@ class TechCrunchScraper:
         
         
 
+print(TechCrunchScraper().scrape())

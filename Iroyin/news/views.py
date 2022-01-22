@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse, Http404
 from .scraper import PunchScraper
 import json
@@ -14,12 +14,12 @@ def index(request):
         
         me = User.objects.get(username = 'jeremiah')
         
-        punchScraper = PunchScraper('sports')
-        
+        punchScraper = PunchScraper('sports')      
         
         data = punchScraper.scrape()
                 
         newsSeen = [news.serialize() for news in me.newsSeen.all()]
+        
         newsInteracted = [news.serialize() for news in me.newsIntereactedWith.all()]
     
         trainingData = prepareDataForModel(data=newsSeen, newsInteracted=newsInteracted)
@@ -67,3 +67,11 @@ def prepareDataForModel (data, newsInteracted):
         return {'titles': titles, 'urls': urls, 'interactions': interactions}
     
     return {'titles': titles, 'urls': urls }
+
+
+def test_templates(request):
+    return render(request, 'index.html')
+
+
+def profile(request):
+    return render(request, 'profile.html')
