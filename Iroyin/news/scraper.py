@@ -54,7 +54,6 @@ class VanguardScraper(Scraper):
         headlines = [
             {'title': i.text, 'url': i.find('a')['href']} for i in value]
 
-        print(headlines)
         return headlines
 
 
@@ -215,12 +214,16 @@ class TechCrunchScraper(Scraper):
     def scrape(self):
         request = requests.get(self.url, headers = self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
+        
+        print(soup)
 
-        news = soup.find_all('article', {'class': 'post-block'})
+        news = soup.find_all('article')
+        
 
         articles = []
 
         for article in news:
+            print(article)
             article_title = article.find(
                 'a', {'class': 'post-block__title__link'}).text
             article_url = article.find(
@@ -231,6 +234,8 @@ class TechCrunchScraper(Scraper):
                 {'title': article_title, 'url': article_url, 'img': article_image})
 
         return articles
+    
+print(TechCrunchScraper().scrape())
 
 
 class TechTrendsAfricaScraper(Scraper):
