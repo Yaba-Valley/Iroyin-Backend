@@ -14,6 +14,9 @@ class Machine:
         scrape= pd.DataFrame(data)
         try:
             self.data= pd.DataFrame(self.data)
+            
+            self.data.to_csv('news.csv', index = False)
+            
             self.model.fit(self.data['titles'], self.data['interactions'])
             probability=self.model.predict_proba(scrape['titles'])[:,1]
             scrape['probability']= probability

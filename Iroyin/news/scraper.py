@@ -27,6 +27,7 @@ class PunchScraper:
 
         return headlines
 
+# FIXME: THE CFSCRAPE ERROR
 class VanguardScraper:
     def __init__(self, topic) -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
