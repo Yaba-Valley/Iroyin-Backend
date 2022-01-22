@@ -2,5 +2,10 @@
 <h1>Ambrose is here✌✌</h1>
 <a href ="{% url 'profile' %}">My Profile</a>
 
+<h1>RECOMMENDED NEWS</h1>
+<ul>
 
-/profile/settings/update;
+    {% for recom in recommended %}
+        <li>{{ recom.tile }}</li>
+    {% endfor %}    
+</ul>

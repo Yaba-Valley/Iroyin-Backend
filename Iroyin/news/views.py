@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import get_object_or_404, render
-from django.http import JsonResponse, Http404
+from django.http import HttpResponse, JsonResponse, Http404
 from .scraper import PunchScraper
 import json
 from .models import News, User
@@ -45,7 +45,7 @@ def index(request):
         pass
         
     
-    return JsonResponse(json.dumps({'SCRAPED': data, 'RECOMMENDED': recommend_news}), safe=False)
+    return render(request, 'index.html', {'scraped': data, 'recommended': recommend_news})
 
 
 def prepareDataForModel (data, newsInteracted):
