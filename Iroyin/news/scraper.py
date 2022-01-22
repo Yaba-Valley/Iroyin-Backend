@@ -216,23 +216,25 @@ class TechTrendsAfricaScraper(Scraper):
         request = requests.get(self.url, headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
 
-        print(soup)
-
         news = soup.find_all('article')
 
         articles = []
 
         for article in news:
-            article_title = article.find(
-                'h2', {'class': 'jeg_post_title'}).text
-            article_url = article.find(
-                'h2', {'class': 'jeg_post_title'}).find('a')['href']
-            article_image = article.find(
-                'div', {'class': 'thumbnail-container thumbnail-background'}['data-src'])
+            article_title = article.select_one('.jeg_post_title').text
+            article_url = article.select_one('.jeg_post_title').find('a')['href']
+            
+            
+            if article.find('img') == None:
+                article_image = article.find(
+                    'div', {'class': 'thumbnail-container thumbnail-background'})['data-src']
+            else:
+                article_image = article.find('img')['data-src']
 
             articles.append(
-                {'title': article_title, 'url': article_url, 'img': article_image})
+                {'title': article_title, 'url': article_url, 'img': article_image.split('?')[0]})
 
         return articles
 
 
+print(TechTrendsAfricaScraper().scrape())
