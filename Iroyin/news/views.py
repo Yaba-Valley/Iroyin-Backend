@@ -45,7 +45,7 @@ def index(request):
         pass
         
     
-    return render(request, 'index.html', {'scraped': data, 'recommended': recommend_news})
+    return render(request, 'index.html', {'scraped': data, 'recommended': recommend_news['titles']})
 
 
 def prepareDataForModel (data, newsInteracted):

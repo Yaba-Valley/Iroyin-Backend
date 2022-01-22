@@ -6,6 +6,15 @@
 <ul>
 
     {% for recom in recommended %}
+        <li>{{ recom }}</li>
+    {% endfor %}    
+</ul>
+
+
+<h1>SCRAPED NEWS</h1>
+<ul>
+
+    {% for recom in scraped %}
         <li>{{ recom.tile }}</li>
     {% endfor %}    
 </ul>
