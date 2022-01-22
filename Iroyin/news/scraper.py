@@ -235,7 +235,7 @@ class TechCrunchScraper(Scraper):
 
         return articles
     
-print(TechCrunchScraper().scrape())
+# print(TechCrunchScraper().scrape())
 
 
 class TechTrendsAfricaScraper(Scraper):

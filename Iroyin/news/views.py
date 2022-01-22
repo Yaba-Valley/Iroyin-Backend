@@ -38,15 +38,14 @@ def index(request):
                 me.newsSeen.add(News.objects.create(title = recommend_news['titles'][i], url = recommend_news['urls'][i]))
                 
         me.save()
+        return render(request, 'index.html', {'scraped': data, 'recommended': recommend_news['titles']})
             
         
     except Exception as e:
         print(e)
-        pass
+        return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
         
     
-    return render(request, 'index.html', {'scraped': data, 'recommended': recommend_news['titles']})
-
 
 def prepareDataForModel (data, newsInteracted):
     
