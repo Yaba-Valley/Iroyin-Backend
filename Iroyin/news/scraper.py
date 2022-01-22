@@ -4,13 +4,22 @@ import requests
 #import cfscrape
 
 
-class PunchScraper:
+class Scraper:
+    def __init__(self):
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
+        }
+
+
+class PunchScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
+        
+        Scraper.__init__(self)
 
     def scrape(self):
 
-        request = requests.get(self.url)
+        request = requests.get(self.url, headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
 
         value = soup.find_all('article', {'class': 'entry-item-simple'})
@@ -27,19 +36,20 @@ class PunchScraper:
 
         return headlines
 
-# FIXME: THE CFSCRAPE ERROR
-class VanguardScraper:
+
+class VanguardScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
+        
+        Scraper.__init__(self)
 
     def scrape(self):
 
         # get big thumbnail news
-        request = requests.get(self.url).content
+        request = requests.get(self.url, headers=self.headers).content
         soup = BeautifulSoup(request, 'lxml')
         value = soup.find_all('h2', {'class': 'entry-title'})
 
-        print(soup)
 
         headlines = [
             {'title': i.text, 'url': i.find('a')['href']} for i in value]
@@ -47,42 +57,44 @@ class VanguardScraper:
         return headlines
 
 
-class GoalDotComScraper:
+class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.goal.com/en-ng/news/1'
-
+        
     def scrape(self):
 
         request = requests.get(self.url)
         soup = BeautifulSoup(request.text, 'html.parser')
-        value=soup.find_all('tr')
-        headlines=[]
-
+        value = soup.find_all('tr')
+        headlines = []
 
         for i in value:
             try:
-                img=i.find('img').get('src')
-                news=i.find('h3',{'class':'widget-news-card__title'})['title']
-                link= self.url+i.find('a')['href']
-                headlines.append({'title':news, 'url':link, 'img':img})
+                img = i.find('img').get('src')
+                news = i.find(
+                    'h3', {'class': 'widget-news-card__title'})['title']
+                link = self.url+i.find('a')['href']
+                headlines.append({'title': news, 'url': link, 'img': img})
             except Exception as e:
-                pass
-        
+                print(e)
+
         return headlines
 
 
-
-class SkySportScraper:
+class SkySportScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.skysports.com/news-wire'
+        
+        Scraper.__init__(self)
 
     def scrape(self):
 
-        request = requests.get(self.url)
+        request = requests.get(self.url, headers = self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news = soup.find_all('div', {'class': 'news-list__item news-list__item--show-thumb-bp30'})
+        news = soup.find_all(
+            'div', {'class': 'news-list__item news-list__item--show-thumb-bp30'})
         #news = soup.find_all('a', {'class': 'news-list__headline-link'})
-        #print(news)
+        # print(news)
 
         headlines = [{'title': article.find('a', {'class': 'news-list__headline-link'}).text.strip(), 'url': article.find('a', {'class': 'news-list__headline-link'})['href'], 'img':article.find('img')['data-src']}
                      for article in news]
@@ -90,62 +102,90 @@ class SkySportScraper:
         return headlines
 
 
-
-class EPLScraper:
+class EPLScraper(Scraper):
     def __init__(self) -> None:
-        # the breaking news section of goal dot com (nigeria version)
         self.url = 'https://www.premierleague.com'
+        
+        Scraper.__init__(self)
 
     def scrape(self):
 
-        request = requests.get(self.url+'/news')
+        request = requests.get(self.url+'/news', headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.find_all('a', {'class': 'thumbnail thumbLong'})
 
-        headlines = [{'title': article.find('span', {'class': 'title'}).text, 'url': self.url+article['href'], 'img':article.find('img')['src'].strip()} for article in news]
+        headlines = [{'title': article.find('span', {'class': 'title'}).text, 'url': self.url +
+                      article['href'], 'img':article.find('img')['src'].strip()} for article in news]
 
         return headlines
 
 
-class LaLigaScraper:
+class LaLigaScraper(Scraper):
     def __init__(self) -> None:
         # images of laliga cannot be scraped cause of it JS abi CSS sha
-        self.url = 'https://www.laliga.com/en-ES/news'
-
+        self.url = 'https://www.laliga.com'
+        
     def scrape(self):
 
-        request = requests.get(self.url, verify=False)
+        request = requests.get(self.url + '/en-ES/news', verify=False)
         soup = BeautifulSoup(request.text, 'html.parser')
-        news = soup.find_all('div', {'class': 'styled__LastNewContainer-ddibnj-4 buiYod'})
-        print(news[0])
+        news = soup.find_all(
+            'div', {'class': 'styled__ImageContainer-sc-1si1tif-0'})
 
-        headlines = []
+        articles = []
+        
         try:
             for article in news:
-                title=article.find('h3', {'class': 'styled__TextHeaderStyled-sc-1edycnf-0'}).text
-                url= article.find('a')['href']
-                img=article.find('img')['src'].strip()
-                headlines.append({'title':title , 'url':url ,'img':img})
-        except:
+                title = article.find('h3').text
+                url = article.find('a')['href']
+                img = 'https://assets.laliga.com/assets/2019/10/09/medium/47d73a0eff4508d03ea51f26384bcba2.jpeg'
+                articles.append({'title': title, 'url': url, 'img': img})
+        except Exception as e:
+            print(e)
             pass
 
-        return headlines
+        return articles
 
-class BundesligaScraper:
+
+class BundesligaScraper(Scraper):
     def __init__(self) -> None:
-        self.url = 'https://www.bundesliga.com/en/bundesliga'
+        self.url = 'https://www.bundesliga.com'
+        
+        Scraper.__init__(self)
 
     def scrape(self):
-        request = requests.get(self.url)
-        return []
+        articles = []
+        request = requests.get(self.url + '/en/bundesliga', headers = self.headers)
+        soup = BeautifulSoup(request.text, 'html.parser')
+        news = soup.select('.teaser')
+        other_news = soup.select('.topListEntry')
+        
+        for article in news:
+            article_title = article.find('h2').text
+            article_url = self.url + article.find('a')['href']
+            article_image = article.find('img')['src'].split('?')[0]
 
-class FreeCodeCampScraper:
+            articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+        
+        for article in other_news:
+            article_title = article.text
+            article_url = self.url + article['href']
+            article_image = article.find('img')['src'].split('?')[0]
+            
+            articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+            
+        return articles
+
+
+class FreeCodeCampScraper(Scraper):
 
     def __init__(self) -> None:
         self.url = 'https://www.freecodecamp.org'
+        
+        Scraper.__init__(self)
 
     def scrape(self):
-        request = requests.get(self.url + '/news')
+        request = requests.get(self.url + '/news', headers = self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.find_all('article', {'class': 'post-card'})
 
@@ -165,25 +205,64 @@ class FreeCodeCampScraper:
         return articles
 
 
-class TechCrunchScraper:
+class TechCrunchScraper(Scraper):
     def __init__(self):
         self.url = 'https://techcrunch.com'
         
+        Scraper.__init__(self)
+
     def scrape(self):
-        request = requests.get(self.url)
-        soup  = BeautifulSoup(request.text, 'html.parser')
+        request = requests.get(self.url, headers = self.headers)
+        soup = BeautifulSoup(request.text, 'html.parser')
         
-        news = soup.find_all('article', {'class': 'post-block'})
+        print(soup)
+
+        news = soup.find_all('article')
         
+
         articles = []
-        
-        print(news)
-        
+
         for article in news:
-            article_title = article.find('a', {'class': 'post-block__title__link'}).text
-            article_url = article.find('a', {'class': 'post-block__title__link'})['href']
+            print(article)
+            article_title = article.find(
+                'a', {'class': 'post-block__title__link'}).text
+            article_url = article.find(
+                'a', {'class': 'post-block__title__link'})['href']
             article_image = article.find('img')['src']
+
+            articles.append(
+                {'title': article_title, 'url': article_url, 'img': article_image})
+
+        return articles
+    
+print(TechCrunchScraper().scrape())
+
+
+class TechTrendsAfricaScraper(Scraper):
+    def __init__(self):
+        self.url = 'https://techtrends.africa'
+        Scraper.__init__(self)
+
+    def scrape(self):
+        request = requests.get(self.url, headers=self.headers)
+        soup = BeautifulSoup(request.text, 'html.parser')
+
+        news = soup.find_all('article')
+
+        articles = []
+
+        for article in news:
+            article_title = article.select_one('.jeg_post_title').text
+            article_url = article.select_one('.jeg_post_title').find('a')['href']
             
-            articles.append({'title': article_title, 'url': article_url, 'img': article_image})
             
+            if article.find('img') == None:
+                article_image = article.find(
+                    'div', {'class': 'thumbnail-container thumbnail-background'})['data-src']
+            else:
+                article_image = article.find('img')['data-src']
+
+            articles.append(
+                {'title': article_title, 'url': article_url, 'img': article_image.split('?')[0]})
+
         return articles
