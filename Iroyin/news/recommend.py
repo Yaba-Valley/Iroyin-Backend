@@ -1,10 +1,12 @@
 from sklearn.naive_bayes import MultinomialNB
+import optuna
 from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
 import nltk
 import re
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.feature_selection import SelectPercentile, chi2
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 
@@ -34,20 +36,33 @@ def utils_preprocess_text(text, flg_stemm=False, flg_lemm=True, lst_stopwords=No
     return text
 
 
+""" def objective(trial):
+    percentile = trial.suggest_float("feature-selection__percerntile", 0, 10)
+    #intercept = trial.suggest_categorical("fit_intercept", [True, False])
+    #tol = trial.suggest_float("tol", 0.001, 0.01, log=True)
+    #solver = trial.suggest_categorical("solver", ["auto", "svd","cholesky", "lsqr", "saga", "sag"])
+
+    ## Create Model
+    model = Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase = True)), ('feature-selection', SelectPercentile(score_func= chi2, percentile=90)), ('model', MultinomialNB()) ])
+
+    ## Fit Model
+    model.fit(X_train, Y_train)
+
+    return mean_squared_error(Y_test, regressor.predict(X_test)) """
+
 
 class Machine:
     def __init__(self, data):
         
         self.data = data
 
-        self.model= Pipeline(steps=[('count_vector', CountVectorizer(ngram_range=(1,1), lowercase=True, stop_words='english')), ('tfid', TfidfTransformer()), ('model', MultinomialNB()) ])
+        self.model= Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase = True)), ('feature-selection', SelectPercentile(score_func= chi2, percentile=50)), ('model', MultinomialNB()) ])
 
     def recommend(self, data):
         scrape= pd.DataFrame(data)
         try:
             self.data= pd.DataFrame(self.data)
 
-            lst_stopwords = nltk.corpus.stopwords.words("english")
 
             #self.data["text_clean"] = self.data["text"].apply(lambda x: utils_preprocess_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=lst_stopwords))
 
