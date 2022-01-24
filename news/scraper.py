@@ -137,7 +137,7 @@ class LaLigaScraper(Scraper):
         try:
             for article in news:
                 title = article.find('h3').text
-                url = article.find('a')['href']
+                url = self.url + article.find('a')['href']
                 img = 'https://assets.laliga.com/assets/2019/10/09/medium/47d73a0eff4508d03ea51f26384bcba2.jpeg'
                 articles.append({'title': title, 'url': url, 'img': img})
         except Exception as e:

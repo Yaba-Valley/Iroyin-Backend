@@ -49,7 +49,13 @@ def index(request):
                 me.newsSeen.add(News.objects.create(title = recommend_news['titles'][i], url = recommend_news['urls'][i]))
                 
         me.save()
-        return render(request, 'index.html', {'scraped': data, 'recommended': recommend_news['titles']})
+        
+        news_for_frontend = []
+        # restructure news for FE
+        for i in range(len(recommend_news['titles'])):
+            news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i]})
+                                          
+        return render(request, 'index.html', {'news': news_for_frontend})
             
         
     except Exception as e:
@@ -60,12 +66,13 @@ def index(request):
 
 def prepareDataForModel (data, newsInteracted):
     
-    titles, urls,interactions=[],[],[]
+    titles, urls,interactions,imgs=[],[],[],[]
         
     for i in range(len(data)):
-        #print(data[i])
         titles.append(data[i]['title'])
         urls.append(data[i]['url'])
+        imgs.append(data[i]['img'])
+        
         
         if newsInteracted is not None:
             if data[i] in newsInteracted:
@@ -74,9 +81,9 @@ def prepareDataForModel (data, newsInteracted):
                 interactions.append(0)
         
     if newsInteracted is not None:
-        return {'titles': titles, 'urls': urls, 'interactions': interactions}
+        return {'titles': titles, 'urls': urls, 'interactions': interactions, 'imgs': imgs}
     
-    return {'titles': titles, 'urls': urls }
+    return {'titles': titles, 'urls': urls, 'imgs': imgs }
 
 
 def test_templates(request):
