@@ -59,11 +59,11 @@ class VanguardScraper(Scraper):
 
 class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
-        self.url = 'https://www.goal.com/en-ng/news/1'
+        self.url = 'https://www.goal.com'
         
     def scrape(self):
 
-        request = requests.get(self.url)
+        request = requests.get(self.url + '/en-ng/news/1')
         soup = BeautifulSoup(request.text, 'html.parser')
         value = soup.find_all('tr')
         headlines = []
