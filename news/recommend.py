@@ -2,7 +2,6 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
-import nltk
 import re
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
@@ -12,7 +11,7 @@ from sklearn.metrics import accuracy_score, f1_score
 
 
 
-def utils_preprocess_text(text, flg_stemm=False, flg_lemm=True, lst_stopwords=None):
+""" def utils_preprocess_text(text, flg_stemm=False, flg_lemm=True, lst_stopwords=None):
     ## clean (convert to lowercase and remove punctuations and   
     ##characters and then strip)
     text = re.sub(r'[^\w\s]', '', str(text).lower().strip())
@@ -38,7 +37,7 @@ def utils_preprocess_text(text, flg_stemm=False, flg_lemm=True, lst_stopwords=No
     return text
 
 
-""" def objective(trial):
+ def objective(trial):
     percentile = trial.suggest_float("feature-selection__percerntile", 0, 10)
     #intercept = trial.suggest_categorical("fit_intercept", [True, False])
     #tol = trial.suggest_float("tol", 0.001, 0.01, log=True)
@@ -50,9 +49,10 @@ def utils_preprocess_text(text, flg_stemm=False, flg_lemm=True, lst_stopwords=No
     ## Fit Model
     model.fit(X_train, Y_train)
 
-    return mean_squared_error(Y_test, regressor.predict(X_test)) """
+    return mean_squared_error(Y_test, regressor.predict(X_test))
 
-
+"""
+ 
 class Machine:
     def __init__(self, data):
         
