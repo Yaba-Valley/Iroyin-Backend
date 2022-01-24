@@ -57,6 +57,11 @@ def index(request):
         print(e)
         return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
+def indicate_interaction(request, news_id):
+    sample_user = User.objects.get(username = 'jeremiah')
+    news = News.objects.get(id = news_id)
+    
+    
 def login(request):
     email = request.POST.get('email_address')
     password = request.POST.get('password')
