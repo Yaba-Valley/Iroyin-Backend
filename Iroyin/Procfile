@@ -1,0 +1,1 @@
+web: gunicorn Iroyin.wsgi --log-file -
