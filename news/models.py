@@ -17,6 +17,7 @@ class News(models.Model):
 
 class User(models.Model):
     username = models.CharField(max_length=50)
+    email = models.EmailField()
     password = models.TextField(max_length=50)
     newsSeen = models.ManyToManyField(to = News, related_name='readers')
     newsIntereactedWith = models.ManyToManyField(to = News, related_name='readers_interacted')

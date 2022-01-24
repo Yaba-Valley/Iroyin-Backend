@@ -5,6 +5,7 @@ from .scraper import EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper,
 import json
 from .models import News, User
 from .recommend import Machine
+from .utils import prepareDataForModel
 
 # Create your views here.
 
@@ -33,7 +34,7 @@ def index(request):
         
         recommend_news=Machine(trainingData).recommend(data_to_predict_with)
         
-        print(recommend_news)
+        # print(recommend_news)
                 
         for i in range(len(recommend_news['titles'])):
             try:
@@ -49,35 +50,20 @@ def index(request):
         for i in range(len(recommend_news['titles'])):
             news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i]})
                                           
-        return render(request, 'index.html', {'news': news_for_frontend})
+        return JsonResponse({'news': news_for_frontend})
             
         
     except Exception as e:
         print(e)
         return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
-        
+
+def login(request):
+    email = request.POST.get('email_address')
+    password = request.POST.get('password')
     
 
-def prepareDataForModel (data, newsInteracted):
-    
-    titles, urls,interactions,imgs=[],[],[],[]
-        
-    for i in range(len(data)):
-        titles.append(data[i]['title'])
-        urls.append(data[i]['url'])
-        imgs.append(data[i]['img'])
-        
-        
-        if newsInteracted is not None:
-            if data[i] in newsInteracted:
-                interactions.append(1)
-            else:
-                interactions.append(0)
-        
-    if newsInteracted is not None:
-        return {'titles': titles, 'urls': urls, 'interactions': interactions, 'imgs': imgs}
-    
-    return {'titles': titles, 'urls': urls, 'imgs': imgs }
+def register(request):
+    pass
 
 
 def test_templates(request):
