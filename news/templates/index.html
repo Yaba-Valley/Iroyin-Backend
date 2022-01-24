@@ -6,7 +6,7 @@
 <ul>
 
     {% for recom in recommended %}
-        <li>{{ recom }}</li>
+        <li><a href = {{ recom.url }}>{{ recom }}</a></li>
     {% endfor %}    
 </ul>
 
