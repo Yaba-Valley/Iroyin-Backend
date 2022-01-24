@@ -5,8 +5,11 @@ import pandas as pd
 import numpy as np
 import nltk
 import re
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectPercentile, chi2
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, f1_score
 
 
 
@@ -56,7 +59,7 @@ class Machine:
         
         self.data = data
 
-        self.model= Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase = True)), ('feature-selection', SelectPercentile(score_func= chi2, percentile=50)), ('model', MultinomialNB()) ])
+        self.model= Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase = True)), ('feature-selection', SelectPercentile(score_func= chi2, percentile=90)), ('classifier', RandomForestClassifier())])
 
     def recommend(self, data):
         scrape= pd.DataFrame(data)
@@ -67,14 +70,25 @@ class Machine:
             #self.data["text_clean"] = self.data["text"].apply(lambda x: utils_preprocess_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=lst_stopwords))
 
             #self.data.to_csv('news.csv', index = False)
-            
-            self.model.fit(self.data['titles'], self.data['interactions'])
-            probability=self.model.predict_proba(scrape['titles'])[:,1]
+            param_grid = {'feature-selection__percentile': (50, 60, 70)}
+            model_grid_search = GridSearchCV(self.model, param_grid=param_grid,
+                                 n_jobs=2, cv=2)
+            model_grid_search.fit(self.data['titles'], self.data['interactions'])
+            #self.model.fit(self.data['titles'], self.data['interactions'])
+
+            probability=model_grid_search.predict_proba(scrape['titles'])[:,1]
+
+            print('f1 :', f1_score(self.data['interactions'],model_grid_search.predict(self.data['titles'])))
+
+            print(f"The best set of parameters is: "f"{model_grid_search.best_params_}")
+
             scrape['probability']= probability
+
             recommended_item= scrape.sort_values(by=['probability'], ascending=False).drop(['probability'], axis=1)
+
             recommended_item= recommended_item.iloc[:20, :]
             print('\n\n\n\n\n')
-            print('ml', recommended_item)
+            #print('ml', recommended_item)
             return recommended_item.to_dict(orient='list')
         except Exception as e:
             print(e)
