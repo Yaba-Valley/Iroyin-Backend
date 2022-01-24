@@ -15,12 +15,6 @@ def index(request):
         me = User.objects.get(username = 'jeremiah')
         
         data = []
-
-        # punch_topics = ['sports', 'politics', 'business', 'entertainment']        
-        
-        # for topic in punch_topics:
-        #     data.extend(PunchScraper(topic).scrape())
-        #     print('scraper %s done' % topic)
         
         scrapers = [GoalDotComScraper(), SkySportScraper(), LaLigaScraper(), EPLScraper()]
         

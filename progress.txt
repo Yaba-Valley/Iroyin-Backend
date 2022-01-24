@@ -1,4 +1,12 @@
-Punch Scraper works perfectly --- returns 25 news per page
-Vanguard Scraper doesn't work yet
-Goal.com scraper works perfectly
-Skysports scraper works perfectly
+// COMPLETED
+1. Most of the scrapers work
+2. Machine Learning Model now makes sense
+3. Model-Backend Interaction is now seamless
+
+
+// TODO: 
+
+1. Connecting Backend to frontend
+2. Scraping content dynamically -- based on user's interest
+3. Authenticating users
+4. Registering user-news interaction
