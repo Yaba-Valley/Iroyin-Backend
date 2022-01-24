@@ -1,5 +1,4 @@
 from sklearn.naive_bayes import MultinomialNB
-import optuna
 from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
