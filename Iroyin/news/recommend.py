@@ -90,7 +90,6 @@ class Machine:
             #print('ml', recommended_item)
             return recommended_item.to_dict(orient='list')
         except Exception as e:
-            print(e)
-            return scrape.iloc[:20, :].to_dict(orient = 'list')
+            return scrape.sample(frac = 1).iloc[:20, :].to_dict(orient = 'list')
 
         

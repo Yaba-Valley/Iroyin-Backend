@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
-from .scraper import PunchScraper
+from .scraper import EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
 import json
 from .models import News, User
 from .recommend import Machine
@@ -14,9 +14,20 @@ def index(request):
         
         me = User.objects.get(username = 'jeremiah')
         
-        punchScraper = PunchScraper('sports')      
+        data = []
+
+        # punch_topics = ['sports', 'politics', 'business', 'entertainment']        
         
-        data = punchScraper.scrape()
+        # for topic in punch_topics:
+        #     data.extend(PunchScraper(topic).scrape())
+        #     print('scraper %s done' % topic)
+        
+        scrapers = [GoalDotComScraper(), SkySportScraper(), LaLigaScraper(), EPLScraper()]
+        
+        for scraper in scrapers:
+            data.extend(scraper.scrape())
+            print(scraper)
+            print('is done')
                 
         newsSeen = [news.serialize() for news in me.newsSeen.all()]
         
