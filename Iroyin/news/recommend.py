@@ -58,7 +58,7 @@ class Machine:
         
         self.data = data
 
-        self.model= Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase = True)), ('feature-selection', SelectPercentile(score_func= chi2, percentile=90)), ('classifier', RandomForestClassifier())])
+        self.model= Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase = True)), ('feature-selection', SelectPercentile(score_func= chi2, percentile=90)), ('classifier', RandomForestClassifier(random_state=0))])
 
     def recommend(self, data):
         scrape= pd.DataFrame(data)
