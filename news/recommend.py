@@ -11,7 +11,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.metrics import accuracy_score, f1_score
 #import nltk
 ### dL
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer
+#from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer
 
 
 
