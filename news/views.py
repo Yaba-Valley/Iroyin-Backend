@@ -17,7 +17,7 @@ def index(request):
         
         data = []
         
-        scrapers = [GoalDotComScraper(), SkySportScraper(), LaLigaScraper(), EPLScraper()]
+        scrapers = [PunchScraper('business'), PunchScraper('sports'), PunchScraper('politics')]
         
         for scraper in scrapers:
             data.extend(scraper.scrape())
