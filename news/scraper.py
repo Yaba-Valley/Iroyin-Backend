@@ -277,3 +277,28 @@ class GizModoScraper:
                 continue
                 
         return articles            
+    
+    
+class TheNextWebScraper:
+    
+    categories = ['', 'plugged', 'neural', 'shift', 'growth-quarters', 'hardfork', 'house-of-talent']
+    
+    def __init__(self, category = '') -> None:
+        self.category = category
+        self.url = 'https://thenextweb.com/'
+        
+    def scrape(self):
+        
+        articles = []
+        request = requests.get(self.url + self.category)
+        soup = BeautifulSoup(request.text, 'html.parser')
+        
+        if self.category == '':
+            news = soup.select('.c-showcase__grid article')
+            for article in news:
+                article_title = article.select_one('.c-card__heading').text.strip()
+                article_url = article.select_one('a')['href']
+                article_image = article.select_one('img')['src']
+                
+                articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+            
