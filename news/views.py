@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
-from .scraper import GizModoScraper, NewsBlockScraper, PunchScraper
+from .scraper import EPLScraper, FreeCodeCampScraper, GizModoScraper, LaLigaScraper, NewsBlockScraper, PunchScraper
 import json
 from .models import News, User
 from .recommend import Machine
@@ -17,7 +17,7 @@ def index(request):
         
         data = []
         
-        scrapers = [ PunchScraper('sports'), NewsBlockScraper(), GizModoScraper() ]
+        scrapers = [ PunchScraper('sports'), FreeCodeCampScraper(), EPLScraper(), LaLigaScraper(), GizModoScraper() ]
         
         for scraper in scrapers:
             data.extend(scraper.scrape())
