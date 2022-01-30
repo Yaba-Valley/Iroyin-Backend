@@ -14,7 +14,7 @@ class Scraper:
 class PunchScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
@@ -40,7 +40,7 @@ class PunchScraper(Scraper):
 class VanguardScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
@@ -49,7 +49,6 @@ class VanguardScraper(Scraper):
         request = requests.get(self.url, headers=self.headers).content
         soup = BeautifulSoup(request, 'lxml')
         value = soup.find_all('h2', {'class': 'entry-title'})
-
 
         headlines = [
             {'title': i.text, 'url': i.find('a')['href']} for i in value]
@@ -60,7 +59,7 @@ class VanguardScraper(Scraper):
 class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.goal.com'
-        
+
     def scrape(self):
 
         request = requests.get(self.url + '/en-ng/news/1')
@@ -84,12 +83,12 @@ class GoalDotComScraper(Scraper):
 class SkySportScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.skysports.com/news-wire'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
 
-        request = requests.get(self.url, headers = self.headers)
+        request = requests.get(self.url, headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.find_all(
             'div', {'class': 'news-list__item news-list__item--show-thumb-bp30'})
@@ -105,7 +104,7 @@ class SkySportScraper(Scraper):
 class EPLScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.premierleague.com'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
@@ -124,7 +123,7 @@ class LaLigaScraper(Scraper):
     def __init__(self) -> None:
         # images of laliga cannot be scraped cause of it JS abi CSS sha
         self.url = 'https://www.laliga.com'
-        
+
     def scrape(self):
 
         request = requests.get(self.url + '/en-ES/news', verify=False)
@@ -133,7 +132,7 @@ class LaLigaScraper(Scraper):
             'div', {'class': 'styled__ImageContainer-sc-1si1tif-0'})
 
         articles = []
-        
+
         try:
             for article in news:
                 title = article.find('h3').text
@@ -150,30 +149,33 @@ class LaLigaScraper(Scraper):
 class BundesligaScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.bundesliga.com'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
         articles = []
-        request = requests.get(self.url + '/en/bundesliga', headers = self.headers)
+        request = requests.get(
+            self.url + '/en/bundesliga', headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.select('.teaser')
         other_news = soup.select('.topListEntry')
-        
+
         for article in news:
             article_title = article.find('h2').text
             article_url = self.url + article.find('a')['href']
             article_image = article.find('img')['src'].split('?')[0]
 
-            articles.append({'title': article_title, 'url': article_url, 'img': article_image})
-        
+            articles.append(
+                {'title': article_title.strip(), 'url': article_url, 'img': article_image})
+
         for article in other_news:
             article_title = article.text
             article_url = self.url + article['href']
             article_image = article.find('img')['src'].split('?')[0]
-            
-            articles.append({'title': article_title, 'url': article_url, 'img': article_image})
-            
+
+            articles.append(
+                {'title': article_title.strip(), 'url': article_url, 'img': article_image})
+
         return articles
 
 
@@ -181,11 +183,11 @@ class FreeCodeCampScraper(Scraper):
 
     def __init__(self) -> None:
         self.url = 'https://www.freecodecamp.org'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
-        request = requests.get(self.url + '/news', headers = self.headers)
+        request = requests.get(self.url + '/news', headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
         news = soup.find_all('article', {'class': 'post-card'})
 
@@ -194,13 +196,12 @@ class FreeCodeCampScraper(Scraper):
         for article in news:
             article_title = article.find(
                 'h2', {'class': 'post-card-title'}).text
-            article_image = article.find(
-                'img', {'class': 'post-card-image'})['data-src']
+            article_image = article.select_one('.post-card-image-link img')['src']
             article_url = article.find(
                 'h2', {'class': 'post-card-title'}).find('a')['href']
 
-            articles.append({'title': article_title, 'url': self.url +
-                            article_url, 'img': self.url + article_image})
+            articles.append({'title': article_title.strip(), 'url': self.url +
+                            article_url, 'img': article_image})
 
         return articles
 
@@ -208,17 +209,14 @@ class FreeCodeCampScraper(Scraper):
 class TechCrunchScraper(Scraper):
     def __init__(self):
         self.url = 'https://techcrunch.com'
-        
+
         Scraper.__init__(self)
 
     def scrape(self):
-        request = requests.get(self.url, headers = self.headers)
+        request = requests.get(self.url, headers=self.headers)
         soup = BeautifulSoup(request.text, 'html.parser')
-        
-        print(soup)
 
         news = soup.find_all('article')
-        
 
         articles = []
 
@@ -231,12 +229,9 @@ class TechCrunchScraper(Scraper):
             article_image = article.find('img')['src']
 
             articles.append(
-                {'title': article_title, 'url': article_url, 'img': article_image})
+                {'title': article_title.strip(), 'url': article_url, 'img': article_image})
 
         return articles
-    
-#print(TechCrunchScraper().scrape())
-
 
 class TechTrendsAfricaScraper(Scraper):
     def __init__(self):
@@ -253,9 +248,9 @@ class TechTrendsAfricaScraper(Scraper):
 
         for article in news:
             article_title = article.select_one('.jeg_post_title').text
-            article_url = article.select_one('.jeg_post_title').find('a')['href']
-            
-            
+            article_url = article.select_one(
+                '.jeg_post_title').find('a')['href']
+
             if article.find('img') == None:
                 article_image = article.find(
                     'div', {'class': 'thumbnail-container thumbnail-background'})['data-src']
@@ -263,6 +258,36 @@ class TechTrendsAfricaScraper(Scraper):
                 article_image = article.find('img')['data-src']
 
             articles.append(
-                {'title': article_title, 'url': article_url, 'img': article_image.split('?')[0]})
+                {'title': article_title.strip(), 'url': article_url, 'img': article_image.split('?')[0]})
 
         return articles
+
+
+class GizModoScraper:
+    def __init__(self):
+        self.url = 'https://gizmodo.com/'
+
+    def scrape(self):
+        request = requests.get(self.url)
+        soup = BeautifulSoup(request.text, 'html.parser')
+
+        news = soup.find_all('article')
+
+        articles = []
+
+        for article in news:
+            try:
+                article_title = article.select_one('h4').text
+                article_url = article.select_one('a')['href']
+                article_image = article.select_one('img')['src']
+                
+                articles.append({'title': article_title.strip(), 'img': article_image, 'url': article_url})
+                
+            except:
+                continue
+                
+        return articles
+    
+
+print(FreeCodeCampScraper().scrape())
+            

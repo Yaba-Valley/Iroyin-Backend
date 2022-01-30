@@ -99,3 +99,22 @@ class TestScraper(TestCase):
         
         scraped_news = scraper.TechCrunchScraper().scrape()
         self.assertNotEqual(len(scraped_news), 0, 'techcrunch scraper does not return anything')
+        
+    
+    def test_techtrends_scraper(self):
+        """
+            This test whether the techtrendsafrica scraper returns more than one news or not
+        """
+        
+        scraped_news = scraper.TechTrendsAfricaScraper().scrape()
+        self.assertNotEqual(len(scraped_news), 0, 'techtrends scraper does not return anything')
+        
+    
+    def test_gizmodo_scraper(self):
+        """
+            This test the number of news returned by the gizmodo scraper, fails if the 
+            scraper returns no news
+        """
+        
+        scraped_news = scraper.GizModoScraper().scrape()
+        self.assertNotEqual(len(scraped_news), 0, 'gizmodo scraper does not return anything')
