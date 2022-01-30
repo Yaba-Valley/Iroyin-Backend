@@ -10,7 +10,6 @@ class Scraper:
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
         }
 
-
 class PunchScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
@@ -36,7 +35,6 @@ class PunchScraper(Scraper):
 
         return headlines
 
-
 class VanguardScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
@@ -54,7 +52,6 @@ class VanguardScraper(Scraper):
             {'title': i.text, 'url': i.find('a')['href']} for i in value]
 
         return headlines
-
 
 class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
@@ -79,7 +76,6 @@ class GoalDotComScraper(Scraper):
 
         return headlines
 
-
 class SkySportScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.skysports.com/news-wire'
@@ -100,7 +96,6 @@ class SkySportScraper(Scraper):
 
         return headlines
 
-
 class EPLScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.premierleague.com'
@@ -117,7 +112,6 @@ class EPLScraper(Scraper):
                       article['href'], 'img':article.find('img')['src'].strip()} for article in news]
 
         return headlines
-
 
 class LaLigaScraper(Scraper):
     def __init__(self) -> None:
@@ -144,7 +138,6 @@ class LaLigaScraper(Scraper):
             pass
 
         return articles
-
 
 class BundesligaScraper(Scraper):
     def __init__(self) -> None:
@@ -178,7 +171,6 @@ class BundesligaScraper(Scraper):
 
         return articles
 
-
 class FreeCodeCampScraper(Scraper):
 
     def __init__(self) -> None:
@@ -204,7 +196,6 @@ class FreeCodeCampScraper(Scraper):
                             article_url, 'img': article_image})
 
         return articles
-
 
 class TechCrunchScraper(Scraper):
     def __init__(self):
@@ -262,7 +253,6 @@ class TechTrendsAfricaScraper(Scraper):
 
         return articles
 
-
 class GizModoScraper:
     def __init__(self):
         self.url = 'https://gizmodo.com/'
@@ -286,8 +276,4 @@ class GizModoScraper:
             except:
                 continue
                 
-        return articles
-    
-
-print(FreeCodeCampScraper().scrape())
-            
+        return articles            
