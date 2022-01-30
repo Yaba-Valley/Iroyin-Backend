@@ -10,6 +10,7 @@ class Scraper:
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
         }
 
+
 class PunchScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
@@ -35,6 +36,7 @@ class PunchScraper(Scraper):
 
         return headlines
 
+
 class VanguardScraper(Scraper):
     def __init__(self, topic) -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
@@ -52,6 +54,7 @@ class VanguardScraper(Scraper):
             {'title': i.text, 'url': i.find('a')['href']} for i in value]
 
         return headlines
+
 
 class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
@@ -76,6 +79,7 @@ class GoalDotComScraper(Scraper):
 
         return headlines
 
+
 class SkySportScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.skysports.com/news-wire'
@@ -96,6 +100,7 @@ class SkySportScraper(Scraper):
 
         return headlines
 
+
 class EPLScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.premierleague.com'
@@ -112,6 +117,7 @@ class EPLScraper(Scraper):
                       article['href'], 'img':article.find('img')['src'].strip()} for article in news]
 
         return headlines
+
 
 class LaLigaScraper(Scraper):
     def __init__(self) -> None:
@@ -138,6 +144,7 @@ class LaLigaScraper(Scraper):
             pass
 
         return articles
+
 
 class BundesligaScraper(Scraper):
     def __init__(self) -> None:
@@ -171,6 +178,7 @@ class BundesligaScraper(Scraper):
 
         return articles
 
+
 class FreeCodeCampScraper(Scraper):
 
     def __init__(self) -> None:
@@ -188,7 +196,8 @@ class FreeCodeCampScraper(Scraper):
         for article in news:
             article_title = article.find(
                 'h2', {'class': 'post-card-title'}).text
-            article_image = article.select_one('.post-card-image-link img')['src']
+            article_image = article.select_one(
+                '.post-card-image-link img')['src']
             article_url = article.find(
                 'h2', {'class': 'post-card-title'}).find('a')['href']
 
@@ -196,6 +205,7 @@ class FreeCodeCampScraper(Scraper):
                             article_url, 'img': article_image})
 
         return articles
+
 
 class TechCrunchScraper(Scraper):
     def __init__(self):
@@ -223,6 +233,7 @@ class TechCrunchScraper(Scraper):
                 {'title': article_title.strip(), 'url': article_url, 'img': article_image})
 
         return articles
+
 
 class TechTrendsAfricaScraper(Scraper):
     def __init__(self):
@@ -253,6 +264,7 @@ class TechTrendsAfricaScraper(Scraper):
 
         return articles
 
+
 class GizModoScraper:
     def __init__(self):
         self.url = 'https://gizmodo.com/'
@@ -270,38 +282,41 @@ class GizModoScraper:
                 article_title = article.select_one('h4').text
                 article_url = article.select_one('a')['href']
                 article_image = article.select_one('img')['src']
-                
-                articles.append({'title': article_title.strip(), 'img': article_image, 'url': article_url})
-                
+
+                articles.append({'title': article_title.strip(),
+                                'img': article_image, 'url': article_url})
+
             except:
                 continue
-                
-        return articles            
-    
-    
+
+        return articles
+
+
 class TheNextWebScraper:
-    
-    categories = ['', 'plugged', 'neural', 'shift', 'growth-quarters', 'hardfork', 'house-of-talent']
-    
-    def __init__(self, category = '') -> None:
+
+    categories = ['', 'plugged', 'neural', 'shift',
+                  'growth-quarters', 'hardfork', 'house-of-talent']
+
+    def __init__(self, category='') -> None:
         self.category = category
         self.url = 'https://thenextweb.com/'
-        
+
     def scrape(self):
-        
+
         articles = []
         request = requests.get(self.url + self.category)
         soup = BeautifulSoup(request.text, 'html.parser')
-        
+
         if self.category == '':
             news = soup.select('.c-showcase__grid article')
             for article in news:
-                article_title = article.select_one('.c-card__heading').text.strip()
+                article_title = article.select_one(
+                    '.c-card__heading').text.strip()
                 article_url = article.select_one('a')['href']
                 article_image = article.select_one('img')['src']
-                
-                articles.append({'title': article_title.strip(), 'url': article_url, 'img': article_image})
-                
+
+                articles.append({'title': article_title.strip(),
+                                'url': article_url, 'img': article_image})
 
 
 class NewsBlockScraper(Scraper):
@@ -324,9 +339,8 @@ class NewsBlockScraper(Scraper):
                 article_url = article.find('a')['href']
                 print(article_title)
                 print('\n')
-                articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+                articles.append(
+                    {'title': article_title, 'url': article_url, 'img': article_image})
             except:
                 pass
         return articles
-
-print(GizModoScraper().scrape())
