@@ -300,5 +300,33 @@ class TheNextWebScraper:
                 article_url = article.select_one('a')['href']
                 article_image = article.select_one('img')['src']
                 
+                articles.append({'title': article_title.strip(), 'url': article_url, 'img': article_image})
+                
+
+
+class NewsBlockScraper(Scraper):
+    def __init__(self):
+        self.url = 'https://newblock.news/'
+        Scraper.__init__(self)
+
+    def scrape(self):
+        request = requests.get(self.url, headers=self.headers)
+        soup = BeautifulSoup(request.text, 'html.parser')
+
+        news = soup.find_all('article')
+
+        articles = []
+
+        for article in news:
+            try:
+                article_title = article.find('h3').text
+                article_image = article.find('img')['data-src']
+                article_url = article.find('a')['href']
+                print(article_title)
+                print('\n')
                 articles.append({'title': article_title, 'url': article_url, 'img': article_image})
-            
+            except:
+                pass
+        return articles
+
+print(GizModoScraper().scrape())

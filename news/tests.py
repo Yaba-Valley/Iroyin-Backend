@@ -118,3 +118,12 @@ class TestScraper(TestCase):
         
         scraped_news = scraper.GizModoScraper().scrape()
         self.assertNotEqual(len(scraped_news), 0, 'gizmodo scraper does not return anything')
+        
+    def test_newsblock_scraper(self):
+        """
+            This test the number of news returned by the newsblock scraper, fails if the 
+            scraper returns no news
+        """
+        
+        scraped_news = scraper.NewsBlockScraper().scrape()
+        self.assertNotEqual(len(scraped_news), 0, 'newsblock scraper does not return anything')
