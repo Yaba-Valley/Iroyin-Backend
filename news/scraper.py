@@ -266,3 +266,30 @@ class TechTrendsAfricaScraper(Scraper):
                 {'title': article_title, 'url': article_url, 'img': article_image.split('?')[0]})
 
         return articles
+
+
+
+class NewsBlockScraper(Scraper):
+    def __init__(self):
+        self.url = 'https://newblock.news/'
+        Scraper.__init__(self)
+
+    def scrape(self):
+        request = requests.get(self.url, headers=self.headers)
+        soup = BeautifulSoup(request.text, 'html.parser')
+
+        news = soup.find_all('article')
+
+        articles = []
+
+        for article in news:
+            try:
+                article_title = article.text[2:]
+                article_image = article.find('img')['data-src']
+                article_url = article.find('a')['href']
+                print(article_title)
+                print('\n')
+                articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+            except:
+                pass
+        return articles
