@@ -10,3 +10,39 @@
 2. Scraping content dynamically -- based on user's interest
 3. Authenticating users
 4. Registering user-news interaction
+
+// TODO:
+WEBSITES TO scrapers
+
+PEOPLE AND RELATIONSHIPS
+
+1. futurelearn
+2. tekedia
+3. rollingstone
+4. verywellmind
+5. mentorcruise
+6. people.com
+
+SKINCARE
+
+1. glamourUk
+2. healthshots
+3. people.com
+4. vogue
+5. wwd
+6. allure
+7. byrdie
+8. everydayhealth
+
+HEALTH
+
+
+CRYPTOCURRENCY
+1. Quartz
+2. The Motley Fool
+3. Yahoo Finance
+4. AirdropAlert
+5. The Washington Post
+6. US News Money
+7. Vox
+8. Wall Street Journal
