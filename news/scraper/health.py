@@ -28,4 +28,4 @@ class VeryWellMindScraper(Scraper):
             
         return articles
     
-print(VeryWellMindScraper().scrape())
+#print(VeryWellMindScraper().scrape())
