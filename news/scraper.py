@@ -344,3 +344,4 @@ class NewsBlockScraper(Scraper):
             except:
                 pass
         return articles
+NewsBlockScraper().scrape()
