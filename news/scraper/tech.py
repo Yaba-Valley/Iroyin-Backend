@@ -124,7 +124,9 @@ class GizModoScraper:
 class TheNextWebScraper:
 
     categories = ['latest', 'plugged', 'neural', 'shift',
-                  'growth-quarters', 'hardfork', 'house-of-talent']
+                  'growth-quarters', 'hardfork', 'house-of-talent', 
+                  'future-of-finance', 'readme'
+                ]
 
     def __init__(self, category=categories[6]) -> None:
         self.category = category
@@ -150,10 +152,43 @@ class TheNextWebScraper:
                 article_title = article.select_one('h3').text.strip()
                 article_url = self.url + article.select_one('a')['href']
                 article_image = article.select_one('img')['data-src']
-                
-                articles.append({'title': article_title, 'url': article_url, 'img': article_image})
+
+                articles.append(
+                    {'title': article_title, 'url': article_url, 'img': article_image})
 
         return articles
 
 
-print(len(TheNextWebScraper().scrape()))
+class GlassDoorScraper:
+    def __init__(self) -> None:
+        self.url = 'https://glassdoor.com'
+
+    def scrape(self):
+        articles = []
+
+        request = requests.get(self.url + '/blog')
+        soup = BeautifulSoup(request.text, 'html.parser')
+
+        for article in soup.select('.post'):
+            article_title = article.select_one('h3').text
+            article_url = self.url + article.select_one('a')['href']
+            article_image = article.select_one(
+                '.css-6uzs0z')['style'].split('url(')[1].split(')')[0]
+
+            articles.append(
+                {'title': article_title, 'img': article_image, 'url': article_url})
+
+        for article in soup.select('.featured-article'):
+            article_title = article.select_one('h2').text
+            article_url = article.select_one('a')['href']
+            article_image = article.select_one('img')['src']
+
+            print(article_title, article_url, article_image)
+            articles.append(
+                {'title': article_title, 'img': article_image, 'url': article_url})
+
+        print(len(articles))
+        return articles
+
+
+print(GlassDoorScraper().scrape())
