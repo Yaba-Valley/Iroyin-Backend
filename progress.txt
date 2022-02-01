@@ -14,8 +14,10 @@
 // TODO:
 WEBSITES TO scrapers
 
-PEOPLE AND RELATIONSHIPS
+TECH
+1. GlassDoor (DONE)
 
+PEOPLE AND RELATIONSHIPS
 1. futurelearn
 2. tekedia
 3. rollingstone
