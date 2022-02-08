@@ -26,7 +26,7 @@ def index(request):
                 
         newsSeen = [news.serialize() for news in me.newsSeen.all()]
         
-        newsInteracted = [news.serialize() for news in me.newsIntereactedWith.all()]
+        newsInteracted = [news.serialize() for news in me.newInteractedWith.all()]
     
         trainingData = prepareDataForModel(data=newsSeen, newsInteracted=newsInteracted)
         
@@ -34,8 +34,6 @@ def index(request):
         
         recommend_news=Machine(trainingData).recommend(data_to_predict_with)
         
-        # print(recommend_news)
-                
         for i in range(len(recommend_news['titles'])):
             try:
                 existing_news = get_object_or_404(News, url = recommend_news['urls'][i])
@@ -58,10 +56,11 @@ def index(request):
         return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
 
-def indicate_interaction(request, news_id):
-    sample_user = User.objects.get(username = 'jeremiah')
-    news = News.objects.get(id = news_id)
+def indicate_interaction(request):
+    news_id = request.POST.get('news_id')
+    active_user = User.objects.get(username = 'jeremiah')
     
+    active_user.news_intereacted_with
     
 def login(request):
     email = request.POST.get('email_address')
@@ -70,13 +69,3 @@ def login(request):
 
 def register(request):
     pass
-
-
-
-
-# def test_templates(request):
-#     return render(request, 'index.html')
-
-
-# def profile(request):
-#     return render(request, 'profile.html')

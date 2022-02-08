@@ -20,7 +20,7 @@ class User(models.Model):
     email = models.EmailField()
     password = models.TextField(max_length=50)
     newsSeen = models.ManyToManyField(to = News, related_name='readers')
-    newsIntereactedWith = models.ManyToManyField(to = News, related_name='readers_interacted')
+    newInteractedWith = models.ManyToManyField(to = News, related_name='readers_interacted')
     
     def __str__(self):
         return self.username

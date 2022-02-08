@@ -54,9 +54,3 @@ class PeopleScraper(Scraper):
                 pass
         
         return articles
-
-
-         
-for i in PeopleScraper('lifestyle').scrape():
-    print(i)
-    print()
