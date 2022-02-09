@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
 from .scraper import EPLScraper, FreeCodeCampScraper, GizModoScraper, LaLigaScraper, NewsBlockScraper, PunchScraper
 import json
 from .models import News, User
@@ -11,8 +12,7 @@ from .utils import prepareDataForModel
 
 def index(request):
     
-    try:
-        
+    try: 
         me = User.objects.get(username = 'jeremiah')
         
         data = []
@@ -56,11 +56,22 @@ def index(request):
         return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
 
+@csrf_exempt
 def indicate_interaction(request):
-    news_id = request.POST.get('news_id')
-    active_user = User.objects.get(username = 'jeremiah')
     
-    active_user.news_intereacted_with
+    request_body_unicode = request.body.decode('utf-8')
+    request_body = json.loads(request_body_unicode)
+    news_id = request_body['news_id']
+    
+    try:
+        active_user = get_object_or_404(User, username = 'jeremiah')
+        current_news = get_object_or_404(News, id = news_id)   
+        active_user.newInteractedWith.add(current_news)
+    except Http404:
+        return JsonResponse({'message': f'News with id {news_id} does not exist', 'success': False})
+    return JsonResponse({'message': 'Interaction has been recorded', 'success': True})
+    
+    
     
 def login(request):
     email = request.POST.get('email_address')
