@@ -1,3 +1,4 @@
+from code import interact
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.pipeline import Pipeline
 import pandas as pd
@@ -10,6 +11,37 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.metrics import accuracy_score, f1_score
 import nltk
+import os
+from sqlalchemy import create_engine
+
+def get_df(id):
+    print('running')
+    path=os.getcwd()+'/db.sqlite3'
+
+    engine = create_engine('sqlite:///'+path)
+    query = f""" SELECT news_news.title         
+    FROM news_news
+    INNER JOIN news_user_newInteractedWith        
+    ON news_news.id=news_user_newInteractedWith.news_id
+    WHERE news_user_newInteractedWith.user_id={id}; """
+
+    interacted= pd.read_sql_query(query,engine)
+    print(interacted)
+    print(interacted.shape)
+    print(np.ones(shape=(1,len(interacted))))
+    interacted['interactions'] = np.ones(shape=(1,len(interacted)))
+    # print(interacted['interactions'])
+
+    query=  f""" SELECT news_news.title           
+    FROM news_news
+    INNER JOIN news_user_newsSeen        
+    ON news_news.id=news_user_newsSeen.news_id
+    WHERE news_user_newsSeen.user_id={id}; """
+
+    seen=pd.read_sql(query,engine)
+    #print(seen)
+
+get_df(1)
 ### dL
 #from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer
 
@@ -68,9 +100,10 @@ class Machine:
     def recommend(self, data):
         scrape= pd.DataFrame(data)
         try:
+            get_df(1)
             self.data= pd.DataFrame(self.data)
             #self.data.to_csv('news.csv', index= False)
-
+            print(os.path.dirname('tests.py'))
             self.data["titles"] = self.data["titles"].apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
 
             #self.data.to_csv('news.csv', index = False)
