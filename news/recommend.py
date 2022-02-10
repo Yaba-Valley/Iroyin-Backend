@@ -16,33 +16,32 @@ from sqlalchemy import create_engine
 
 
 def get_df(id):
-    print('running')
     path = os.getcwd()+'/db.sqlite3'
 
     engine = create_engine('sqlite:///'+path)
-    query = f""" SELECT news_news.title         
+    query = f""" SELECT news_news.title, news_news.id         
     FROM news_news
     INNER JOIN news_user_newInteractedWith        
     ON news_news.id=news_user_newInteractedWith.news_id
     WHERE news_user_newInteractedWith.user_id={id}; """
 
     interacted = pd.read_sql_query(query, engine)
-    print(interacted)
     
     interacted['interactions'] =  [1] * len(interacted)
-    print('After insertion:\n\n')
     
-    query = f""" SELECT news_news.title           
+    query = f""" SELECT news_news.title, news_news.id          
     FROM news_news
     INNER JOIN news_user_newsSeen        
     ON news_news.id=news_user_newsSeen.news_id
     WHERE news_user_newsSeen.user_id={id}; """
 
     seen = pd.read_sql(query, engine)
-    # print(seen)
+    merged=interacted.merge(seen, on=['id', 'title'], how='outer')
+    merged.fillna(0, inplace=True)
+    merged.sample(frac = 1)
+    return merged.sample(frac = 1)
 
 
-get_df(1)
 # dL
 #from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer
 
@@ -94,20 +93,17 @@ def clean_text(text, flg_stemm=False, flg_lemm=False, lst_stopwords=None):
 
 
 class Machine:
-    def __init__(self, data):
+    def __init__(self, id):
 
-        self.data = data
-
+        self.data = get_df(id)
         self.model = Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase=True)), ('feature-selection',
                               SelectPercentile(score_func=f_classif)), ('classifier', RandomForestClassifier(random_state=0))])
 
     def recommend(self, data):
         scrape = pd.DataFrame(data)
+        
+        #scrape= pdfrom_dict(data, orient='rows', dtype=None, columns=None)
         try:
-            get_df(1)
-            self.data = pd.DataFrame(self.data)
-            #self.data.to_csv('news.csv', index= False)
-            print(os.path.dirname('tests.py'))
             self.data["titles"] = self.data["titles"].apply(lambda x: clean_text(
                 x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
 

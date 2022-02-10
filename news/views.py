@@ -7,7 +7,6 @@ import json
 from .models import News, User
 from .recommend import Machine
 from .utils import prepareDataForModel
-
 # Create your views here.
 
 def index(request):
@@ -28,11 +27,11 @@ def index(request):
         
         newsInteracted = [news.serialize() for news in me.newInteractedWith.all()]
     
-        trainingData = prepareDataForModel(data=newsSeen, newsInteracted=newsInteracted)
-        
+        #trainingData = prepareDataForModel(data=newsSeen, newsInteracted=newsInteracted)
+        print('scraped: ',data)
         data_to_predict_with = prepareDataForModel(data = data, newsInteracted=None)
         
-        recommend_news=Machine(trainingData).recommend(data_to_predict_with)
+        recommend_news=Machine(1).recommend(data_to_predict_with)
         
         for i in range(len(recommend_news['titles'])):
             try:
