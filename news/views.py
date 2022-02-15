@@ -14,7 +14,7 @@ from .utils import fetch_news_async, prepareDataForModel
 
 def index(request):
     
-    # try: 
+    try: 
         me = User.objects.get(username = 'jeremiah')
         
         data = []
@@ -30,29 +30,29 @@ def index(request):
         
         data = asyncio.run(fetch_news_async(scrapers, data))
         
-        # data_to_predict_with = prepareDataForModel(data = data, newsInteracted=None)
+        data_to_predict_with = prepareDataForModel(data = data, newsInteracted=None)
         
-        # recommend_news=Machine(1).recommend(data_to_predict_with)
+        recommend_news=Machine(1).recommend(data_to_predict_with)
         
-        # for i in range(len(recommend_news['titles'])):
-        #     try:
-        #         existing_news = get_object_or_404(News, url = recommend_news['urls'][i])
-        #         me.newsSeen.add(existing_news)
-        #     except Http404:
-        #         me.newsSeen.add(News.objects.create(title = recommend_news['titles'][i], url = recommend_news['urls'][i]))
+        for i in range(len(recommend_news['titles'])):
+            try:
+                existing_news = get_object_or_404(News, url = recommend_news['urls'][i])
+                me.newsSeen.add(existing_news)
+            except Http404:
+                me.newsSeen.add(News.objects.create(title = recommend_news['titles'][i], url = recommend_news['urls'][i]))
                 
-        # me.save()
+        me.save()
         
-        # news_for_frontend = []
-        # # restructure news for FE
-        # for i in range(len(recommend_news['titles'])):
-        #     news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i]})
+        news_for_frontend = []
+        # restructure news for FE
+        for i in range(len(recommend_news['titles'])):
+            news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i]})
                                           
         return JsonResponse({'news': data})
             
-    # except Exception as e:
-        # print(e)
-        # return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
+    except Exception as e:
+        print(e)
+        return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
 
 @csrf_exempt

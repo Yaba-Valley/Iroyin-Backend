@@ -53,7 +53,7 @@ async def fetch_news_async(scrapers, news = []):
             tasks.append(task)
     
         await asyncio.gather(*tasks)
-        print('TIME TAKEN:', math.floor(time.time() - start_time))
+        print('TIME TAKEN:', math.floor(time.time() - start_time), 's')
         
         return news
     
