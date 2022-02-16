@@ -3,6 +3,8 @@ import json
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
+from news.scraper.fashion import GlamourScraper, PeopleScraper
+from news.scraper.health import VeryWellMindScraper
 
 from news.scraper.sports import BundesligaScraper, GoalDotComScraper, SkySportScraper
 from .scraper import EPLScraper, LaLigaScraper, PunchScraper
@@ -20,12 +22,15 @@ def index(request):
         data = []
         
         scrapers = [
-            PunchScraper(topic = 'sports'),
+            # PunchScraper(topic = 'sports'),
             GoalDotComScraper(),
-            SkySportScraper(),
+            # SkySportScraper(),
             EPLScraper(),
             LaLigaScraper(),
-            BundesligaScraper()
+            BundesligaScraper(),
+            PeopleScraper(),
+            GlamourScraper(),
+            VeryWellMindScraper()
         ]
         
         data = asyncio.run(fetch_news_async(scrapers, data))
