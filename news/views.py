@@ -5,10 +5,9 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from news.scraper.fashion import GlamourScraper, PeopleScraper
 from news.scraper.health import VeryWellMindScraper
-
-from news.scraper.sports import BundesligaScraper, GoalDotComScraper, SkySportScraper
-from .scraper import EPLScraper, LaLigaScraper, PunchScraper
 import json
+
+from news.scraper.tech import FreeCodeCampScraper, GizModoScraper, GlassDoorScraper, NewsBlockScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper
 from .models import News, User
 from .recommend import Machine
 from .utils import fetch_news_async, prepareDataForModel
@@ -23,15 +22,13 @@ def index(request):
         data = []
         
         scrapers = [
-            # PunchScraper(topic = 'sports'),
-            GoalDotComScraper(),
-            # SkySportScraper(),
-            EPLScraper(),
-            LaLigaScraper(),
-            BundesligaScraper(),
-            PeopleScraper(),
-            GlamourScraper(),
-            VeryWellMindScraper()
+            FreeCodeCampScraper(),
+            TechCrunchScraper(),
+            TechTrendsAfricaScraper(),
+            GizModoScraper(),
+            TheNextWebScraper(),
+            GlassDoorScraper(),
+            NewsBlockScraper()
         ]
         
         data = asyncio.run(fetch_news_async(scrapers, data))
@@ -54,7 +51,7 @@ def index(request):
         for i in range(len(recommend_news['titles'])):
             news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i]})
                                           
-        return JsonResponse({'news': news_for_frontend})
+        return JsonResponse({'news': data})
             
     except Exception as e:
         print(e)
