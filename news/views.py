@@ -48,7 +48,7 @@ def index(request):
         for i in range(len(recommend_news['titles'])):
             news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i]})
                                           
-        return JsonResponse({'news': data})
+        return JsonResponse({'news': news_for_frontend})
             
     except Exception as e:
         print(e)
@@ -60,14 +60,14 @@ def indicate_interaction(request):
     
     request_body_unicode = request.body.decode('utf-8')
     request_body = json.loads(request_body_unicode)
-    news_id = request_body['news_id']
+    news_url = request_body['news_url']
     
     try:
         active_user = get_object_or_404(User, username = 'jeremiah')
-        current_news = get_object_or_404(News, id = news_id)   
+        current_news = get_object_or_404(News, url = news_url)   
         active_user.newInteractedWith.add(current_news)
     except Http404:
-        return JsonResponse({'message': f'News with id {news_id} does not exist', 'success': False})
+        return JsonResponse({'message': f'News with url {news_url} does not exist', 'success': False})
     return JsonResponse({'message': 'Interaction has been recorded', 'success': True})
     
     
