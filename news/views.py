@@ -14,6 +14,7 @@ from .recommend import Machine
 from .utils import fetch_news_async, prepareDataForModel
 
 
+
 def index(request):
     
     try: 
