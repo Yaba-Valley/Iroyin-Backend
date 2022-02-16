@@ -22,9 +22,9 @@ def index(request):
         data = []
         
         scrapers = [
-            FreeCodeCampScraper(),
-            TechCrunchScraper(),
-            TechTrendsAfricaScraper(),
+         
+       
+          
 
             TheNextWebScraper(),
             GlassDoorScraper(),
