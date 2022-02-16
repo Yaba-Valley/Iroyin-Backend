@@ -25,7 +25,7 @@ def index(request):
             FreeCodeCampScraper(),
             TechCrunchScraper(),
             TechTrendsAfricaScraper(),
-            GizModoScraper(),
+
             TheNextWebScraper(),
             GlassDoorScraper(),
             NewsBlockScraper()
