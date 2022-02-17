@@ -76,7 +76,8 @@ class GoalDotComScraper(Scraper):
                     news = i.find(
                         'h3', {'class': 'widget-news-card__title'})['title']
                     link = self.url+i.find('a')['href']
-                    headlines.append({'title': news, 'url': link, 'img': img})
+                    headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
+                                     'website': self.website, 'favicon': self.favicon}})
                 except Exception as e:
                     print(e)
 
