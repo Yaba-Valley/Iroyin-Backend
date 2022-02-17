@@ -8,13 +8,13 @@ from asyncio.proactor_events import _ProactorBasePipeTransport
 
 def prepareDataForModel (data, newsInteracted):
     
-    titles, urls,interactions,imgs=[],[],[],[]
+    titles, urls,interactions,imgs, meta=[],[],[],[], []
         
     for i in range(len(data)):
         titles.append(data[i]['title'])
         urls.append(data[i]['url'])
         imgs.append(data[i]['img'])
-        
+        meta.append(data[i]['metadata'])
         
         if newsInteracted is not None:
             if data[i] in newsInteracted:
@@ -23,9 +23,9 @@ def prepareDataForModel (data, newsInteracted):
                 interactions.append(0)
         
     if newsInteracted is not None:
-        return {'titles': titles, 'urls': urls, 'interactions': interactions, 'imgs': imgs}
+        return {'titles': titles, 'urls': urls, 'interactions': interactions, 'imgs': imgs, 'meta':meta}
     
-    return {'titles': titles, 'urls': urls, 'imgs': imgs }
+    return {'titles': titles, 'urls': urls, 'imgs': imgs, 'meta':meta}
 
 
 def silence_event_loop_closed(func):

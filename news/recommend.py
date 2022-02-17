@@ -101,7 +101,7 @@ class Machine:
 
     def recommend(self, data):
         scrape = pd.DataFrame(data)
-        
+        print(scrape)
         #scrape= pdfrom_dict(data, orient='rows', dtype=None, columns=None)
         try:
             self.data["titles"] = self.data["titles"].apply(lambda x: clean_text(
@@ -136,6 +136,7 @@ class Machine:
                 by=['probability'], ascending=False).drop(['probability'], axis=1)
 
             recommended_item = recommended_item.iloc[:20, :]
+            print(recommended_item[['meta', 'probability']])
             print('\n\n\n\n\n')
             #print('ml', recommended_item)
             return recommended_item.to_dict(orient='list')
