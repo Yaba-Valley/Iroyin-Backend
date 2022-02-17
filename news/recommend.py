@@ -136,7 +136,6 @@ class Machine:
                 by=['probability'], ascending=False).drop(['probability'], axis=1)
 
             recommended_item = recommended_item.iloc[:20, :]
-            print(recommended_item[['meta', 'probability']])
             print('\n\n\n\n\n')
             #print('ml', recommended_item)
             return recommended_item.to_dict(orient='list')
