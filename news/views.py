@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 # from news.scraper.fashion import GlamourScraper, PeopleScraper
 # from news.scraper.health import VeryWellMindScraper
 import json
+from news.scraper.sports import GoalDotComScraper, PunchScraper
 
 from news.scraper.tech import FreeCodeCampScraper, GizModoScraper, GlassDoorScraper, NewsBlockScraper, TheNextWebScraper
 from .models import News, User
@@ -22,11 +23,11 @@ def index(request):
         data = []
 
         scrapers = [
-            TheNextWebScraper(),
-            GlassDoorScraper(),
-            NewsBlockScraper(),
-            FreeCodeCampScraper(),
-            GizModoScraper(),
+            PunchScraper('business'),
+            PunchScraper('sports'),
+            PunchScraper('entertainment'),
+            GoalDotComScraper(),
+            NewsBlockScraper()
         ]
 
         data = asyncio.run(fetch_news_async(scrapers, data))

@@ -26,6 +26,8 @@ class VanguardScraper(Scraper):
 class PunchScraper(Scraper):
     def __init__(self, topic='sports') -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
+        self.website = 'PunchNG'
+        self.favicon = 'https://cdn.punchng.com/wp-content/uploads/2016/06/19220759/favicon.jpg'
 
         Scraper.__init__(self)
 
@@ -45,7 +47,8 @@ class PunchScraper(Scraper):
                     news = i.find('h3', {'class': 'entry-title'}).text
                     link = i.find(
                         'h3', {'class': 'entry-title'}).find('a')['href']
-                    headlines.append({'title': news, 'url': link, 'img': img})
+                    headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
+                                     'website': self.website, 'favicon': self.favicon}})
                 except:
                     pass
 
@@ -53,10 +56,11 @@ class PunchScraper(Scraper):
             return headlines
 
 
-
 class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.goal.com'
+        self.website = 'Goal'
+        self.favicon = 'https://www.logodesignlove.com/images/sports/goal-logo-elmwood-01.jpg'
 
     async def scrape(self, async_client, scraped_news):
 
@@ -157,7 +161,7 @@ class BundesligaScraper(Scraper):
         Scraper.__init__(self)
 
     async def scrape(self, async_client, scraped_news):
-        
+
         async with async_client.get(self.url + '/en/bundesliga', headers=self.headers) as response:
 
             articles = []
