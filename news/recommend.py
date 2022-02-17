@@ -1,5 +1,5 @@
 from code import interact
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 import pandas as pd
 import numpy as np
@@ -97,7 +97,7 @@ class Machine:
 
         self.data = get_df(id)
         self.model = Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase=True)), ('feature-selection',
-                              SelectPercentile(score_func=f_classif)), ('classifier', RandomForestClassifier(random_state=0))])
+                              SelectPercentile(score_func=f_classif)), ('classifier', MultinomialNB())])
 
     def recommend(self, data):
         scrape = pd.DataFrame(data)
