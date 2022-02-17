@@ -162,8 +162,9 @@ class TheNextWebScraper:
                         article.select_one('a')['href'][1:]
                     article_image = article.select_one('img')['data-src']
 
-                    articles.append({'title': article_title.strip(),
-                                    'url': article_url, 'img': article_image})
+                    articles.append(
+                        {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    
                 else:
                     article_title = article.select_one('h3').text.strip()
                     article_url = self.url + article.select_one('a')['href']
@@ -196,7 +197,7 @@ class GlassDoorScraper:
                     '.css-6uzs0z')['style'].split('url(')[1].split(')')[0]
 
                 articles.append(
-                    {'title': article_title, 'img': article_image, 'url': article_url})
+                    {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             for article in soup.select('.featured-article'):
                 article_title = article.select_one('h2').text
