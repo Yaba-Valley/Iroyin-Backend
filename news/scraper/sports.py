@@ -26,7 +26,7 @@ class VanguardScraper(Scraper):
 class PunchScraper(Scraper):
     def __init__(self, topic='sports') -> None:
         self.url = f'https://punchng.com/topics/{topic}/'
-        self.website = 'PunchNG'
+        self.website = 'Punch NG'
         self.favicon = 'https://cdn.punchng.com/wp-content/uploads/2016/06/19220759/favicon.jpg'
 
         Scraper.__init__(self)
@@ -59,7 +59,7 @@ class PunchScraper(Scraper):
 class GoalDotComScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.goal.com'
-        self.website = 'Goal'
+        self.website = 'Goal.com'
         self.favicon = 'https://www.logodesignlove.com/images/sports/goal-logo-elmwood-01.jpg'
 
     async def scrape(self, async_client, scraped_news):

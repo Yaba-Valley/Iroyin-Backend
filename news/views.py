@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 # from news.scraper import PunchScraper
 # from news.scraper.fashion import GlamourScraper, PeopleScraper
 # from news.scraper.health import VeryWellMindScraper
-import json
+# import json
 from news.scraper.sports import GoalDotComScraper, PunchScraper
 
 from news.scraper.tech import FreeCodeCampScraper, GizModoScraper, GlassDoorScraper, NewsBlockScraper, TheNextWebScraper
