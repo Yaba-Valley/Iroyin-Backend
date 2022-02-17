@@ -37,7 +37,6 @@ def index(request):
 
         recommend_news = Machine(1).recommend(data_to_predict_with)
 
-        print('The Model is giving us : \n', recommend_news)
 
         for i in range(len(recommend_news['titles'])):
             try:

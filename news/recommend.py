@@ -101,30 +101,30 @@ class Machine:
 
     def recommend(self, data):
         scrape = pd.DataFrame(data)
-        print(scrape)
+        print('DATA: ', scrape)
         #scrape= pdfrom_dict(data, orient='rows', dtype=None, columns=None)
         try:
-            self.data["titles"] = self.data["titles"].apply(lambda x: clean_text(
+            self.data["title"] = self.data["title"].apply(lambda x: clean_text(
                 x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
-
+            
             #self.data.to_csv('news.csv', index = False)
             param_grid = {
                 'feature-selection__percentile': (10, 20, 30, 40, 50, 60, 70, 80, 90, 100)}
-
+            
             model_grid_search = GridSearchCV(self.model,
                                              param_grid=param_grid,
                                              n_jobs=2,
                                              cv=StratifiedShuffleSplit(
                                                  n_splits=3, test_size=0.1),
                                              scoring='f1')
-
+            print('about to train')
             model_grid_search.fit(
-                self.data['titles'], self.data['interactions'])
+                self.data['title'], self.data['interactions'])
             #self.model.fit(self.data['titles'], self.data['interactions'])
-
+            print('trained')
             probability = model_grid_search.predict_proba(scrape['titles'].apply(
                 lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None)))[:, 1]
-
+            print('predicted')
             print('f1 :', model_grid_search.best_score_)
 
             print(
@@ -141,5 +141,5 @@ class Machine:
             #print('ml', recommended_item)
             return recommended_item.to_dict(orient='list')
         except Exception as e:
-            print(e)
+            print('model error is', e)
             return scrape.sample(frac=1).iloc[:20, :].to_dict(orient='list')
