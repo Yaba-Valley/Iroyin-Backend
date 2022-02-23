@@ -111,7 +111,7 @@ class Machine:
             
             model_grid_search = GridSearchCV(self.model,
                                              param_grid=param_grid,
-                                             n_jobs=-1,
+                                             n_jobs=1,
                                              cv=StratifiedShuffleSplit(
                                                  n_splits=3, test_size=0.1),
                                              scoring='f1')
