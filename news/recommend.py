@@ -96,8 +96,7 @@ class Machine:
     def __init__(self, id):
 
         self.data = get_df(id)
-        self.model = Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase=True)), ('feature-selection',
-                              SelectPercentile(score_func=f_classif)), ('classifier', RandomForestClassifier(random_state=0))])
+        self.model = Pipeline(steps=[('tfid-vectorizer', TfidfVectorizer(lowercase=True, ngram_range=(1,2)),('classifier', RandomForestClassifier(random_state=0))])
 
     def recommend(self, data):
         scrape = pd.DataFrame(data)
@@ -108,12 +107,11 @@ class Machine:
                 x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
             
             #self.data.to_csv('news.csv', index = False)
-            param_grid = {
-                'feature-selection__percentile': (10, 20, 30, 40, 50, 60, 70, 80, 90, 100)}
+            param_grid = {'tfid-vectorizer__max_df': (0.8,0.9,1), 'tfid-vectorizer__min_df': (0.1,0.2,0.3)}
             
             model_grid_search = GridSearchCV(self.model,
                                              param_grid=param_grid,
-                                             n_jobs=2,
+                                             n_jobs=-1,
                                              cv=StratifiedShuffleSplit(
                                                  n_splits=3, test_size=0.1),
                                              scoring='f1')
