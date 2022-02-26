@@ -9,23 +9,27 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import environ
 import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6329=4&y$@285u+xi$p)h=_o08fti+cljm9mct$ks(%*j+vv40'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not False
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', 'readnews.azurewebsites.net']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.azurewebsites.net']
 
 
 # Application definition
@@ -78,10 +82,16 @@ WSGI_APPLICATION = 'Iroyin.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DBNAME'),
+        'USER': env('DBUSER'),
+        'PASSWORD': env('DBPASS'),
+        'HOST': env('DBHOST'),
+        'PORT': env('DBPORT'),
     }
 }
+
+print(DATABASES)
 
 
 # Password validation
@@ -128,7 +138,3 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-
-# DATABASE_USERNAME = pbrechzolz
-# DATABASE_PASSWORD = 7D41V30I13S16J6D$
