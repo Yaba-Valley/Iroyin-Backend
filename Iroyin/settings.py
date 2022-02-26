@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-6329=4&y$@285u+xi$p)h=_o08fti+cljm9mct$ks(%*j+vv40
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not False
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', 'readnews.azurewebsites.net']
 
 
 # Application definition
@@ -128,3 +128,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# DATABASE_USERNAME = pbrechzolz
+# DATABASE_PASSWORD = 7D41V30I13S16J6D$

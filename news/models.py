@@ -1,7 +1,13 @@
 from operator import mod
 from django.db import models
+from sklearn.metrics import max_error
 
 # Create your models here.
+
+class Interest(models.Model):
+    name = models.CharField(max_length=100)
+    
+    
 class News(models.Model):
     title = models.CharField(max_length=500)
     url = models.URLField(unique=True)
@@ -21,6 +27,7 @@ class User(models.Model):
     password = models.TextField(max_length=50)
     newsSeen = models.ManyToManyField(to = News, related_name='readers')
     newInteractedWith = models.ManyToManyField(to = News, related_name='readers_interacted')
+    interests = models.ManyToManyField(to = Interest, related_name='users')
     
     def __str__(self):
         return self.username

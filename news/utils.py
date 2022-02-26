@@ -67,3 +67,4 @@ async def fetch_news_async(scrapers, news = []):
     
  """
  
+ 
