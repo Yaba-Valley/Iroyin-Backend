@@ -5,10 +5,9 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from news.scraper.sports import GoalDotComScraper, PunchScraper
 
-from news.scraper.tech import FreeCodeCampScraper, GizModoScraper, GlassDoorScraper, NewsBlockScraper, TheNextWebScraper
 from .models import News, User
 from .recommend import Machine
-from .utils import fetch_news_async, prepareDataForModel
+from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest
 
 
 def index(request):
@@ -17,14 +16,8 @@ def index(request):
         me = User.objects.get(username='jeremiah')
 
         data = []
-
-        scrapers = [
-            PunchScraper('business'),
-            PunchScraper('sports'),
-            PunchScraper('entertainment'),
-            GoalDotComScraper(),
-            NewsBlockScraper()
-        ]
+        
+        scrapers = get_scrapers_based_on_user_interest(me)
 
         data = asyncio.run(fetch_news_async(scrapers, data))
 

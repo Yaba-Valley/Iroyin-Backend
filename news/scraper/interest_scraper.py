@@ -1,10 +1,11 @@
 from re import T
 from news.scraper.fashion import GlamourScraper, PeopleScraper
+from news.scraper.health import VeryWellMindScraper
 from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
 from news.scraper.tech import GlassDoorScraper, NewsBlockScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper
 
 
-interest_to_scraper_map = {
+INTEREST_TO_SCRAPER_MAP = {
     'SPORTS': [
         PunchScraper(topic='sports'), 
         LaLigaScraper(), 
@@ -53,6 +54,17 @@ interest_to_scraper_map = {
         TechTrendsAfricaScraper(category='blockchain')
     ],
     "HEALTH": [
-        
-    ]
+        VeryWellMindScraper(),
+        PeopleScraper(topic = 'health'),
+        GlamourScraper(topic = 'wellness')   
+    ],
+    'TECH': [],
+    'PROGRAMMING': [],
+    'MEN\'S FASHION': [],
+    'WOMEN\'S FASHION': [],
+    'AFRICA': [],
+    'NIGERIA': [],
+    'LOCAL': [],
+    'GLOBAL': [],
+    
 }
