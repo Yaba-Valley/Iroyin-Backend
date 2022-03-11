@@ -1,16 +1,10 @@
-import requests
 from bs4 import BeautifulSoup
-
-class Scraper:
-    def __init__(self):
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0',
-        }
-
+from .base import Scraper
 
 class VeryWellMindScraper(Scraper):
     def __init__(self) -> None:
         self.url = 'https://www.verywellmind.com/news-latest-research-and-trending-topics-4846421'
+        self.related_interests = ['Health']
         Scraper.__init__(self)
         
     async def scrape(self, async_client, scraped_news):

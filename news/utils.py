@@ -58,13 +58,8 @@ async def fetch_news_async(scrapers, news = []):
         return news
     
 
-""" async def scrape_website(session, website):
-    print('making request to', website)
-    async with session.get(website) as response:
-        print('made request to', website)
-        html_text = await response.text()
-        return html_text[:30]
+def interests_to_scraper_map(user):
+    user_interests = user.interests.all()
     
- """
- 
- 
+    
+    

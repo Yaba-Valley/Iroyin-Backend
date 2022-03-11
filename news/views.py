@@ -3,10 +3,6 @@ import json
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-# from news.scraper import PunchScraper
-# from news.scraper.fashion import GlamourScraper, PeopleScraper
-# from news.scraper.health import VeryWellMindScraper
-# import json
 from news.scraper.sports import GoalDotComScraper, PunchScraper
 
 from news.scraper.tech import FreeCodeCampScraper, GizModoScraper, GlassDoorScraper, NewsBlockScraper, TheNextWebScraper
@@ -37,7 +33,6 @@ def index(request):
 
         recommend_news = Machine(1).recommend(data_to_predict_with)
 
-
         for i in range(len(recommend_news['titles'])):
             try:
                 existing_news = get_object_or_404(
@@ -53,8 +48,7 @@ def index(request):
         # restructure news for FE
         for i in range(len(recommend_news['titles'])):
             news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
-                                     'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
-
+                                      'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
 
         return JsonResponse({'news': news_for_frontend})
 

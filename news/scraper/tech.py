@@ -36,8 +36,14 @@ class FreeCodeCampScraper(Scraper):
 
 
 class TechCrunchScraper(Scraper):
-    def __init__(self):
-        self.url = 'https://techcrunch.com'
+    def __init__(self, isNigeria, isStartups):
+        
+        if isNigeria:
+            self.url = 'https://techcrunch.com/tag/nigeria'
+        
+        if isStartups:
+            self.url = 'https://techcrunch.com/startups'
+            
         self.title = 'TechCrunch'
         self.favicon_url = 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png?w=60'
 
@@ -68,8 +74,19 @@ class TechCrunchScraper(Scraper):
 
 
 class TechTrendsAfricaScraper(Scraper):
-    def __init__(self):
-        self.url = 'https://techtrends.africa'
+    def __init__(self, category):
+        
+        """
+        category can either be 'tech-and-innovation', 'business',
+        'funding', 'startups', '5g-and-the-internet-of-things', 'gadgets-apps',
+        'blockchain' 
+        """
+        
+        if category:
+            self.url = 'https://techtrends.africa/category/'+category
+        else:
+            self.url = 'https://techtrends.africa'
+            
         self.title = 'Tech Trends Africa'
         self.favicon_url = 'https://i0.wp.com/techtrends.africa/wp-content/uploads/2021/05/cropped-TechTrends.Africa-Logo-2.png?fit=192%2C192'
 
@@ -135,12 +152,14 @@ class GizModoScraper:
 
 class TheNextWebScraper:
 
+    """
     categories = ['latest', 'plugged', 'neural', 'shift',
                   'growth-quarters', 'hardfork', 'house-of-talent',
                   'future-of-finance', 'readme'
                   ]
+    """
 
-    def __init__(self, category=categories[4]) -> None:
+    def __init__(self, category='latest') -> None:
         self.category = category
         self.url = 'https://thenextweb.com/'
         self.title = 'The Next Web'
@@ -232,8 +251,6 @@ class NewsBlockScraper(Scraper):
                     article_title = article.find('h3').text
                     article_image = article.find('img')['data-src']
                     article_url = article.find('a')['href']
-                    print(article_title)
-                    print('\n')
                     articles.append(
                         {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
                 except:
@@ -242,4 +259,3 @@ class NewsBlockScraper(Scraper):
             scraped_news.extend(articles)
             return articles
 
-# print(GlassDoorScraper().scrape())

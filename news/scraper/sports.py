@@ -7,6 +7,8 @@ from .base import Scraper
 class VanguardScraper(Scraper):
     def __init__(self, topic='sports') -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
+        self.related_interests = [
+            'Sports', 'Business', 'Politics', 'Africa', 'Nigeria', 'Local', 'Entertainment']
 
         Scraper.__init__(self)
 
@@ -28,6 +30,8 @@ class PunchScraper(Scraper):
         self.url = f'https://punchng.com/topics/{topic}/'
         self.website = 'Punch NG'
         self.favicon = 'https://cdn.punchng.com/wp-content/uploads/2016/06/19220759/favicon.jpg'
+        self.related_interests = [
+            'Sports', 'Business', 'Politics', 'Africa', 'Nigeria', 'Local', 'Entertainment']
 
         Scraper.__init__(self)
 
