@@ -12,6 +12,9 @@ def prepareDataForModel(data, newsInteracted):
     titles, urls, interactions, imgs, meta = [], [], [], [], []
 
     for i in range(len(data)):
+        print(
+            f"TITLE: {data[i]['title']} IMAGE: {data[i]['img']}")
+
         titles.append(data[i]['title'])
         urls.append(data[i]['url'])
         imgs.append(data[i]['img'])
@@ -65,8 +68,8 @@ def get_scrapers_based_on_user_interest(user):
     scrapers = []
     user_interests = [interest.name.upper()
                       for interest in user.interests.all()]
-    
+
     for interest in user_interests:
         scrapers.extend(INTEREST_TO_SCRAPER_MAP[interest])
-        
+
     return scrapers

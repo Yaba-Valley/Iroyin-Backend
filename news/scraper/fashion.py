@@ -5,7 +5,9 @@ from .base import Scraper
 class GlamourScraper(Scraper):
     def __init__(self, topic='entertainment'):
         self.url = 'https://www.glamourmagazine.co.uk/topic/'+topic
-        self.related_interests = ['Fashion', 'Entertainment', 'Women\'s Fashion']
+        self.title = 'Glamour'
+        self.favicon = 'https://www.glamourmagazine.co.uk/verso/static/glamour-international/assets/favicon.ico'
+
         Scraper.__init__(self)
 
     async def scrape(self, async_client, scraped_news):
@@ -19,7 +21,7 @@ class GlamourScraper(Scraper):
                 article_image = article.find('img')['src']
                 article_url = article.find('a')['href']
                 articles.append(
-                    {'title': article_title, 'url': self.url+article_url, 'img': article_image})
+                    {'title': article_title, 'url': self.url+article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
 
             scraped_news.extend(articles)
             return articles
@@ -28,7 +30,9 @@ class GlamourScraper(Scraper):
 class PeopleScraper(Scraper):
     def __init__(self, topic='entertainment'):
         self.url = 'https://people.com/'+topic+'/'
-        self.related_interests = ['Politics', 'Entertainment', 'Fashion', 'Women\'s Fashion', 'Tech'];
+        self.title = "People.com"
+        self.favicon = 'https://people.com/img/favicons/favicon-152.png'
+
         Scraper.__init__(self)
 
     async def scrape(self, async_client, scraped_news):
@@ -44,7 +48,7 @@ class PeopleScraper(Scraper):
                     article_image = article.find('img')['src']
                     article_url = article.find('a')['href']
                     articles.append(
-                        {'title': article_title, 'url': self.url+article_url, 'img': article_image})
+                        {'title': article_title, 'url': self.url+article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
                 except:
                     pass
 
