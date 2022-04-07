@@ -174,23 +174,28 @@ class TheNextWebScraper:
 
             news = soup.select('article')
 
-            for article in news:
-                if article.select_one('.c-card__heading') == None:
-                    article_title = article.select_one('h4').text.strip()
-                    article_url = self.url + \
-                        article.select_one('a')['href'][1:]
-                    article_image = article.select_one('img')['data-src']
+            try:
+                for article in news:
+                    if article.select_one('.c-card__heading') == None:
+                        article_title = article.select_one('h4').text.strip()
+                        article_url = self.url + article.select_one('a')['href'][1:]   
+                        article_image = article.select_one('img')['src']
 
-                    articles.append(
-                        {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-                    
-                else:
-                    article_title = article.select_one('h3').text.strip()
-                    article_url = self.url + article.select_one('a')['href']
-                    article_image = article.select_one('img')['data-src']
+                        articles.append(
+                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                        
+                    else:
+                        article_title = article.select_one('h3').text.strip()
+                        article_url = self.url + article.select_one('a')['href']
+                        article_image = article.select_one('img')['data-src']
 
-                    articles.append(
-                        {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                        articles.append(
+                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                        
+                    print(articles)
+            except Exception as e:
+                print(e)
+                pass
 
             scraped_news.extend(articles)
             return articles

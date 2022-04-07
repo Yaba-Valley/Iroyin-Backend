@@ -48,7 +48,7 @@ class PeopleScraper(Scraper):
                     article_image = article.find('img')['src']
                     article_url = article.find('a')['href']
                     articles.append(
-                        {'title': article_title, 'url': self.url+article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
+                        {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
                 except:
                     pass
 

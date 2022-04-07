@@ -12,19 +12,22 @@ from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_
 
 def index(request):
 
-    try:
+    # try:
         me = User.objects.get(username='jeremiah')
 
         data = []
         
         scrapers = get_scrapers_based_on_user_interest(me)
-
+        
         data = asyncio.run(fetch_news_async(scrapers, data))
 
         data_to_predict_with = prepareDataForModel(
             data=data, newsInteracted=None)
 
         recommend_news = Machine(1).recommend(data_to_predict_with)
+        
+        print(recommend_news)
+        print(data)
 
         for i in range(len(recommend_news['titles'])):
             try:
@@ -45,9 +48,9 @@ def index(request):
 
         return JsonResponse({'news': news_for_frontend})
 
-    except Exception as e:
-        print(e)
-        return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
+    # except Exception as e:
+        # print(e)
+        # return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
 
 @csrf_exempt

@@ -1,6 +1,8 @@
 from tkinter import Scrollbar
 from django.test import TestCase
 from . import scraper
+from .utils import fetch_news_async
+import asyncio
 
 # Create your tests here.
 
@@ -13,7 +15,7 @@ class TestScraper(TestCase):
         NOTE THAT THIS SCRAPER REQUIRES A TOPIC
         """
         
-        scraped_news = scraper.PunchScraper('business').scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.PunchScraper('business')]))
         
         self.assertNotEqual(len(scraped_news), 0, 'Punch Scraper does not return anything')
         
@@ -24,7 +26,7 @@ class TestScraper(TestCase):
         NOTE THAT THIS SCRAPER REQUIRES A TOPIC
         """
         
-        scraped_news = scraper.VanguardScraper('business').scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.VanguardScraper('business')]))
         
         self.assertNotEqual(len(scraped_news), 0, 'Vanguard Scraper does not return anything')
         
@@ -35,7 +37,7 @@ class TestScraper(TestCase):
             Test that the GOALDOTCOM Scraper returns more than 1 news
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC
         """
-        scraped_news = scraper.GoalDotComScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.GoalDotComScraper()]))
         
         self.assertNotEqual(len(scraped_news), 0, 'goal.com scaper does not return anything')
         
@@ -45,7 +47,7 @@ class TestScraper(TestCase):
             This test ensures that the skysport scraper returns more than one news
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC 
         """
-        scraped_news = scraper.SkySportScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.SkySportScraper()]))
         
         self.assertNotEqual(len(scraped_news), 0, 'skysports scraper does not return anything')
         
@@ -56,7 +58,7 @@ class TestScraper(TestCase):
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC
         """
         
-        scraped_news = scraper.EPLScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.EPLScraper()]))
         
         self.assertNotEqual(len(scraped_news), 0, 'epl scraper does not return anything')
         
@@ -67,7 +69,7 @@ class TestScraper(TestCase):
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC
         """
         
-        scraped_news = scraper.LaLigaScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.LaLigaScraper()]))
         
         self.assertNotEqual(len(scraped_news), 0, 'la liga scraper does not return anything')
         
@@ -77,7 +79,7 @@ class TestScraper(TestCase):
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC
         """
         
-        scraped_news = scraper.BundesligaScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.BundesligaScraper()]))
         
         self.assertNotEqual(len(scraped_news), 0, 'bundesliga scraper does not return anything')
         
@@ -87,7 +89,7 @@ class TestScraper(TestCase):
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC
         """
         
-        scraped_news = scraper.FreeCodeCampScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.FreeCodeCampScraper()]))
         
         self.assertNotEqual(len(scraped_news), 0, 'freecodecamp scraper does not return anything')
         
@@ -97,7 +99,7 @@ class TestScraper(TestCase):
             NOTE: THIS SCRAPER DOESN'T REQUIRE A TOPIC
         """
         
-        scraped_news = scraper.TechCrunchScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.TechCrunchScraper(isNigeria=True, isStartups=True)]))
         self.assertNotEqual(len(scraped_news), 0, 'techcrunch scraper does not return anything')
         
     
@@ -106,7 +108,7 @@ class TestScraper(TestCase):
             This test whether the techtrendsafrica scraper returns more than one news or not
         """
         
-        scraped_news = scraper.TechTrendsAfricaScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.TechTrendsAfricaScraper(category='startups')]))
         self.assertNotEqual(len(scraped_news), 0, 'techtrends scraper does not return anything')
         
     
@@ -116,7 +118,7 @@ class TestScraper(TestCase):
             scraper returns no news
         """
         
-        scraped_news = scraper.GizModoScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.GizModoScraper()]))
         self.assertNotEqual(len(scraped_news), 0, 'gizmodo scraper does not return anything')
         
     def test_newsblock_scraper(self):
@@ -125,5 +127,5 @@ class TestScraper(TestCase):
             scraper returns no news
         """
         
-        scraped_news = scraper.NewsBlockScraper().scrape()
+        scraped_news = asyncio.run(fetch_news_async([scraper.NewsBlockScraper()]))
         self.assertNotEqual(len(scraped_news), 0, 'newsblock scraper does not return anything')
