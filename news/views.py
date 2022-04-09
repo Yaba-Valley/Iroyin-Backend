@@ -3,7 +3,7 @@ import json
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from news.scraper.sports import GoalDotComScraper, PunchScraper
+from django.middleware.csrf import get_token
 
 from .models import News, User
 from .recommend import Machine
@@ -12,20 +12,20 @@ from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_
 
 def index(request):
 
-    # try:
+    try:
         me = User.objects.get(username='jeremiah')
 
         data = []
-        
+
         scrapers = get_scrapers_based_on_user_interest(me)
-        
+
         data = asyncio.run(fetch_news_async(scrapers, data))
 
         data_to_predict_with = prepareDataForModel(
             data=data, newsInteracted=None)
 
         recommend_news = Machine(1).recommend(data_to_predict_with)
-        
+
         print(recommend_news)
         print(data)
 
@@ -48,9 +48,9 @@ def index(request):
 
         return JsonResponse({'news': news_for_frontend})
 
-    # except Exception as e:
-        # print(e)
-        # return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
+    except Exception as e:
+        print(e)
+        return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
 
 @csrf_exempt
@@ -69,10 +69,49 @@ def indicate_interaction(request):
     return JsonResponse({'message': 'Interaction has been recorded', 'success': True})
 
 
+@csrf_exempt
 def login(request):
-    email = request.POST.get('email_address')
-    password = request.POST.get('password')
+
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if email and password:
+            try:
+                user = get_object_or_404(User, email=email)
+
+                if user.check_password(password):
+
+                    csrf_token = get_token(request)
+
+                    return JsonResponse(
+                        {
+                            'message': 'You have successfully logged in',
+                            'error': False,
+                            'token': csrf_token,
+                            'email': user.email
+                        }, status=200
+                    )
+                else:
+                    return JsonResponse(
+                        {
+                            'message': 'Incorrect Login Credentials',
+                            'error': True
+                        }, status=404
+                    )
+            except Http404:
+                return JsonResponse(
+                    {
+                        'message': 'Incorrect Login Credentials',
+                        'error': True
+                    },  status=404
+                )
+        else:
+            return JsonResponse({'error': True, 'message': "Please input required fields"})
+    else:
+        return JsonResponse({'error': True, 'message': "Request Not Allowed"}, status=400)
 
 
 def register(request):
+    # if
     pass
