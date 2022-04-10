@@ -1,9 +1,12 @@
 import asyncio
 import json
+from django.db import IntegrityError
+from django.forms import ValidationError
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
+from django.contrib.auth.password_validation import validate_password
 
 from .models import News, User
 from .recommend import Machine
@@ -87,31 +90,86 @@ def login(request):
                     return JsonResponse(
                         {
                             'message': 'You have successfully logged in',
-                            'error': False,
-                            'token': csrf_token,
-                            'email': user.email
+                            'success': True,
+                            'data': {
+                                'token': csrf_token,
+                                'email': user.email
+                            }
                         }, status=200
                     )
                 else:
                     return JsonResponse(
                         {
                             'message': 'Incorrect Login Credentials',
-                            'error': True
+                            'success': False,
+                            'errors': [],
                         }, status=404
                     )
             except Http404:
                 return JsonResponse(
                     {
                         'message': 'Incorrect Login Credentials',
-                        'error': True
+                        'success': False,
+                        'errors': []
                     },  status=404
                 )
         else:
-            return JsonResponse({'error': True, 'message': "Please input required fields"})
+            return JsonResponse({'success': False, 'errors': [],  'message': "Please input required fields"}, status=400)
     else:
-        return JsonResponse({'error': True, 'message': "Request Not Allowed"}, status=400)
+        return JsonResponse({'success': False, 'errors': [], 'message': "Request Not Allowed"}, status=400)
 
 
+@csrf_exempt
 def register(request):
-    # if
-    pass
+
+    if request.method == "POST":
+        email = request.POST['email']
+        full_name = request.POST['fullName'].split(' ')
+        password = request.POST['password']
+
+        first_name = full_name[0]
+        last_name = full_name[1]
+
+        if full_name and email and password:
+            try:
+                
+                # try to get the user to know if a user already exists with the email address
+                user = User.objects.filter(email = email);
+                
+                if len(user) == 1:
+                    raise IntegrityError()
+                
+                
+                # this code only runs if there no user with the same email address
+                
+                test_user = User(email=email, first_name=first_name, last_name=last_name)
+                
+                validate_password(password=password, user=test_user)
+
+                test_user.set_password(password)
+
+                test_user.save()
+
+                """
+                A MAIL IS SENT TO THE USER ADDRESS IN ORDER TO ACTIVATE HIS ACCOUNT
+                """
+
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Account has been created successfully. Check your mail to activate your account',
+                    'data': {
+                        'email': email,
+                    }
+                }, status=200)
+
+            except ValidationError as errors:
+                validation_errors = []
+                
+                [ validation_errors.append(str(error)) for error in errors ]
+                
+                return JsonResponse({'success': False, 'message': 'Please review your password', 'errors': validation_errors}, status=400)
+            except IntegrityError:
+                return JsonResponse({'success': False, 'message': 'Email Address is already in use', 'errors': ['Email Already in Use']}, status=400)
+
+    else:
+        return JsonResponse({'success': False, 'message': "Request Not Allowed"}, status=400)

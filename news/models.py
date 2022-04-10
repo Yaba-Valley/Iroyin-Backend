@@ -82,8 +82,8 @@ class User(AbstractBaseUser):
     
     first_name = models.CharField(max_length=100, verbose_name='First Name')
     last_name = models.CharField(max_length=100, verbose_name='Last Name')
-    newsSeen = models.ManyToManyField(to = News, related_name='readers')
-    newInteractedWith = models.ManyToManyField(to = News, related_name='readers_interacted')
+    newsSeen = models.ManyToManyField(to = News, related_name='readers', verbose_name='News Seen By User')
+    newInteractedWith = models.ManyToManyField(to = News, related_name='readers_interacted', verbose_name='News User Interacted With')
     interests = models.ManyToManyField(to = Interest, related_name='users')
     
     
