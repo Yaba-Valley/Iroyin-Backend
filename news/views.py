@@ -123,13 +123,24 @@ def login(request):
 def register(request):
 
     if request.method == "POST":
-        email = request.POST['email']
-        full_name = request.POST['fullName'].split(' ')
-        password = request.POST['password']
+        email = request.POST['email'].strip()
+        full_name = request.POST['fullName'].strip().split(' ')
+        password = request.POST['password'].strip()
 
-        first_name = full_name[0]
-        last_name = full_name[1]
 
+        if len(full_name) == 1:
+            if full_name[0] == '':
+                full_name = False
+            else:
+                first_name = full_name[0]
+                last_name = ''
+        else:
+            first_name = full_name[0]
+            last_name = full_name[len(full_name) - 1]
+            
+            full_name = True
+    
+    
         if full_name and email and password:
             try:
                 
@@ -170,6 +181,27 @@ def register(request):
                 return JsonResponse({'success': False, 'message': 'Please review your password', 'errors': validation_errors}, status=400)
             except IntegrityError:
                 return JsonResponse({'success': False, 'message': 'Email Address is already in use', 'errors': ['Email Already in Use']}, status=400)
+        
+        else:
+            errors = []
+            
+            if not email:
+                errors.append('Email cannot be empty')
+            
+            if not password:
+                errors.append('Password cannot be empty')
+                
+            if not full_name:
+                errors.append('Your fullname cannot be empty')
+            
+            return JsonResponse({'success': False, 'message': 'Please fill the required fields', 'errors': errors}, status = 400)
 
     else:
         return JsonResponse({'success': False, 'message': "Request Not Allowed"}, status=400)
+
+
+def get_all_interests(requests):
+    pass
+
+def register_interests(request):
+    pass
