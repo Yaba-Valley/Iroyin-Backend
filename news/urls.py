@@ -10,7 +10,5 @@ urlpatterns = [
     
     path('interests/all', views.get_all_interests, name = 'get all interests'),
     
-    
-    path('indicate_news_interaction/', views.indicate_interaction,
-         name='indicate news interaction')
+    path('indicate_news_interaction/', views.indicate_interaction, name='indicate news interaction')
 ]

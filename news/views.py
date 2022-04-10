@@ -203,5 +203,5 @@ def register(request):
 def get_all_interests(requests):
     pass
 
-def register_interests(request):
+def user_interest(request):
     pass
