@@ -1,5 +1,6 @@
 import asyncio
 import json
+from re import template
 from django.db import IntegrityError
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404, render
@@ -7,10 +8,12 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.contrib.auth.password_validation import validate_password
+from django.template.loader import render_to_string
+
 
 from .models import Interest, News, User
 from .recommend import Machine
-from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest
+from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest, send_email
 
 
 def index(request):
@@ -160,10 +163,15 @@ def register(request):
                 test_user.set_password(password)
 
                 test_user.save()
+                
+                
+                #SENDING ACTIVATION MAIL
+                template_string = render_to_string('welcomeAndActivateAccount.html', { 'registered_user': test_user })
+                
+                res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉', template_string, email, f"{first_name} {last_name}")
+                
+                print('email sending res', res)
 
-                """
-                A MAIL IS SENT TO THE USER ADDRESS IN ORDER TO ACTIVATE HIS ACCOUNT
-                """
 
                 return JsonResponse({
                     'success': True,
@@ -200,8 +208,15 @@ def register(request):
         return JsonResponse({'success': False, 'message': "Request Not Allowed"}, status=405)
 
 
+@csrf_exempt
 def activate_account(request):
-    pass
+    
+    user = User.objects.get(email = 'jeremiahlena13@gmail.com')
+    
+    template_string = render_to_string('welcomeEmail.html', { 'registered_user': user })
+    res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉', template_string, user.email, user.first_name)
+    
+    return JsonResponse({'message': 'tried seending mail'}, status = res.status_code)
 
 
 def get_all_interests(request):

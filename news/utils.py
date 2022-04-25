@@ -4,6 +4,9 @@ import time
 import math
 from functools import wraps
 from asyncio.proactor_events import _ProactorBasePipeTransport
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from six import text_type
+from django.conf import settings
 from news.scraper.interest_scraper import INTEREST_TO_SCRAPER_MAP
 
 
@@ -73,3 +76,42 @@ def get_scrapers_based_on_user_interest(user):
         scrapers.extend(INTEREST_TO_SCRAPER_MAP[interest])
 
     return scrapers
+
+
+def send_email(subject, body, receipient_email, receipient_fullName):
+
+    import environ
+    from mailjet_rest import Client
+
+    env = environ.Env()
+
+    environ.Env.read_env()
+
+    mailjet = Client(auth=(env('MAILJET_API_KEY'),
+                     env('MAILJET_SECRET_KEY')), version = 'v3.1')
+
+    data = {
+        "Messages": [
+            {
+                "From": {
+                    "Email": "jeremiahlena13@gmail.com",
+                    "Name": "The ReadNews Team"
+                },
+                "To": [
+                    {
+                        "Email": receipient_email,
+                        "Name": receipient_fullName
+                    }
+                ],
+                "Subject": subject,
+                "TextPart": subject,
+                "HTMLPart": body,
+                "CustomID": "AppGettingStartedTest"
+            }
+        ]
+    }
+
+    result = mailjet.send.create(data=data)
+    print(dir(result))
+    return result
+
