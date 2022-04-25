@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.contrib.auth.password_validation import validate_password
 
-from .models import News, User
+from .models import Interest, News, User
 from .recommend import Machine
 from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest
 
@@ -127,7 +127,6 @@ def register(request):
         full_name = request.POST['fullName'].strip().split(' ')
         password = request.POST['password'].strip()
 
-
         if len(full_name) == 1:
             if full_name[0] == '':
                 full_name = False
@@ -137,24 +136,23 @@ def register(request):
         else:
             first_name = full_name[0]
             last_name = full_name[len(full_name) - 1]
-            
+
             full_name = True
-    
-    
+
         if full_name and email and password:
             try:
-                
+
                 # try to get the user to know if a user already exists with the email address
-                user = User.objects.filter(email = email);
-                
+                user = User.objects.filter(email=email)
+
                 if len(user) == 1:
                     raise IntegrityError()
-                
-                
+
                 # this code only runs if there no user with the same email address
-                
-                test_user = User(email=email, first_name=first_name, last_name=last_name)
-                
+
+                test_user = User(
+                    email=email, first_name=first_name, last_name=last_name)
+
                 validate_password(password=password, user=test_user)
 
                 test_user.set_password(password)
@@ -175,33 +173,39 @@ def register(request):
 
             except ValidationError as errors:
                 validation_errors = []
-                
-                [ validation_errors.append(str(error)) for error in errors ]
-                
+
+                [validation_errors.append(str(error)) for error in errors]
+
                 return JsonResponse({'success': False, 'message': 'Please review your password', 'errors': validation_errors}, status=400)
             except IntegrityError:
                 return JsonResponse({'success': False, 'message': 'Email Address is already in use', 'errors': ['Email Already in Use']}, status=400)
-        
+
         else:
             errors = []
-            
+
             if not email:
                 errors.append('Email cannot be empty')
-            
+
             if not password:
                 errors.append('Password cannot be empty')
-                
+
             if not full_name:
                 errors.append('Your fullname cannot be empty')
-            
-            return JsonResponse({'success': False, 'message': 'Please fill the required fields', 'errors': errors}, status = 400)
+
+            return JsonResponse({'success': False, 'message': 'Please fill the required fields', 'errors': errors}, status=400)
 
     else:
         return JsonResponse({'success': False, 'message': "Request Not Allowed"}, status=400)
 
 
-def get_all_interests(requests):
-    pass
+def get_all_interests(request):
+
+    try:
+        interest_names = [interest.name for interest in Interest.objects.all()]
+        return JsonResponse({'success': True, 'data': interest_names, 'message': "Successfully retrieved interests"}, status=200)
+    except Exception as e:
+        return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
+
 
 def user_interest(request):
     pass
