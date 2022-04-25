@@ -205,13 +205,13 @@ def activate_account(request):
 
 
 def get_all_interests(request):
-
     try:
         interest_names = [{'name': interest.name, 'id': interest.id}
                           for interest in Interest.objects.all()]
         return JsonResponse({'success': True, 'data': interest_names, 'message': "Successfully retrieved interests"}, status=200)
     except Exception as e:
         return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
+
 
 @csrf_exempt
 def save_interests(request):
@@ -230,6 +230,28 @@ def save_interests(request):
             user.interests.add(interest)
 
         return JsonResponse({'success': True, 'message': 'User interests successfully recorded', 'data': interest_ids}, status=200)
+
+    else:
+        return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
+
+
+@csrf_exempt
+def remove_interests(request):
+    """
+    This endpoint takes the id of the interests as an array and removes them from the user's profile
+    """
+    
+    if request.method == "POST":
+        request_body = json.loads(request.body.decode('utf-8'))
+        user = User.objects.get(email="jeremiahlena13@gmail.com")
+
+        interest_ids = request_body['interests']
+
+        for id in interest_ids:
+            interest = Interest.objects.get(id=id)
+            user.interests.remove(interest)
+
+        return JsonResponse({'success': True, 'message': 'Successfully removed interests', 'data': interest_ids}, status=200)
 
     else:
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)

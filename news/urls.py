@@ -11,7 +11,7 @@ urlpatterns = [
     # USER URLS
     # path('user/interests/', views.user_interest, name = 'user interests'),
     path('user/interests/add', views.save_interests, name = 'save user interests'),
-    path('user/interest/remove', views.remove_interests, name = 'remove user interests')
+    path('user/interests/remove', views.remove_interests, name = 'remove user interests'),
     
     #NEWS URLS
     path('news/get_news/', views.index, name='index route'),
