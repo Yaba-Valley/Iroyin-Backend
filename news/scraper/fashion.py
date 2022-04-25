@@ -4,18 +4,19 @@ from .base import Scraper
 
 class GlamourScraper(Scraper):
     def __init__(self, topic='entertainment'):
-        self.url = 'https://www.glamourmagazine.co.uk/topic/'+topic
+        self.url = 'https://www.glamourmagazine.co.uk'
         self.title = 'Glamour'
+        self.topic = topic
         self.favicon = 'https://www.glamourmagazine.co.uk/verso/static/glamour-international/assets/favicon.ico'
 
         Scraper.__init__(self)
 
     async def scrape(self, async_client, scraped_news):
-        async with async_client.get(self.url, headers=self.headers) as response:
+        async with async_client.get(self.url+'/topic/'+self.topic, headers=self.headers) as response:
             articles = []
             request_text = await response.text()
             soup = BeautifulSoup(request_text, 'html.parser')
-            # print(soup)
+
             for article in soup.select('div[class*="SummaryItemWrapper"]'):
                 article_title = article.text
                 article_image = article.find('img')['src']

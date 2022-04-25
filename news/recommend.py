@@ -16,7 +16,7 @@ from sqlalchemy import create_engine
 
 
 def get_df(id):
-    path = os.getcwd()+'/db.sqlite3'
+    path = os.getcwd()+'/db2.sqlite3'
 
     engine = create_engine('sqlite:///'+path)
     query = f""" SELECT news_news.title, news_news.id         
