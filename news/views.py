@@ -16,7 +16,8 @@ from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_
 def index(request):
 
     try:
-        me = User.objects.get(username='jeremiah')
+        me = User.objects.get(email='jeremiahlena13@gmail.com')
+        print(me)
 
         data = []
 
@@ -28,9 +29,6 @@ def index(request):
             data=data, newsInteracted=None)
 
         recommend_news = Machine(1).recommend(data_to_predict_with)
-
-        print(recommend_news)
-        print(data)
 
         for i in range(len(recommend_news['titles'])):
             try:
@@ -76,8 +74,10 @@ def indicate_interaction(request):
 def login(request):
 
     if request.method == "POST":
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+
+        request_body = json.loads(request.body.decode('utf-8'))
+        email = request_body['email']
+        password = request_body['password']
 
         if email and password:
             try:
@@ -116,16 +116,18 @@ def login(request):
         else:
             return JsonResponse({'success': False, 'errors': [],  'message': "Please input required fields"}, status=400)
     else:
-        return JsonResponse({'success': False, 'errors': [], 'message': "Request Not Allowed"}, status=400)
+        return JsonResponse({'success': False, 'errors': [], 'message': "Request Not Allowed"}, status=405)
 
 
 @csrf_exempt
 def register(request):
 
     if request.method == "POST":
-        email = request.POST['email'].strip()
-        full_name = request.POST['fullName'].strip().split(' ')
-        password = request.POST['password'].strip()
+
+        request_body = json.loads(request.body.decode('utf-8'))
+        email = request_body['email'].strip()
+        full_name = request_body['fullName'].strip().split(' ')
+        password = request_body['password'].strip()
 
         if len(full_name) == 1:
             if full_name[0] == '':
@@ -195,17 +197,39 @@ def register(request):
             return JsonResponse({'success': False, 'message': 'Please fill the required fields', 'errors': errors}, status=400)
 
     else:
-        return JsonResponse({'success': False, 'message': "Request Not Allowed"}, status=400)
+        return JsonResponse({'success': False, 'message': "Request Not Allowed"}, status=405)
+
+
+def activate_account(request):
+    pass
 
 
 def get_all_interests(request):
 
     try:
-        interest_names = [interest.name for interest in Interest.objects.all()]
+        interest_names = [{'name': interest.name, 'id': interest.id}
+                          for interest in Interest.objects.all()]
         return JsonResponse({'success': True, 'data': interest_names, 'message': "Successfully retrieved interests"}, status=200)
     except Exception as e:
         return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
 
+@csrf_exempt
+def save_interests(request):
+    """
+    This endpoint takes the id of the interests as an array and saves it to the user's profile
+    """
 
-def user_interest(request):
-    pass
+    if request.method == "POST":
+        request_body = json.loads(request.body.decode('utf-8'))
+        user = User.objects.get(email="jeremiahlena13@gmail.com")
+
+        interest_ids = request_body['interests']
+
+        for id in interest_ids:
+            interest = Interest.objects.get(id=id)
+            user.interests.add(interest)
+
+        return JsonResponse({'success': True, 'message': 'User interests successfully recorded', 'data': interest_ids}, status=200)
+
+    else:
+        return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
