@@ -152,3 +152,5 @@ REST_FRAMEWORK = {
 		'rest_framework_simplejwt.authentication.JWTAuthentication',
 	],
 }
+
+PASSWORD_RESET_TIMEOUT = 10000

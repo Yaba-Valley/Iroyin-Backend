@@ -13,10 +13,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt import views as jwt_views
 from .models import Interest, News, User
 from .recommend import Machine
-from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest, send_email
+from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest, send_email, TokenGenerator
 
 
 def index(request):
@@ -90,11 +89,12 @@ def login(request):
                 user = get_object_or_404(User, email=email)
 
                 if user.check_password(password):
-                    
+
                     # generate a token
                     site = get_current_site(request).__str__()
-                    res = requests.post(f"http://{site}/api/token/", {'email': email, 'password': password })
-                    
+                    res = requests.post(
+                        f"http://{site}/api/token/", {'email': email, 'password': password})
+
                     # token was generated successfully
                     if res.status_code == 200:
                         token_response = res.json()
@@ -109,7 +109,10 @@ def login(request):
                             }, status=200
                         )
                     else:
-                        #failure to generate token is mostly a result of user not been activated
+
+                        TokenGenerator().send_account_activation_mail(request, user)
+                        
+                        # failure to generate token is mostly a result of user not been activated
                         return JsonResponse(
                             {
                                 'success': False,
@@ -117,7 +120,7 @@ def login(request):
                                 'errors': []
                             }
                         )
-                    
+
                 else:
                     return JsonResponse(
                         {
@@ -138,7 +141,6 @@ def login(request):
             return JsonResponse({'success': False, 'errors': [],  'message': "Please input required fields"}, status=400)
     else:
         return JsonResponse({'success': False, 'errors': [], 'message': "Request Not Allowed"}, status=405)
-
 
 
 @csrf_exempt
@@ -182,16 +184,16 @@ def register(request):
                 test_user.set_password(password)
 
                 test_user.save()
-                
-                
-                #SENDING ACTIVATION MAIL
-                template_string = render_to_string('welcomeAndActivateAccount.html', { 'registered_user': test_user })
-                
-                res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉', template_string, email, f"{first_name} {last_name}")
-                
-                print('email sending res', res)
 
+                # SENDING ACTIVATION MAIL
+                template_string = render_to_string('welcomeEmail.html', {
+                                                   'registered_user': test_user})
 
+                res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
+                                 template_string, email, f"{first_name} {last_name}")
+                
+                TokenGenerator().send_account_activation_mail(request, test_user)
+                
                 return JsonResponse({
                     'success': True,
                     'message': 'Account has been created successfully. Check your mail to activate your account',
@@ -203,7 +205,7 @@ def register(request):
             except ValidationError as errors:
                 validation_errors = []
 
-                [validation_errors.append(str(error)) for error in errors]
+                [ validation_errors.append(str(error)) for error in errors ]
 
                 return JsonResponse({'success': False, 'message': 'Please review your password', 'errors': validation_errors}, status=400)
             except IntegrityError:
@@ -229,13 +231,15 @@ def register(request):
 
 @csrf_exempt
 def activate_account(request):
-    
-    user = User.objects.get(email = 'jeremiahlena13@gmail.com')
-    
-    template_string = render_to_string('welcomeEmail.html', { 'registered_user': user })
-    res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉', template_string, user.email, user.first_name)
-    
-    return JsonResponse({'message': 'tried seending mail'}, status = res.status_code)
+
+    user = User.objects.get(email='jeremiahlena13@gmail.com')
+
+    template_string = render_to_string(
+        'welcomeEmail.html', {'registered_user': user})
+    res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
+                     template_string, user.email, user.first_name)
+
+    return JsonResponse({'message': 'tried seending mail'}, status=res.status_code)
 
 
 def get_all_interests(request):
@@ -274,7 +278,7 @@ def remove_interests(request):
     """
     This endpoint takes the id of the interests as an array and removes them from the user's profile
     """
-    
+
     if request.method == "POST":
         request_body = json.loads(request.body.decode('utf-8'))
         user = User.objects.get(email="jeremiahlena13@gmail.com")
@@ -290,11 +294,10 @@ def remove_interests(request):
     else:
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
-  
-  
+
 class HelloView(APIView):
     permission_classes = (IsAuthenticated, )
-  
+
     def get(self, request):
         content = {'message': 'Hello, GeeksforGeeks'}
         return Response(content)

@@ -7,7 +7,7 @@ urlpatterns = [
     # AUTH URLS
     path('auth/login/', views.login, name='login'),
     path('auth/register/', views.register, name='register'),
-    path('auth/activate-account', views.activate_account, name = 'activate account'),
+    path('auth/activate-account/<str:uid>/<str:token>', views.activate_account, name = 'activate account'),
     
     # USER URLS
     # path('user/interests/', views.user_interest, name = 'user interests'),

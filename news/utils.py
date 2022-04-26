@@ -6,7 +6,10 @@ from functools import wraps
 from asyncio.proactor_events import _ProactorBasePipeTransport
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from six import text_type
-from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.template.loader import render_to_string
 from news.scraper.interest_scraper import INTEREST_TO_SCRAPER_MAP
 
 
@@ -111,7 +114,29 @@ def send_email(subject, body, receipient_email, receipient_fullName):
         ]
     }
 
+
     result = mailjet.send.create(data=data)
-    print(dir(result))
+    print(receipient_fullName)
+    print(f"{subject} return {str(result.status_code)}")
     return result
 
+
+class TokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (text_type(user.pk) + text_type(timestamp) + text_type(user.is_active))
+
+    def send_account_activation_mail(self, request, user):
+
+        site = get_current_site(request).name
+        token = TokenGenerator().make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        template_string = render_to_string('activateAccount.html', {
+                                           'user': user, 'uid': uid, 'token': token, 'site': site})
+
+        # print(template_string)
+        res = send_email('Confirm your email', template_string,
+                   user.email, f"{user.first_name} {user.last_name}")
+    
+        print(res)
+        
+        return res.status_code;
