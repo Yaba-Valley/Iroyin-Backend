@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     
@@ -19,4 +20,8 @@ urlpatterns = [
     
     #STATICS
     path('interests/all', views.get_all_interests, name = 'get all interests'),
+    
+    path('test-jwt/', views.HelloView.as_view(), name = 'hello'),
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name = 'get jwt token')
+    
 ]

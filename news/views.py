@@ -1,6 +1,6 @@
 import asyncio
 import json
-from re import template
+import requests
 from django.db import IntegrityError
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404, render
@@ -9,8 +9,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.contrib.auth.password_validation import validate_password
 from django.template.loader import render_to_string
-
-
+from django.contrib.sites.shortcuts import get_current_site
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt import views as jwt_views
 from .models import Interest, News, User
 from .recommend import Machine
 from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest, send_email
@@ -87,19 +90,34 @@ def login(request):
                 user = get_object_or_404(User, email=email)
 
                 if user.check_password(password):
-
-                    csrf_token = get_token(request)
-
-                    return JsonResponse(
-                        {
-                            'message': 'You have successfully logged in',
-                            'success': True,
-                            'data': {
-                                'token': csrf_token,
-                                'email': user.email
+                    
+                    # generate a token
+                    site = get_current_site(request).__str__()
+                    res = requests.post(f"http://{site}/api/token/", {'email': email, 'password': password })
+                    
+                    # token was generated successfully
+                    if res.status_code == 200:
+                        token_response = res.json()
+                        return JsonResponse(
+                            {
+                                'message': 'You have successfully logged in',
+                                'success': True,
+                                'data': {
+                                    'token': token_response['access'],
+                                    'email': user.email
+                                }
+                            }, status=200
+                        )
+                    else:
+                        #failure to generate token is mostly a result of user not been activated
+                        return JsonResponse(
+                            {
+                                'success': False,
+                                'message': 'Your account has not been activated',
+                                'errors': []
                             }
-                        }, status=200
-                    )
+                        )
+                    
                 else:
                     return JsonResponse(
                         {
@@ -120,6 +138,7 @@ def login(request):
             return JsonResponse({'success': False, 'errors': [],  'message': "Please input required fields"}, status=400)
     else:
         return JsonResponse({'success': False, 'errors': [], 'message': "Request Not Allowed"}, status=405)
+
 
 
 @csrf_exempt
@@ -270,3 +289,12 @@ def remove_interests(request):
 
     else:
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
+
+  
+  
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated, )
+  
+    def get(self, request):
+        content = {'message': 'Hello, GeeksforGeeks'}
+        return Response(content)
