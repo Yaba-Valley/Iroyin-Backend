@@ -1,0 +1,14 @@
+
+{
+    "builds": [{
+        "src": "Iroyin/wsgi.py",
+        "use": "@ardnt/vercel-python-wsgi",
+        "config": { "maxLambdaSize": "15mb" }
+    }],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "Iroyin/wsgi.py"
+        }
+    ]
+}
