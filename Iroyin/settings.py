@@ -84,7 +84,7 @@ AUTH_USER_MODEL = 'news.User'
 
 #TODO: The value of database should depend on the environment it's working in
 
-if False:
+if True:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
