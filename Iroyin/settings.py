@@ -29,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.vercel.app']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.azurewebsites.net']
 
 
 # Application definition
@@ -82,7 +82,27 @@ WSGI_APPLICATION = 'Iroyin.wsgi.application'
 
 AUTH_USER_MODEL = 'news.User'
 
-DATABASES = {}
+#TODO: The value of database should depend on the environment it's working in
+
+if False:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db2.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DBNAME'),
+            'USER': env('DBUSER'),
+            'PASSWORD': env('DBPASS'),
+            'HOST': env('DBHOST'),
+            'PORT': env('DBPORT'),
+        }
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -134,5 +154,3 @@ REST_FRAMEWORK = {
 		'rest_framework_simplejwt.authentication.JWTAuthentication',
 	],
 }
-
-PASSWORD_RESET_TIMEOUT = 10000
