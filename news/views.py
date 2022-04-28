@@ -6,9 +6,10 @@ from django.forms import ValidationError
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from django.middleware.csrf import get_token
 from django.contrib.auth.password_validation import validate_password
 from django.template.loader import render_to_string
+from django.utils.encoding import force_str, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -94,8 +95,9 @@ def login(request):
                     site = get_current_site(request).__str__()
                     res = requests.post(
                         f"http://{site}/api/token/", {'email': email, 'password': password})
+                    
 
-                    # token was generated successfully
+                    # if the token was generated successfully
                     if res.status_code == 200:
                         token_response = res.json()
                         return JsonResponse(
@@ -110,16 +112,18 @@ def login(request):
                         )
                     else:
 
-                        TokenGenerator().send_account_activation_mail(request, user)
+                        html_string = TokenGenerator().send_account_activation_mail(request, user)
                         
                         # failure to generate token is mostly a result of user not been activated
-                        return JsonResponse(
-                            {
-                                'success': False,
-                                'message': 'Your account has not been activated',
-                                'errors': []
-                            }
-                        )
+                        # return JsonResponse(
+                            # {
+                                # 'success': False,
+                                # 'message': 'Your account has not been activated',
+                                # 'errors': []
+                            # }
+                        # )
+                        
+                        return HttpResponse(html_string)
 
                 else:
                     return JsonResponse(
@@ -230,16 +234,40 @@ def register(request):
 
 
 @csrf_exempt
-def activate_account(request):
+def activate_account(request, uid, token):
+    
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user_id = int(user_id)
+        
+        user = User.objects.get(id = user_id)
+        
+        is_valid_token = TokenGenerator().check_token(user = user, token = token)
+        
+        if is_valid_token:
+            print('Token is Valid')
+            user.is_active = True
+            user.save()
+        else:
+            return HttpResponse('Invalid token')
+        
+        return HttpResponse('hi ' + user.first_name + '. You can now log in normally')
+        
+    except User.DoesNotExist:
+        return HttpResponse("Guy how far, this person no dey our databse")
+    except DjangoUnicodeDecodeError:
+        return HttpResponse('I catch you, couldn\'t decode this unicode')
 
-    user = User.objects.get(email='jeremiahlena13@gmail.com')
+    # user = User.objects.get(email='jeremiahlena13@gmail.com')
 
-    template_string = render_to_string(
-        'welcomeEmail.html', {'registered_user': user})
-    res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
-                     template_string, user.email, user.first_name)
+    # template_string = render_to_string(
+        # 'welcomeEmail.html', {'registered_user': user})
+    # res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
+                    #  template_string, user.email, user.first_name)
 
-    return JsonResponse({'message': 'tried seending mail'}, status=res.status_code)
+    # return JsonResponse({'message': 'tried seending mail'}, status=res.status_code)
+    
+    
 
 
 def get_all_interests(request):
