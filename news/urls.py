@@ -11,8 +11,8 @@ urlpatterns = [
     
     # USER URLS
     path('user/interests/', views.UserInterests.as_view(), name = 'user interests'),
-    path('user/interests/add/', views.save_interests, name = 'save user interests'),
-    path('user/interests/remove/', views.remove_interests, name = 'remove user interests'),
+    path('user/interests/add/', views.Save_Interests.as_view(), name = 'save user interests'),
+    path('user/interests/remove/', views.Remove_Interests.as_view(), name = 'remove user interests'),
     
     #NEWS URLS
     path('news/get_news/', views.GetNews.as_view(), name='index route'),
