@@ -90,8 +90,8 @@ def login(request):
     if request.method == "POST":
 
         request_body = json.loads(request.body.decode('utf-8'))
-        email = request_body['email']
-        password = request_body['password']
+        email = request_body['email'].strip()
+        password = request_body['password'].strip()
 
         if email and password:
             try:
@@ -113,7 +113,9 @@ def login(request):
                                 'success': True,
                                 'data': {
                                     'token': token_response['access'],
-                                    'email': user.email
+                                    'email': user.email,
+                                    'first_name': user.first_name,
+                                    'last_name': user.last_name
                                 }
                             }, status=200
                         )
