@@ -287,15 +287,14 @@ def get_all_interests(request):
         return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
 
 
-@csrf_exempt
-def save_interests(request):
+class Save_Interests(APIView):
     """
     This endpoint takes the id of the interests as an array and saves it to the user's profile
     """
-
-    if request.method == "POST":
+    
+    def post(self, request):
         request_body = json.loads(request.body.decode('utf-8'))
-        user = User.objects.get(email="jeremiahlena13@gmail.com")
+        user = request.user
 
         interest_ids = request_body['interests']
 
@@ -305,19 +304,20 @@ def save_interests(request):
 
         return JsonResponse({'success': True, 'message': 'User interests successfully recorded', 'data': interest_ids}, status=200)
 
-    else:
+
+    def get(self, request):
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
 
-@csrf_exempt
-def remove_interests(request):
+
+class Remove_Interests(APIView):
     """
     This endpoint takes the id of the interests as an array and removes them from the user's profile
     """
 
-    if request.method == "POST":
+    def post(self, request):
         request_body = json.loads(request.body.decode('utf-8'))
-        user = User.objects.get(email="jeremiahlena13@gmail.com")
+        user = request.user
 
         interest_ids = request_body['interests']
 
@@ -327,7 +327,8 @@ def remove_interests(request):
 
         return JsonResponse({'success': True, 'message': 'Successfully removed interests', 'data': interest_ids}, status=200)
 
-    else:
+
+    def get(self, request):
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
 
