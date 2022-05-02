@@ -67,6 +67,19 @@ class GetNews(APIView):
             print(e)
             return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
+class Search_News(APIView):
+    
+    permission_classes = [ IsAuthenticated ]
+    
+    def get(self, request, title):
+        try:
+            search_news = News.objects.filter(title__contains = title).values_list('title', flat = True)
+            
+            return Response({'res': list(search_news)})
+        except News.DoesNotExist:
+            return Response({'res': 404})
+        
+
 
 class Indicate_Interaction(APIView):
     
