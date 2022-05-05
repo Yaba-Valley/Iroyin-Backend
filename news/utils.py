@@ -133,12 +133,9 @@ class TokenGenerator(PasswordResetTokenGenerator):
         template_string = render_to_string('activateAccount.html', {
                                            'user': user, 'uid': uid, 'token': token, 'site': site})
 
-        print(template_string)
-        # res = send_email('Confirm your email', template_string,
-                #    user.email, f"{user.first_name} {user.last_name}")
+        res = send_email('Confirm your email', template_string,
+                   user.email, f"{user.first_name} {user.last_name}")
     
-        # print(res)
+        print(res)
         
-        # return res.status_code;
-        
-        return template_string;
+        return res.status_code;

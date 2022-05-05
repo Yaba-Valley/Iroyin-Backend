@@ -137,15 +137,15 @@ def login(request):
                         html_string = TokenGenerator().send_account_activation_mail(request, user)
 
                         # failure to generate token is mostly a result of user not been activated
-                        # return JsonResponse(
-                        # {
-                        # 'success': False,
-                        # 'message': 'Your account has not been activated',
-                        # 'errors': []
-                        # }
-                        # )
+                        return JsonResponse(
+                            {
+                                'success': False,
+                                'message': 'Your account has not been activated',
+                                'errors': []
+                            }
+                        )
 
-                        return HttpResponse(html_string)
+                        # return HttpResponse(html_string)
 
                 else:
                     return JsonResponse(
@@ -215,10 +215,13 @@ def register(request):
                 template_string = render_to_string('welcomeEmail.html', {
                                                    'registered_user': test_user})
 
-                res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
+                welcome_mail_res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
                                  template_string, email, f"{first_name} {last_name}")
 
-                TokenGenerator().send_account_activation_mail(request, test_user)
+                activation_mail_res = TokenGenerator().send_account_activation_mail(request, test_user)
+                
+                
+                print(welcome_mail_res, activation_mail_res)
 
                 return JsonResponse({
                     'success': True,
