@@ -97,7 +97,7 @@ def send_email(subject, body, receipient_email, receipient_fullName):
         "Messages": [
             {
                 "From": {
-                    "Email": "jeremiahlena13@gmail.com",
+                    "Email": "jeremiah@fusionintel.io",
                     "Name": "The ReadNews Team"
                 },
                 "To": [
@@ -109,7 +109,6 @@ def send_email(subject, body, receipient_email, receipient_fullName):
                 "Subject": subject,
                 "TextPart": subject,
                 "HTMLPart": body,
-                "CustomID": "AppGettingStartedTest"
             }
         ]
     }
