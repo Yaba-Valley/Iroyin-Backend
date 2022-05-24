@@ -39,13 +39,13 @@ class GetNews(APIView):
 
             recommend_news = Machine(1).recommend(data_to_predict_with)
 
-            news_for_frontend = []
+            news_for_frontend = list(recommend_news.values())
 
             for i in range(len(recommend_news['titles'])):
                 try:
                     #restructure the news recommend for the frontend
-                    news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
-                        'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
+                    #news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
+                    #'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
                     
                     # check to see if news exists with this url
                     existing_news = get_object_or_404(
