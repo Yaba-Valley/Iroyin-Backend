@@ -41,7 +41,7 @@ class GetNews(APIView):
 
             news_for_frontend = list(recommend_news.values())
 
-            for i in range(len(recommend_news['titles'])):
+            for i in range(len(news_for_frontend)):
                 try:
                     #restructure the news recommend for the frontend
                     #news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
@@ -49,7 +49,7 @@ class GetNews(APIView):
                     
                     # check to see if news exists with this url
                     existing_news = get_object_or_404(
-                        News, url=recommend_news['urls'][i])
+                        News, url=news_for_frontend[i]['titles']['urls'])
                     
                     # add the news to the user's seen news if it already exists
                     me.newsSeen.add(existing_news)
@@ -57,7 +57,7 @@ class GetNews(APIView):
                     
                     # create a new News object and addit to the user's seen news
                     me.newsSeen.add(News.objects.create(
-                        title=recommend_news['titles'][i], url=recommend_news['urls'][i]))
+                        title=news_for_frontend[i]['titles'], url=recommend_news[i]['urls']))
 
             me.save()
 
