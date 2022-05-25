@@ -2,3 +2,6 @@ env.sh
 env.bat
 env.ps1
 .vercel
+pyvenv.cfg
+/lib
+/bin
