@@ -1,6 +1,6 @@
 import asyncio
 import json
-import requests
+# import requests
 from django.db import IntegrityError
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404, render
@@ -53,6 +53,7 @@ class GetNews(APIView):
                     
                     # add the news to the user's seen news if it already exists
                     me.newsSeen.add(existing_news)
+                
                 except Http404:
                     
                     # create a new News object and addit to the user's seen news
