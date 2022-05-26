@@ -134,7 +134,7 @@ def login(request):
                         )
                     else:
 
-                        html_string = TokenGenerator().send_account_activation_mail(request, user)
+                        res = TokenGenerator().send_account_activation_mail(request, user)
 
                         # failure to generate token is mostly a result of user not been activated
                         return JsonResponse(
@@ -142,10 +142,8 @@ def login(request):
                                 'success': False,
                                 'message': 'Your account has not been activated',
                                 'errors': []
-                            }
+                            }, status = 401
                         )
-
-                        # return HttpResponse(html_string)
 
                 else:
                     return JsonResponse(

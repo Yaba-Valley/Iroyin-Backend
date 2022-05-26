@@ -30,7 +30,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.azurewebsites.net']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.ngrok.io']
 
 
 # Application definition
