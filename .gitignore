@@ -5,3 +5,4 @@ env.ps1
 pyvenv.cfg
 /lib
 /bin
+.env

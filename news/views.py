@@ -1,6 +1,6 @@
 import asyncio
 import json
-# import requests
+import requests
 from django.db import IntegrityError
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404, render
@@ -26,7 +26,6 @@ class GetNews(APIView):
     def get(self, request):
 
         try:
-
             data = []
             me = request.user
 
