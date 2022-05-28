@@ -128,7 +128,9 @@ def login(request):
                                     'token': token_response['access'],
                                     'email': user.email,
                                     'first_name': user.first_name,
-                                    'last_name': user.last_name
+                                    'last_name': user.last_name,
+                                    'last_login': user.last_login,
+                                    'hasSetInterests': user.interests.count() > 0
                                 }
                             }, status=200
                         )
@@ -193,7 +195,7 @@ def register(request):
             try:
 
                 # try to get the user to know if a user already exists with the email address
-                user = User.objects.filter(email=email)
+                user = User.objects.filter(email=email.lower())
 
                 if len(user) == 1:
                     raise IntegrityError()
@@ -201,7 +203,7 @@ def register(request):
                 # this code only runs if there no user with the same email address
 
                 test_user = User(
-                    email=email, first_name=first_name, last_name=last_name)
+                    email=email.lower(), first_name=first_name, last_name=last_name)
 
                 validate_password(password=password, user=test_user)
 
