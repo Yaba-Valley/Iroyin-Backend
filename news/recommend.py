@@ -39,6 +39,8 @@ def get_df(id):
     merged=interacted.merge(seen, on=['id', 'title'], how='outer')
     merged.fillna(0, inplace=True)
     merged.sample(frac = 1)
+    
+    print(interacted)
     return merged.sample(frac = 1)
 
 

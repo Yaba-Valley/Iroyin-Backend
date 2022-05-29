@@ -36,28 +36,35 @@ class GetNews(APIView):
             data_to_predict_with = prepareDataForModel(
                 data=data, newsInteracted=None)
 
-            recommend_news = Machine(1).recommend(data_to_predict_with)
+            recommend_news = Machine(me.id).recommend(data_to_predict_with)
 
-            news_for_frontend = list(recommend_news.values())
-
-            for i in range(len(news_for_frontend)):
+            print(len(recommend_news['titles']))
+            news_for_frontend = []
+            
+            for i in range(len(recommend_news['titles'])):
                 try:
-                    #restructure the news recommend for the frontend
-                    #news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
-                    #'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
+                    print("TITLE:", recommend_news['titles'][i])
+                    print("IMG:", recommend_news['imgs'][i])
+                    print("URL:", recommend_news['urls'][i])
+                    print("META:", recommend_news['meta'][i])
                     
+                    
+                    # restructure the news recommend for the frontend
+                    news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
+                        'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
+
                     # check to see if news exists with this url
                     existing_news = get_object_or_404(
-                        News, url=news_for_frontend[i]['titles']['urls'])
-                    
+                        News, url=recommend_news['urls'][i])
+
                     # add the news to the user's seen news if it already exists
                     me.newsSeen.add(existing_news)
-                
+
                 except Http404:
-                    
+
                     # create a new News object and addit to the user's seen news
                     me.newsSeen.add(News.objects.create(
-                        title=news_for_frontend[i]['titles'], url=recommend_news[i]['urls']))
+                        title=recommend_news['titles'][i], url=recommend_news[i]['urls']))
 
             me.save()
 
@@ -67,22 +74,23 @@ class GetNews(APIView):
             print(e)
             return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
 
+
 class Search_News(APIView):
-    
-    permission_classes = [ IsAuthenticated ]
-    
+
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, title):
         try:
-            search_news = News.objects.filter(title__contains = title).values_list('title', flat = True)
-            
+            search_news = News.objects.filter(
+                title__contains=title).values_list('title', flat=True)
+
             return Response({'res': list(search_news)})
         except News.DoesNotExist:
             return Response({'res': 404})
-        
 
 
 class Indicate_Interaction(APIView):
-    
+
     def post(self, request):
         request_body_unicode = request.body.decode('utf-8')
         request_body = json.loads(request_body_unicode)
@@ -144,7 +152,7 @@ def login(request):
                                 'success': False,
                                 'message': 'Your account has not been activated',
                                 'errors': []
-                            }, status = 401
+                            }, status=401
                         )
 
                 else:
@@ -216,11 +224,10 @@ def register(request):
                                                    'registered_user': test_user})
 
                 welcome_mail_res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
-                                 template_string, email, f"{first_name} {last_name}")
+                                              template_string, email, f"{first_name} {last_name}")
 
                 activation_mail_res = TokenGenerator().send_account_activation_mail(request, test_user)
-                
-                
+
                 print(welcome_mail_res, activation_mail_res)
 
                 return JsonResponse({
@@ -259,9 +266,9 @@ def register(request):
 
 
 class Activate_Account(APIView):
-    
+
     def get(self, request,  uid, token):
-        
+
         try:
             user_id = force_str(urlsafe_base64_decode(uid))
             user_id = int(user_id)
@@ -307,7 +314,7 @@ class Save_Interests(APIView):
     """
     This endpoint takes the id of the interests as an array and saves it to the user's profile
     """
-    
+
     def post(self, request):
         request_body = json.loads(request.body.decode('utf-8'))
         user = request.user
@@ -320,10 +327,8 @@ class Save_Interests(APIView):
 
         return JsonResponse({'success': True, 'message': 'User interests successfully recorded', 'data': interest_ids}, status=200)
 
-
     def get(self, request):
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
-
 
 
 class Remove_Interests(APIView):
@@ -343,21 +348,20 @@ class Remove_Interests(APIView):
 
         return JsonResponse({'success': True, 'message': 'Successfully removed interests', 'data': interest_ids}, status=200)
 
-
     def get(self, request):
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
 
 class UserInterests(APIView):
 
-    permssion_classes = [ IsAuthenticated ]
-        
+    permssion_classes = [IsAuthenticated]
+
     def get(self, request):
         me = request.user
-        interests = [ {'name': interest.name, 'id': interest.id } for interest in me.interests.all() ]
+        interests = [{'name': interest.name, 'id': interest.id}
+                     for interest in me.interests.all()]
         return Response({'success': True, 'interests': interests, 'message': 'Successfully retrieved user interest'})
-        
-        
+
 
 class HelloView(APIView):
     permission_classes = (IsAuthenticated, )
