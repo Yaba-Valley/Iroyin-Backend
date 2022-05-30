@@ -163,5 +163,5 @@ SIMPLE_JWT = {
 }
 
 CRONJOBS = [
-    ('*/0 0,8,12,16,20 * * *', 'news.cron.run_all_scrapers')
+    ('0 0,8,12,16,20 * * *', 'news.cron.run_all_scrapers'),
 ]
