@@ -1,9 +1,11 @@
-from .models import News
+from .models import News, Interest
 from .utils import get_all_scrapers, fetch_news_async
 import asyncio
+import random
 
 
 def run_all_scrapers():
+    print('running all the scrapers')
     scrapers = get_all_scrapers()
     scraped_news = []
 
