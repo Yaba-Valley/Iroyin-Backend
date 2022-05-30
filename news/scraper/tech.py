@@ -59,7 +59,6 @@ class TechCrunchScraper(Scraper):
             articles = []
 
             for article in news:
-                print(article)
                 article_title = article.find(
                     'a', {'class': 'post-block__title__link'}).text
                 article_url = article.find(
@@ -192,7 +191,6 @@ class TheNextWebScraper:
                         articles.append(
                             {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
                         
-                    print(articles)
             except Exception as e:
                 print(e)
                 pass

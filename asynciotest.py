@@ -1,5 +1,4 @@
 import asyncio
-from tkinter import E
 from aiohttp import ClientSession
 import time
 import math
