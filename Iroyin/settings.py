@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.ngrok.io']
 
 INSTALLED_APPS = [
     'news',
+    'django_crontab',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -160,3 +161,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'UPDATE_LAST_LOGIN': True
 }
+
+CRONJOBS = [
+    ('*/0 0,8,12,16,20 * * *', 'news.cron.run_all_scrapers')
+]

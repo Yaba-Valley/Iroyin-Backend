@@ -1,4 +1,3 @@
-import asyncio
 import json
 import requests
 from django.db import IntegrityError
@@ -16,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News, User
 from .recommend import Machine
-from .utils import fetch_news_async, prepareDataForModel, get_scrapers_based_on_user_interest, send_email, TokenGenerator
+from .utils import prepareDataForModel, send_email, TokenGenerator
 
 
 class GetNews(APIView):
@@ -28,10 +27,6 @@ class GetNews(APIView):
         try:
             data = []
             me = request.user
-
-            scrapers = get_scrapers_based_on_user_interest(me)
-
-            data = asyncio.run(fetch_news_async(scrapers, data))
 
             data_to_predict_with = prepareDataForModel(
                 data=data, newsInteracted=None)

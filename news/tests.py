@@ -1,4 +1,3 @@
-from tkinter import Scrollbar
 from django.test import TestCase
 from . import scraper
 from .utils import fetch_news_async

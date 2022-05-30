@@ -18,12 +18,11 @@ class VeryWellMindScraper(Scraper):
             articles = []
 
             for article in soup.select('.mntl-document-card'):
-                print(article)
+                
                 article_title = article.select_one('.card__title-text').text
                 article_image = article.select_one(
                     '.card__media img')['data-src']
                 article_url = article['href']
-                print(articles)
 
                 articles.append({'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {
                                 'website': self.title, 'favicon': self.favicon}})
