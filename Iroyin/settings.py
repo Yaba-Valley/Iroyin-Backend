@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.ngrok.io']
 INSTALLED_APPS = [
     'news',
     'django_crontab',
+    'django_cron',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -162,6 +163,6 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
 
-CRONJOBS = [
-    ('0 0,8,12,16,20 * * *', 'news.cron.run_all_scrapers'),
+CRON_CLASSES = [
+    ( 'news.cron.ScrapersCronJob'),
 ]
