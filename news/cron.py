@@ -31,3 +31,13 @@ class ScrapersCronJob(CronJobBase):
                 pass
 
         return True
+    
+    
+class ScrapersCronJob2(CronJobBase):
+    # RUN_EVERY_MINS = 120 # every two hours
+    RUN_EVERY_MINS = 1 # every minute
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'my_app.my_cron_job' # unique code to identify the particular cron task
+
+    def run_all_scrapers(self):
+        print('running this cron job oo')

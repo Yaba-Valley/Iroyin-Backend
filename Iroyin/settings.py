@@ -164,5 +164,5 @@ SIMPLE_JWT = {
 }
 
 CRON_CLASSES = [
-    ( 'news.cron.ScrapersCronJob'),
+    ( 'news.cron.ScrapersCronJob', 'news.cron.TestCronJob'),
 ]
