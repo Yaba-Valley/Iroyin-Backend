@@ -156,7 +156,7 @@ def login(request):
                             'message': 'Incorrect Login Credentials',
                             'success': False,
                             'errors': [],
-                        }, status=404
+                        }, status=401
                     )
             except Http404:
                 return JsonResponse(
