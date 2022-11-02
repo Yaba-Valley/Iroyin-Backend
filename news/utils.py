@@ -76,8 +76,11 @@ def get_scrapers_based_on_user_interest(user):
                       for interest in user.interests.all()]
 
     for interest in user_interests:
-        scrapers.extend(INTEREST_TO_SCRAPER_MAP[interest])
-
+        try:
+            scrapers.extend(INTEREST_TO_SCRAPER_MAP[interest])
+        except KeyError:
+            pass
+        
     return scrapers
 
 

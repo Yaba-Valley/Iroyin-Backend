@@ -31,7 +31,9 @@ class GetNews(APIView):
 
             scrapers = get_scrapers_based_on_user_interest(me)
 
-            data = asyncio.run(fetch_news_async(scrapers, data))
+            data = asyncio.run(fetch_news_async(scrapers, data ))
+            
+            return JsonResponse(data, safe=False)
 
             data_to_predict_with = prepareDataForModel(
                 data=data, newsInteracted=None)
