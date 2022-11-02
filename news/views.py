@@ -23,17 +23,17 @@ class GetNews(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
+        
+        me = request.user
 
         try:
             data = []
-            me = request.user
 
             data_to_predict_with = prepareDataForModel(
                 data=data, newsInteracted=None)
 
             recommend_news = Machine(me.id).recommend(data_to_predict_with)
 
-            print(len(recommend_news['titles']))
             news_for_frontend = []
             
             for i in range(len(recommend_news['titles'])):

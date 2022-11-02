@@ -37,7 +37,6 @@ ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.ngrok.io']
 
 INSTALLED_APPS = [
     'news',
-    'django_crontab',
     'django_cron',
     'corsheaders',
     'django.contrib.admin',
@@ -85,7 +84,7 @@ WSGI_APPLICATION = 'Iroyin.wsgi.application'
 
 AUTH_USER_MODEL = 'news.User'
 
-#TODO: The value of database should depend on the environment it's working in
+# TODO: The value of database should depend on the environment it's working in
 
 if True:
     DATABASES = {
@@ -153,9 +152,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
-	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework_simplejwt.authentication.JWTAuthentication',
-	],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
 
 SIMPLE_JWT = {
@@ -163,6 +162,4 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
 
-CRON_CLASSES = [
-    ( 'news.cron.ScrapersCronJob', 'news.cron.TestCronJob'),
-]
+CRON_CLASSES = ('news.cron.ScrapersCronJob', 'news.cron.ScrapersCronJob2')

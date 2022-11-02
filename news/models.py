@@ -61,7 +61,7 @@ class News(models.Model):
     categories = models.ManyToManyField(to = Interest)
 
     def __str__(self):
-        return self.title
+        return self.title + ' (' + str(self.read_count) + ' reads)'
     
     def serialize(self):
         
