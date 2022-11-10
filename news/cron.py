@@ -9,7 +9,7 @@ class ScrapersCronJob(CronJobBase):
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'my_app.my_cron_job' # unique code to identify the particular cron task
 
-    def run_all_scrapers(self):
+    def do(self):
 
         print('running all the scrapers')
         scrapers = get_all_scrapers()
@@ -17,6 +17,8 @@ class ScrapersCronJob(CronJobBase):
 
         # get news using all the scrapers we have
         scraped_news = asyncio.run(fetch_news_async(scrapers, scraped_news))
+        
+        print(scraped_news)
 
         # save the news to the database
         for news in scraped_news:
@@ -40,6 +42,6 @@ class ScrapersCronJob2(CronJobBase):
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'RUN EVERY MINUTE'
 
-    def run_all_scrapers(self):
+    def do(self):
         print('minute is ', minute)
         minute+=1
