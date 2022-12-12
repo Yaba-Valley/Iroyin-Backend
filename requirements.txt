@@ -1,5 +1,6 @@
 aiohttp==3.8.1
 aiosignal==1.2.0
+APScheduler==3.9.1.post1
 asgiref==3.4.1
 async-timeout==4.0.2
 attrs==21.4.0
@@ -45,6 +46,7 @@ pyparsing==3.0.6
 python-dateutil==2.8.2
 python-decouple==3.5
 pytz==2021.3
+pytz-deprecation-shim==0.1.0.post0
 regex==2021.11.10
 requests==2.27.1
 requests-toolbelt==0.7.0
@@ -59,6 +61,7 @@ threadpoolctl==3.0.0
 toml==0.10.2
 tqdm==4.62.3
 tzdata==2021.5
+tzlocal==4.2
 uplink==0.9.7
 uritemplate==4.1.1
 urllib3==1.26.9
