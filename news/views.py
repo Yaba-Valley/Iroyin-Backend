@@ -15,7 +15,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News, User
 from .recommend import Machine
-from .utils import prepareDataForModel, send_email, TokenGenerator
+from .utils import send_email, TokenGenerator, fetch_news_async
+from .scraper import FreeCodeCampScraper
+import asyncio
 
 
 class GetNews(APIView):
@@ -25,25 +27,32 @@ class GetNews(APIView):
     def get(self, request):
 
         try:
-            data = []
+            scrapers = [FreeCodeCampScraper()]
+            d = []
+            data = asyncio.run(fetch_news_async(scrapers, d))
+
+            print(data)
+
             me = request.user
 
-            data_to_predict_with = prepareDataForModel(
-                data=data, newsInteracted=None)
+            # data_to_predict_with = prepareDataForModel(
+            #     data=data, newsInteracted=None)
 
-            recommend_news = Machine(me.id).recommend(data_to_predict_with)
+            data_to_predict_with = []
+
+            # recommend_news = Machine(me.id).recommend(data_to_predict_with)
+            return JsonResponse({"news": data})
 
             print(len(recommend_news['titles']))
             news_for_frontend = []
-            
+
             for i in range(len(recommend_news['titles'])):
                 try:
                     print("TITLE:", recommend_news['titles'][i])
                     print("IMG:", recommend_news['imgs'][i])
                     print("URL:", recommend_news['urls'][i])
                     print("META:", recommend_news['meta'][i])
-                    
-                    
+
                     # restructure the news recommend for the frontend
                     news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
                         'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
