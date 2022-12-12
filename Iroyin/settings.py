@@ -32,14 +32,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.ngrok.io']
 
-
 # Application definition
 
 INSTALLED_APPS = [
-    'news',
-    'django_crontab',
-    'django_cron',
     'corsheaders',
+    'news.apps.NewsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -162,7 +159,3 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'UPDATE_LAST_LOGIN': True
 }
-
-CRON_CLASSES = [
-    ( 'news.cron.ScrapersCronJob', 'news.cron.TestCronJob'),
-]
