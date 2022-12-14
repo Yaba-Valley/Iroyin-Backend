@@ -2,14 +2,14 @@ import json
 import requests
 from django.db import IntegrityError
 from django.forms import ValidationError
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse, JsonResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
