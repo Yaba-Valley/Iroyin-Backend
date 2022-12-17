@@ -39,9 +39,10 @@ class TechCrunchScraper(Scraper):
 
         if isNigeria:
             self.url = 'https://techcrunch.com/tag/nigeria'
-
-        if isStartups:
+        elif isStartups:
             self.url = 'https://techcrunch.com/startups'
+        else:
+            self.url = "https://techcrunch.com/tag/nigeria"
 
         self.title = 'TechCrunch'
         self.favicon_url = 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png?w=60'
@@ -49,17 +50,15 @@ class TechCrunchScraper(Scraper):
         Scraper.__init__(self, 'TechCrunch Scraper')
 
     async def scrape(self, async_client, scraped_news):
+        print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
-
-            news = soup.find_all('article')
-
-            print(len(news))
+            all_articles = soup.find_all('div', {'class': 'post-block'})
 
             articles = []
 
-            for article in news:
+            for article in all_articles:
                 article_title = article.find(
                     'a', {'class': 'post-block__title__link'}).text
                 article_url = article.find(
@@ -70,7 +69,7 @@ class TechCrunchScraper(Scraper):
                     {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             scraped_news.extend(articles)
-            return articles
+            return scraped_news
 
 
 class TechTrendsAfricaScraper(Scraper):
