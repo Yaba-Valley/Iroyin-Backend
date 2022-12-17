@@ -28,7 +28,7 @@ INTEREST_TO_SCRAPER_MAP = {
         TheNextWebScraper(category='growth-quarters')
     ],
     "ENTERTAINMENT": [
-        PunchScraper(topic='entertainment'),
+        # PunchScraper(topic='entertainment'),
         PeopleScraper(topic='entertainment'),
         GlamourScraper()
     ],

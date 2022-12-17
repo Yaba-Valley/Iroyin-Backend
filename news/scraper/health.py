@@ -8,7 +8,7 @@ class VeryWellMindScraper(Scraper):
         self.title = 'VeryWellMind'
         self.favicon = 'https://www.verywellmind.com/favicon.ico'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'VeryWellMind Scraper')
 
     async def scrape(self, async_client, scraped_news):
         async with async_client.get(self.url, headers=self.headers) as response:

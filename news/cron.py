@@ -2,14 +2,13 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from news.models import News
 import asyncio
-from news.utils import fetch_news_async
+from news.utils import fetch_news_async, get_all_scrapers
 from news.scraper import TheNextWebScraper, TechTrendsAfricaScraper
 
 
 def fetch_news():
-    
-    scrapers = [TheNextWebScraper(), TechTrendsAfricaScraper('blockchain'), TechTrendsAfricaScraper(
-        'tech-and-innovation'), TechTrendsAfricaScraper('funding')]
+    print('started scraping')
+    scrapers = get_all_scrapers()
     
     scraped_news = []
 
@@ -34,6 +33,5 @@ def fetch_news():
 def start():
     print('setting up scheduler...')
     scheduler = BackgroundScheduler()
-    scheduler.add_job(fetch_news, 'interval', minutes=1000000)
+    scheduler.add_job(fetch_news, 'interval', minutes=1)
     scheduler.start()
-    print('started scheduler...')
