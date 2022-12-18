@@ -28,9 +28,9 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '.ngrok.io']
+ALLOWED_HOSTS = ['django-env.eba-v6gscjfw.us-west-2.elasticbeanstalk.com']
 
 # Application definition
 
