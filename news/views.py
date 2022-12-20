@@ -25,53 +25,38 @@ class GetNews(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-
+        request_body = json.loads(request.body.decode('utf-8'))
+        news_per_page = request_body['news_per_page']
+        page_number = int(request_body['page_number']) # first value should be 1
+        
+        if page_number < 1:
+            page_number = 1 # first value should be 1
+        
+        start = (page_number - 1) * news_per_page
+        end = start + news_per_page
+        
         try:
-            scrapers = [FreeCodeCampScraper()]
-            d = []
-            data = asyncio.run(fetch_news_async(scrapers, d))
-
-            print(data)
-
+            news = News.objects.all()[start:end]
+            
             me = request.user
+            
+            """
+            what should happen here is that the recommender system is called with the id of the user and 
+            the number of news to be returned, the model has access to the database and can get the user's 
+            news interaction history. After prediction, it should return the news most likely to be liked by the user
+            """
 
-            # data_to_predict_with = prepareDataForModel(
-            #     data=data, newsInteracted=None)
+            # news = Machine(me.id).recommend(data_to_predict_with)
 
-            data_to_predict_with = []
-
-            # recommend_news = Machine(me.id).recommend(data_to_predict_with)
-            return JsonResponse({"news": data})
-
-            print(len(recommend_news['titles']))
             news_for_frontend = []
 
-            for i in range(len(recommend_news['titles'])):
-                try:
-                    print("TITLE:", recommend_news['titles'][i])
-                    print("IMG:", recommend_news['imgs'][i])
-                    print("URL:", recommend_news['urls'][i])
-                    print("META:", recommend_news['meta'][i])
-
-                    # restructure the news recommend for the frontend
-                    news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
-                        'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
-
-                    # check to see if news exists with this url
-                    existing_news = get_object_or_404(
-                        News, url=recommend_news['urls'][i])
-
-                    # add the news to the user's seen news if it already exists
-                    me.newsSeen.add(existing_news)
-
-                except Http404:
-
-                    # create a new News object and addit to the user's seen news
-                    me.newsSeen.add(News.objects.create(
-                        title=recommend_news['titles'][i], url=recommend_news[i]['urls']))
+            for n in list(news):
+                print(n.serialize())
+                news_for_frontend.append(n.serialize())
+                me.newsSeen.add(n)
 
             me.save()
-
+            
             return JsonResponse({'news': news_for_frontend})
 
         except Exception as e:

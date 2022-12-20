@@ -31,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'django-env.eba-v6gscjfw.us-west-2.elasticbeanstalk.com', 'localhost']
+    'django-env.eba-v6gscjfw.us-west-2.elasticbeanstalk.com', 'localhost', '.eu.ngrok.io']
 
 # Application definition
 

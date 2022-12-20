@@ -189,20 +189,28 @@ class BundesligaScraper(Scraper):
             other_news = soup.select('.topListEntry')
 
             for article in news:
-                article_title = article.find('h2').text
-                article_url = self.url + article.find('a')['href']
-                article_image = article.find('img')['src'].split('?')[0]
-
-                articles.append(
-                    {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                try:
+                    article_title = article.find('h2').text
+                    article_url = self.url + article.find('a')['href']
+                    article_image = article.find('img')['src'].split('?')[0]
+                    
+                    articles.append(
+                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                except Exception as e:
+                    print(e)
+                    pass
 
             for article in other_news:
-                article_title = article.text
-                article_url = self.url + article['href']
-                article_image = article.find('img')['src'].split('?')[0]
-
-                articles.append(
-                    {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                try:
+                    article_title = article.text
+                    article_url = self.url + article['href']
+                    article_image = article.find('img')['src'].split('?')[0]
+                    
+                    articles.append(
+                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                except Exception as e:
+                    print(e)
+                    pass
 
             scraped_news.extend(articles)
             return articles

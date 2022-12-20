@@ -2,6 +2,7 @@ from operator import mod
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
         """
@@ -48,49 +49,54 @@ class UserManager(BaseUserManager):
 
 class Interest(models.Model):
     name = models.CharField(max_length=100)
-    
+
     def __str__(self):
         return self.name
-    
-    
+
+
 class News(models.Model):
     title = models.CharField(max_length=500)
     url = models.URLField(unique=True)
-    img = models.URLField(default = 'https://media.istockphoto.com/vectors/news-vector-id918880270?k=20&m=918880270&s=612x612&w=0&h=bDcgr9jhiRYCPMUhVdLKD5ouIc5daM4qMcaPPapppQI=')
-    read_count = models.BigIntegerField(default = 0)
-    categories = models.ManyToManyField(to = Interest)
+    img = models.URLField(
+        default='https://media.istockphoto.com/vectors/news-vector-id918880270?k=20&m=918880270&s=612x612&w=0&h=bDcgr9jhiRYCPMUhVdLKD5ouIc5daM4qMcaPPapppQI=')
+    read_count = models.BigIntegerField(default=0)
+    categories = models.ManyToManyField(to=Interest)
+
+    website_name = models.TextField(default='Unknown')
+    website_favicon = models.URLField(
+        default='https://media.istockphoto.com/vectors/news-vector-id918880270?k=20&m=918880270&s=612x612&w=0&h=bDcgr9jhiRYCPMUhVdLKD5ouIc5daM4qMcaPPapppQI=')
 
     def __str__(self):
         return self.title
-    
+
     def serialize(self):
-        
-        return {'title': self.title, 'url': self.url, 'img': self.img }
-    
+        return {'title': self.title, 'url': self.url, 'img': self.img, 'metadata': {'website': self.website_name, 'favicon': self.website_favicon}}
+
 
 class User(AbstractBaseUser):
-    
+
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
         unique=True,
     )
-    
+
     objects = UserManager()
-    
+
     is_active = models.BooleanField(default=False)
-    staff = models.BooleanField(default=False) 
+    staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
-    
+
     first_name = models.CharField(max_length=100, verbose_name='First Name')
     last_name = models.CharField(max_length=100, verbose_name='Last Name')
-    newsSeen = models.ManyToManyField(to = News, related_name='readers', verbose_name='News Seen By User')
-    newInteractedWith = models.ManyToManyField(to = News, related_name='readers_interacted', verbose_name='News User Interacted With')
-    interests = models.ManyToManyField(to = Interest, related_name='users')
-    
-    
+    newsSeen = models.ManyToManyField(
+        to=News, related_name='readers', verbose_name='News Seen By User')
+    newInteractedWith = models.ManyToManyField(
+        to=News, related_name='readers_interacted', verbose_name='News User Interacted With')
+    interests = models.ManyToManyField(to=Interest, related_name='users')
+
     USERNAME_FIELD = 'email'
-    
+
     def get_full_name(self):
         return "%s %s" % (self.first_name, self.last_name)
 
@@ -119,8 +125,6 @@ class User(AbstractBaseUser):
     def is_admin(self):
         "Is the user a admin member?"
         return self.admin
-    
-   
+
     def __str__(self):
         return self.email
-    
