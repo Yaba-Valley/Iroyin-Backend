@@ -25,21 +25,23 @@ class GetNews(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        request_body = json.loads(request.body.decode('utf-8'))
-        news_per_page = request_body['news_per_page']
-        page_number = int(request_body['page_number']) # first value should be 1
+        news_per_page = int(request.GET.get('news_per_page'))
+        # first value should be 1
+        page_number = int(request.GET.get('page_number'))
         
+        print(news_per_page, page_number)
+
         if page_number < 1:
-            page_number = 1 # first value should be 1
-        
+            page_number = 1  # first value should be 1
+
         start = (page_number - 1) * news_per_page
         end = start + news_per_page
-        
+
         try:
             news = News.objects.all()[start:end]
-            
+
             me = request.user
-            
+
             """
             what should happen here is that the recommender system is called with the id of the user and 
             the number of news to be returned, the model has access to the database and can get the user's 
@@ -56,8 +58,14 @@ class GetNews(APIView):
                 me.newsSeen.add(n)
 
             me.save()
-            
-            return JsonResponse({'news': news_for_frontend})
+
+            return JsonResponse({
+                'news': news_for_frontend, 
+                'current_page': page_number, 
+                'next_page': page_number + 1,
+                'per_page': news_per_page,
+                'total_pages': round(News.objects.count() / news_per_page)
+            })
 
         except Exception as e:
             print(e)
