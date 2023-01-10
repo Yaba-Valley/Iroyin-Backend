@@ -15,8 +15,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News, User
 from .recommend import Machine
-from .utils import send_email, TokenGenerator, fetch_news_async
-from .scraper import FreeCodeCampScraper
+from .utils import send_email, TokenGenerator
+import time
 
 
 class GetNews(APIView):
@@ -58,6 +58,8 @@ class GetNews(APIView):
                 # me.newsSeen.add(n)
 
             # me.save()
+            
+            # time.sleep(3)
             
             return JsonResponse({
                 'news': news_for_frontend,
