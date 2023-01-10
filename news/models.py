@@ -61,6 +61,7 @@ class News(models.Model):
         default='https://media.istockphoto.com/vectors/news-vector-id918880270?k=20&m=918880270&s=612x612&w=0&h=bDcgr9jhiRYCPMUhVdLKD5ouIc5daM4qMcaPPapppQI=')
     read_count = models.BigIntegerField(default=0)
     categories = models.ManyToManyField(to=Interest)
+    time_added = models.DateTimeField(auto_now=True)
 
     website_name = models.TextField(default='Unknown')
     website_favicon = models.URLField(
