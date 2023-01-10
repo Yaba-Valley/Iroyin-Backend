@@ -2,79 +2,86 @@ import json
 import requests
 from django.db import IntegrityError
 from django.forms import ValidationError
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse, JsonResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News, User
 from .recommend import Machine
-from .utils import prepareDataForModel, send_email, TokenGenerator
+from .utils import send_email, TokenGenerator
+import time
 
 
 class GetNews(APIView):
-
-    permission_classes = (IsAuthenticated, )
+    
+    # permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        
-        me = request.user
+        # print(list(request.headers.keys()), '\n\n',
+        #       list(request.headers.items()), '\n\n', type(request.headers))
+        news_per_page = int(request.GET.get('news_per_page'))
+        # first value should be 1
+        page_number = int(request.GET.get('page_number'))
+
+        print(news_per_page, page_number)
+
+        if page_number < 1:
+            page_number = 1  # first value should be 1
+
+        start = (page_number - 1) * news_per_page
+        end = start + news_per_page
 
         try:
-            data = []
+            news = News.objects.order_by('-time_added')[start:end]
 
-            data_to_predict_with = prepareDataForModel(
-                data=data, newsInteracted=None)
+            # me = request.user
 
-            recommend_news = Machine(me.id).recommend(data_to_predict_with)
+            """
+            what should happen here is that the recommender system is called with the id of the user and 
+            the number of news to be returned, the model has access to the database and can get the user's 
+            news interaction history. After prediction, it should return the news most likely to be liked by the user
+            """
+
+            # news = Machine(me.id).recommend(data_to_predict_with)
 
             news_for_frontend = []
+
+            for n in list(news):
+                news_for_frontend.append(n.serialize())
+                # me.newsSeen.add(n)
+
+            # me.save()
             
-            for i in range(len(recommend_news['titles'])):
-                try:
-                    print("TITLE:", recommend_news['titles'][i])
-                    print("IMG:", recommend_news['imgs'][i])
-                    print("URL:", recommend_news['urls'][i])
-                    print("META:", recommend_news['meta'][i])
-                    
-                    
-                    # restructure the news recommend for the frontend
-                    news_for_frontend.append({'title': recommend_news['titles'][i], 'url': recommend_news['urls'][i], 'img': recommend_news['imgs'][i], 'metadata': {
-                        'website': recommend_news['meta'][i]['website'], 'favicon': recommend_news['meta'][i]['favicon']}})
-
-                    # check to see if news exists with this url
-                    existing_news = get_object_or_404(
-                        News, url=recommend_news['urls'][i])
-
-                    # add the news to the user's seen news if it already exists
-                    me.newsSeen.add(existing_news)
-
-                except Http404:
-
-                    # create a new News object and addit to the user's seen news
-                    me.newsSeen.add(News.objects.create(
-                        title=recommend_news['titles'][i], url=recommend_news[i]['urls']))
-
-            me.save()
-
-            return JsonResponse({'news': news_for_frontend})
+            # time.sleep(3)
+            
+            return JsonResponse({
+                'news': news_for_frontend,
+                'current_page': page_number,
+                'next_page': page_number + 1,
+                'per_page': news_per_page,
+                'total_pages': round(News.objects.count() / news_per_page)
+            })
 
         except Exception as e:
             print(e)
             return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
+    
+    def post(request): 
+        return 
 
 
 class Search_News(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, title):
+    def get(self, _, title):
         try:
             search_news = News.objects.filter(
                 title__contains=title).values_list('title', flat=True)
@@ -82,10 +89,11 @@ class Search_News(APIView):
             return Response({'res': list(search_news)})
         except News.DoesNotExist:
             return Response({'res': 404})
+    
 
 
 class Indicate_Interaction(APIView):
-
+    
     def post(self, request):
         request_body_unicode = request.body.decode('utf-8')
         request_body = json.loads(request_body_unicode)
@@ -102,7 +110,6 @@ class Indicate_Interaction(APIView):
 
 @csrf_exempt
 def login(request):
-
     if request.method == "POST":
 
         request_body = json.loads(request.body.decode('utf-8'))
@@ -306,6 +313,8 @@ def get_all_interests(request):
 
 
 class Save_Interests(APIView):
+
+    permission_classes = [IsAuthenticated]
     """
     This endpoint takes the id of the interests as an array and saves it to the user's profile
     """

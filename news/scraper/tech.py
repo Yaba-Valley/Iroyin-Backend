@@ -1,4 +1,3 @@
-import requests
 from bs4 import BeautifulSoup
 from .base import Scraper
 
@@ -10,7 +9,7 @@ class FreeCodeCampScraper(Scraper):
         self.title = 'FreeCodeCamp'
         self.favicon_url = 'https://cdn.freecodecamp.org/universal/favicons/favicon.ico'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'FreeCodeCamp Scraper')
 
     async def scrape(self, async_client, scraped_news):
         print(self)
@@ -38,30 +37,30 @@ class FreeCodeCampScraper(Scraper):
 
 
 class TechCrunchScraper(Scraper):
-    def __init__(self, isNigeria, isStartups):
-        
+    def __init__(self, isNigeria=True, isStartups=False):
+
         if isNigeria:
             self.url = 'https://techcrunch.com/tag/nigeria'
-        
-        if isStartups:
+        elif isStartups:
             self.url = 'https://techcrunch.com/startups'
-            
+        else:
+            self.url = "https://techcrunch.com/tag/nigeria"
+
         self.title = 'TechCrunch'
         self.favicon_url = 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png?w=60'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'TechCrunch Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self)
+        print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
-
-            news = soup.find_all('article')
+            all_articles = soup.find_all('div', {'class': 'post-block'})
 
             articles = []
 
-            for article in news:
+            for article in all_articles:
                 article_title = article.find(
                     'a', {'class': 'post-block__title__link'}).text
                 article_url = article.find(
@@ -72,28 +71,26 @@ class TechCrunchScraper(Scraper):
                     {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             scraped_news.extend(articles)
-            print(articles)
-            return articles
+            return scraped_news
 
 
 class TechTrendsAfricaScraper(Scraper):
     def __init__(self, category):
-        
         """
         category can either be 'tech-and-innovation', 'business',
         'funding', 'startups', '5g-and-the-internet-of-things', 'gadgets-apps',
         'blockchain' 
         """
-        
+
         if category:
             self.url = 'https://techtrends.africa/category/'+category
         else:
             self.url = 'https://techtrends.africa'
-            
+
         self.title = 'Tech Trends Africa'
         self.favicon_url = 'https://i0.wp.com/techtrends.africa/wp-content/uploads/2021/05/cropped-TechTrends.Africa-Logo-2.png?fit=192%2C192'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'Tech Trends Scraper')
 
     async def scrape(self, async_client, scraped_news):
         print(self)
@@ -129,6 +126,8 @@ class GizModoScraper:
         self.url = 'https://gizmodo.com/'
         self.title = 'Gizmodo'
         self.favicon_url = 'https://i.kinja-img.com/gawker-media/image/upload/h_60,w_60/fdj3buryz5nuzyf2k620.png'
+
+        Scraper.__init__(self, 'GizModo Scraper')
 
     async def scrape(self, async_client, scraped_news):
         print(self)
@@ -172,6 +171,8 @@ class TheNextWebScraper:
         self.title = 'The Next Web'
         self.favicon_url = 'https://next.tnwcdn.com/assets/img/favicon/favicon-194x194.png'
 
+        Scraper.__init__(self, 'TheNextWeb Scraper')
+
     async def scrape(self, async_client, scraped_news):
         print(self)
 
@@ -180,33 +181,36 @@ class TheNextWebScraper:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
 
-            news = soup.select('article')
+            all_articles = soup.find_all('article')
 
             try:
-                for article in news:
-                    if article.select_one('.c-card__heading') == None:
+                for article in all_articles:
+                    if ''.join(article.attrs['class']).find('c-listArticle') != -1:
                         article_title = article.select_one('h4').text.strip()
-                        article_url = self.url + article.select_one('a')['href'][1:]   
-                        article_image = article.select_one('img')['src']
+                        article_url = self.url + \
+                            article.select_one('h4').find('a')['href']
+                        article_image = article.select_one('img').attrs.get(
+                            'data-src') or article.select_one('img').attrs.get('src')
 
                         articles.append(
                             {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-                        
+
                     else:
                         article_title = article.select_one('h3').text.strip()
-                        article_url = self.url + article.select_one('a')['href']
-                        article_image = article.select_one('img')['data-src']
+                        article_url = self.url + \
+                            article.select_one('a')['href']
+                        article_image = article.select_one('img').attrs.get(
+                            'data-src') or article.select_one('img').attrs.get('src')
 
                         articles.append(
                             {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-                        
+
             except Exception as e:
                 print(e)
                 pass
 
             scraped_news.extend(articles)
-            print(articles)
-            return articles
+            return scraped_news
 
 
 class GlassDoorScraper:
@@ -214,6 +218,8 @@ class GlassDoorScraper:
         self.url = 'https://glassdoor.com'
         self.title = 'GlassDoor'
         self.favicon_url = 'https://www.glassdoor.com/favicon.ico'
+
+        Scraper.__init__(self, 'GlassDoor Scraper')
 
     async def scrape(self, async_client, scraped_news):
         articles = []
@@ -249,7 +255,7 @@ class NewsBlockScraper(Scraper):
         self.url = 'https://newblock.news/'
         self.title = 'NewsBlock'
         self.favicon_url = 'https://newblock.news/wp-content/uploads/2022/01/cropped-webicon-192x192.png'
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'NewsBlock Scraper')
 
     async def scrape(self, async_client, scraped_news):
         async with async_client.get(self.url, headers=self.headers) as response:
@@ -273,4 +279,3 @@ class NewsBlockScraper(Scraper):
             scraped_news.extend(articles)
             print(articles)
             return articles
-

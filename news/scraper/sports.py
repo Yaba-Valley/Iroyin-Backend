@@ -8,7 +8,7 @@ class VanguardScraper(Scraper):
     def __init__(self, topic='sports') -> None:
         self.url = f'https://www.vanguardngr.com/category/{topic}/'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'Vanguard Scraper')
 
     def scrape(self):
 
@@ -29,7 +29,7 @@ class PunchScraper(Scraper):
         self.website = 'Punch NG'
         self.favicon = 'https://cdn.punchng.com/wp-content/uploads/2016/06/19220759/favicon.jpg'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'Punch Scraper')
 
     async def scrape(self, async_client, scraped_news):
 
@@ -38,29 +38,35 @@ class PunchScraper(Scraper):
 
             soup = BeautifulSoup(html_text, 'html.parser')
 
-            value = soup.find_all('article', {'class': 'entry-item-simple'})
+            all_articles = soup.find_all('article')
             headlines = []
 
-            for i in value:
+            for i in all_articles:
                 try:
-                    img = i.find('img').get('src')
-                    news = i.find('h3', {'class': 'entry-title'}).text
-                    link = i.find(
-                        'h3', {'class': 'entry-title'}).find('a')['href']
+                    img = i.find('img').get('data-src')
+                    news = i.find('a').text.strip()
+                    link = i.find('a')['href']
                     headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
                                      'website': self.website, 'favicon': self.favicon}})
                 except:
-                    pass
+                    img = 'https://cdn.punchng.com/wp-content/uploads/2021/05/16175056/IMG-20210516-WA0002.jpg'
+                    news = i.find('a').text.strip()
+                    link = i.find('a')['href']
+                    headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
+                                     'website': self.website, 'favicon': self.favicon}})
 
             scraped_news.extend(headlines)
-            return headlines
+            return scraped_news
 
 
 class GoalDotComScraper(Scraper):
+
     def __init__(self) -> None:
         self.url = 'https://www.goal.com'
         self.website = 'Goal.com'
         self.favicon = 'https://www.logodesignlove.com/images/sports/goal-logo-elmwood-01.jpg'
+
+        Scraper.__init__(self, 'goal.com scraper')
 
     async def scrape(self, async_client, scraped_news):
 
@@ -91,7 +97,7 @@ class SkySportScraper(Scraper):
         self.website = 'Sky Sports'
         self.favicon = 'https://www.skysports.com/favicon.ico'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'SkySport Scraper')
 
     async def scrape(self, async_client, scraped_news):
 
@@ -114,7 +120,7 @@ class EPLScraper(Scraper):
         self.title = "Premier League"
         self.favicon = 'https://s3.amazonaws.com/premierleague-static-files/premierleague/pl_icon.png'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'EPL Scraper')
 
     async def scrape(self, async_client, scraped_news):
 
@@ -136,6 +142,8 @@ class LaLigaScraper(Scraper):
         self.url = 'https://www.laliga.com'
         self.title = 'Laliga'
         self.favicon_url = 'https://assets.laliga.com/assets/public/logos/favicon.ico'
+
+        Scraper.__init__(self, 'LaLiga Scraper')
 
     async def scrape(self, async_client, scraped_news):
 
@@ -168,7 +176,7 @@ class BundesligaScraper(Scraper):
         self.title = 'Bundesliga'
         self.favicon_url = 'https://www.bundesliga.com/assets/favicons/android-chrome-192x192.png'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'Bundesliga Scraper')
 
     async def scrape(self, async_client, scraped_news):
 
@@ -181,20 +189,28 @@ class BundesligaScraper(Scraper):
             other_news = soup.select('.topListEntry')
 
             for article in news:
-                article_title = article.find('h2').text
-                article_url = self.url + article.find('a')['href']
-                article_image = article.find('img')['src'].split('?')[0]
-
-                articles.append(
-                    {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                try:
+                    article_title = article.find('h2').text
+                    article_url = self.url + article.find('a')['href']
+                    article_image = article.find('img')['src'].split('?')[0]
+                    
+                    articles.append(
+                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                except Exception as e:
+                    print(e)
+                    pass
 
             for article in other_news:
-                article_title = article.text
-                article_url = self.url + article['href']
-                article_image = article.find('img')['src'].split('?')[0]
-
-                articles.append(
-                    {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                try:
+                    article_title = article.text
+                    article_url = self.url + article['href']
+                    article_image = article.find('img')['src'].split('?')[0]
+                    
+                    articles.append(
+                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                except Exception as e:
+                    print(e)
+                    pass
 
             scraped_news.extend(articles)
             return articles

@@ -1,47 +1,37 @@
-from .models import News, Interest
-from .utils import get_all_scrapers, fetch_news_async
-from django_cron import CronJobBase, Schedule
+from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+from news.models import News
 import asyncio
-import random
+from news.utils import fetch_news_async, get_all_scrapers
+from news.scraper import FreeCodeCampScraper
 
-class ScrapersCronJob(CronJobBase):
-    RUN_EVERY_MINS = 120 # every two hours
-    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
-    code = 'my_app.my_cron_job' # unique code to identify the particular cron task
 
-    def do(self):
+def fetch_news():
+    print('started scraping')
+    scrapers = get_all_scrapers()
 
-        print('running all the scrapers')
-        scrapers = get_all_scrapers()
-        scraped_news = []
+    scraped_news = []
 
-        # get news using all the scrapers we have
-        scraped_news = asyncio.run(fetch_news_async(scrapers, scraped_news))
-        
-        print(scraped_news)
-
-        # save the news to the database
-        for news in scraped_news:
-            try:
-                news = News.objects.get_or_create(
-                    title=news['title'], url=news['url'], img=news['img'])
-            except Exception as e:
-                print(e)
-                print(news)
-                print(
-                    f"Error while adding news to database. Skipping... {news['title']}")
-                pass
-
-        return True
+    asyncio.run(fetch_news_async(scrapers, scraped_news))
     
-    
-minute = 1
-    
-class ScrapersCronJob2(CronJobBase):
-    RUN_EVERY_MINS = 1
-    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
-    code = 'RUN EVERY MINUTE'
+    for news in scraped_news:
+        try:
+            News.objects.get_or_create(
+                title=news['title'], url=news['url'], img=news['img'], website_name=news[
+                    'metadata']['website'], website_favicon=news['metadata']['favicon']
+            )
+        except Exception as e:
+            print(e)
+            print(news)
+            print(
+                f"Error while adding news to database. Skipping {news['title']}...")
 
-    def do(self):
-        print('minute is ', minute)
-        minute+=1
+            pass
+
+    return True
+
+
+def start():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(fetch_news, 'interval', minutes=100000)
+    scheduler.start()

@@ -9,7 +9,7 @@ class GlamourScraper(Scraper):
         self.topic = topic
         self.favicon = 'https://www.glamourmagazine.co.uk/verso/static/glamour-international/assets/favicon.ico'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'Glamour Scraper')
 
     async def scrape(self, async_client, scraped_news):
         async with async_client.get(self.url+'/topic/'+self.topic, headers=self.headers) as response:
@@ -30,18 +30,20 @@ class GlamourScraper(Scraper):
 
 class PeopleScraper(Scraper):
     def __init__(self, topic='entertainment'):
-        self.url = 'https://people.com/'+topic+'/'
+        # removed the title from the url because it was causing issues
+        self.url = 'https://people.com/'
         self.title = "People.com"
         self.favicon = 'https://people.com/img/favicons/favicon-152.png'
 
-        Scraper.__init__(self)
+        Scraper.__init__(self, 'People Scraper')
 
     async def scrape(self, async_client, scraped_news):
         async with async_client.get(self.url, headers=self.headers) as response:
             articles = []
             response_text = await response.text()
             soup = BeautifulSoup(response_text, 'html.parser')
-            # print(soup)
+            
+            print(soup.find_all('div[class*="category-page-item"]'))
             for article in soup.select('div[class*="category-page-item"]'):
                 try:
                     article_title = article.find('span').text.strip()
@@ -54,4 +56,4 @@ class PeopleScraper(Scraper):
                     pass
 
             scraped_news.extend(articles)
-            return articles
+            return scraped_news
