@@ -31,7 +31,6 @@ joblib==1.1.0
 mailjet-rest==1.3.4
 Markdown==3.3.6
 multidict==6.0.2
-mysqlclient==2.1.1
 nltk==3.6.5
 numpy==1.21.4
 oauth2client==3.0.0
