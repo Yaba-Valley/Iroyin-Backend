@@ -12,7 +12,7 @@ class FreeCodeCampScraper(Scraper):
         Scraper.__init__(self, 'FreeCodeCamp Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self)
+        # print(self)
         async with async_client.get(self.url + '/news', headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -32,7 +32,7 @@ class FreeCodeCampScraper(Scraper):
                                 article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             scraped_news.extend(articles)
-            print(articles)
+            # print(articles)
             return articles
 
 
@@ -52,7 +52,7 @@ class TechCrunchScraper(Scraper):
         Scraper.__init__(self, 'TechCrunch Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self.url)
+        # print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -93,7 +93,7 @@ class TechTrendsAfricaScraper(Scraper):
         Scraper.__init__(self, 'Tech Trends Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self)
+        # print(self)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -117,7 +117,7 @@ class TechTrendsAfricaScraper(Scraper):
                     {'title': article_title.strip(), 'url': article_url, 'img': article_image.split('?')[0], 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             scraped_news.extend(articles)
-            print(articles)
+            # print(articles)
             return articles
 
 
@@ -130,7 +130,7 @@ class GizModoScraper:
         Scraper.__init__(self, 'GizModo Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self)
+        # print(self)
         async with async_client.get(self.url) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -152,11 +152,11 @@ class GizModoScraper:
                     continue
 
             scraped_news.extend(articles)
-            print(articles)
+            # print(articles)
             return articles
 
 
-class TheNextWebScraper:
+class TheNextWebScraper(Scraper):
 
     """
     categories = ['latest', 'plugged', 'neural', 'shift',
@@ -174,7 +174,7 @@ class TheNextWebScraper:
         Scraper.__init__(self, 'TheNextWeb Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self)
+        # print(self)
 
         articles = []
         async with async_client.get(self.url + self.category) as response:
@@ -206,7 +206,7 @@ class TheNextWebScraper:
                             {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             except Exception as e:
-                print(e)
+                # print(e)
                 pass
 
             scraped_news.extend(articles)
@@ -246,7 +246,7 @@ class GlassDoorScraper:
                     {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             scraped_news.extend(articles)
-            print(articles)
+            # print(articles)
             return articles
 
 
@@ -277,5 +277,5 @@ class NewsBlockScraper(Scraper):
                     pass
 
             scraped_news.extend(articles)
-            print(articles)
+            # print(articles)
             return articles

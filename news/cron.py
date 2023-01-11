@@ -3,7 +3,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from news.models import News
 import asyncio
 from news.utils import fetch_news_async, get_all_scrapers
-from news.scraper import FreeCodeCampScraper
 
 
 def fetch_news():
@@ -13,25 +12,19 @@ def fetch_news():
     scraped_news = []
 
     asyncio.run(fetch_news_async(scrapers, scraped_news))
-    
-    for news in scraped_news:
-        try:
-            News.objects.get_or_create(
-                title=news['title'], url=news['url'], img=news['img'], website_name=news[
-                    'metadata']['website'], website_favicon=news['metadata']['favicon']
-            )
-        except Exception as e:
-            print(e)
-            print(news)
-            print(
-                f"Error while adding news to database. Skipping {news['title']}...")
 
-            pass
+    news_before_db = [News(title=news['title'], url=news['url'], img=news['img'], website_name=news['metadata']
+                           ['website'], website_favicon=news['metadata']['favicon']) for news in scraped_news]
+    
+    # try:
+    News.objects.bulk_create(news_before_db, ignore_conflicts=True)
+    # except Exception as e:
+        # pass
 
     return True
 
 
 def start():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(fetch_news, 'interval', minutes=100000)
+    scheduler.add_job(fetch_news, 'interval', minutes=240)  # every four hours
     scheduler.start()

@@ -50,7 +50,7 @@ INTEREST_TO_SCRAPER_MAP = {
     ],
     "CRYPTO": [
         TheNextWebScraper(category='hardfork'),
-        NewsBlockScraper(),
+        # NewsBlockScraper(),
         TechTrendsAfricaScraper(category='blockchain')
     ],
     "HEALTH": [

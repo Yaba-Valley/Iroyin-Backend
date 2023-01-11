@@ -58,4 +58,7 @@ class TestScraper(TestCase):
     
     def test_glassdoor_scraper(self):
         run_test(self, scraper=scraper.GlassDoorScraper())
+    
+    def test_news_block_scraper(self):
+        run_test(self, scraper=scraper.NewsBlockScraper())
         

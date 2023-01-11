@@ -43,7 +43,7 @@ class PeopleScraper(Scraper):
             response_text = await response.text()
             soup = BeautifulSoup(response_text, 'html.parser')
             
-            print(soup.find_all('div[class*="category-page-item"]'))
+            # print(soup.find_all('div[class*="category-page-item"]'))
             for article in soup.select('div[class*="category-page-item"]'):
                 try:
                     article_title = article.find('span').text.strip()
