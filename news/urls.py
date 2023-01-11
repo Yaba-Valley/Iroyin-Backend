@@ -15,5 +15,5 @@ urlpatterns = [
     path('news/search/<str:title>', views.Search_News.as_view(), name = 'search for news'),
     
     #STATICS
-    path('interests/all/', views.get_all_interests, name = 'get all interests'),
+    path('interests/all', views.get_all_interests, name = 'get all interests'),
 ]

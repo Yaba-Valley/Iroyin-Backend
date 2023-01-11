@@ -28,9 +28,10 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com']
 
 # Application definition
 
@@ -85,15 +86,15 @@ AUTH_USER_MODEL = 'authentication.User'
 
 # TODO: The value of database should depend on the environment it's working in
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': env('DBNAME'),
-            'USER': env('DBUSER'),
-            'PASSWORD': env('DBPASS'),
-            'HOST': env('DBHOST'),
-            'PORT': env('DBPORT'),
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('DBNAME'),
+        'USER': env('DBUSER'),
+        'PASSWORD': env('DBPASS'),
+        'HOST': env('DBHOST'),
+        'PORT': env('DBPORT'),
     }
+}
 
 
 # Password validation
