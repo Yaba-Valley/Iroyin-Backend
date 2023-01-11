@@ -1,4 +1,6 @@
 branch-defaults:
+  dev:
+    environment: iroyin-backend-env
   main:
     environment: iroyin-backend-env
     group_suffix: null

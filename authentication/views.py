@@ -34,7 +34,8 @@ def login(request):
                     # generate a token
                     site = get_current_site(request).__str__()
                     res = requests.post(
-                        f"http://{site}/auth/api/token/", {'email': email, 'password': password})
+                        f"http://iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com/auth/api/token/", {'email': email, 'password': password})
+                    
 
                     # if the token was generated successfully
                     if res.status_code == 200:
