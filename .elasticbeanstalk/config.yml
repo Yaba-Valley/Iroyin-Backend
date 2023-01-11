@@ -1,9 +1,13 @@
 branch-defaults:
   main:
-    environment: django-env
+    environment: iroyin-backend-env
     group_suffix: null
+environment-defaults:
+  Iroyinbackend-env:
+    branch: null
+    repository: null
 global:
-  application_name: iroyin-backend
+  application_name: iroyin-backend2
   branch: null
   default_ec2_keyname: iroyin-keypair
   default_platform: Python 3.8
