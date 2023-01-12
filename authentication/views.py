@@ -1,6 +1,4 @@
-import logging
 import json
-import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
@@ -17,9 +15,6 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-# Create your views here.
-logger = logging.getLogger(__name__)
-
 @csrf_exempt
 def login(request):
     if request.method == "POST":
@@ -32,11 +27,11 @@ def login(request):
                 user = get_object_or_404(User, email=email)
 
                 if user.check_password(password):
-                    
+
                     # if the token was generated successfully
                     if user.is_active:
                         token = RefreshToken.for_user(user)
-                        
+
                         return JsonResponse(
                             {
                                 'message': 'You have successfully logged in',

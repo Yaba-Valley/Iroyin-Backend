@@ -211,3 +211,15 @@ Looking for jobs to run
 Next wakeup is due at 2023-01-12 17:08:53.751076+00:00 (in 14399.999498 seconds)
 Watching for file changes with StatReloader
 Not Found: /auth/login/
+Adding job tentatively -- it will be properly scheduled when the scheduler starts
+Added job "fetch_news" to job store "default"
+Scheduler started
+Looking for jobs to run
+Next wakeup is due at 2023-01-12 17:12:41.029244+00:00 (in 14399.998178 seconds)
+Adding job tentatively -- it will be properly scheduled when the scheduler starts
+Added job "fetch_news" to job store "default"
+Scheduler started
+Looking for jobs to run
+Next wakeup is due at 2023-01-12 17:12:41.531557+00:00 (in 14399.999527 seconds)
+Watching for file changes with StatReloader
+/Users/macbookpro/Documents/personal/iroyin-backend/Iroyin/settings.py changed, reloading.
