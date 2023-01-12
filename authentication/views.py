@@ -1,3 +1,4 @@
+import logging
 import json
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -16,11 +17,11 @@ from rest_framework.views import APIView
 
 
 # Create your views here.
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def login(request):
     if request.method == "POST":
-
         request_body = json.loads(request.body.decode('utf-8'))
         email = request_body['email'].strip()
         password = request_body['password'].strip()
@@ -32,14 +33,16 @@ def login(request):
                 if user.check_password(password):
 
                     # generate a token
-                    site = get_current_site(request).__str__()
-                    res = requests.post(
-                        f"http://iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com/auth/api/token/", {'email': email, 'password': password})
+                    # site = get_current_site(request).__str__()
+                    res = requests.post(f"http://iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com/auth/api/token/", {'email': email, 'password': password})
                     
+                    logger.debug(res.status_code)
+                    logger.debug(str(res.json()))
 
                     # if the token was generated successfully
                     if res.status_code == 200:
                         token_response = res.json()
+                        logger.debug('got the token')
                         return JsonResponse(
                             {
                                 'message': 'You have successfully logged in',

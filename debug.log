@@ -1,0 +1,5 @@
+Starting new HTTP connection (1): iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com:80
+http://iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com:80 "POST /auth/api/token/ HTTP/1.1" 200 483
+200
+{'refresh': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3MzYwNDI4NSwiaWF0IjoxNjczNTE3ODg1LCJqdGkiOiI5NGJhOWRiMWMyODM0ZjBmYjk4NjgxNDA2NWExMGJjMiIsInVzZXJfaWQiOjF9.XQuUpXyJmSskwzZLeG97xdndegcIiI7CBIssvNqdhak', 'access': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjczNjA0Mjg1LCJpYXQiOjE2NzM1MTc4ODUsImp0aSI6ImNmYTdhMGJhZTI2YjRhMGM5YTVkZjk3YWEwZDI0YTM5IiwidXNlcl9pZCI6MX0.FUQgopgXdM0zgIYs3poZIoEUZVokzLvGxKfvkNSw4zY'}
+got the token
