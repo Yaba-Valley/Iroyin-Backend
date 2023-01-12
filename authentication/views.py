@@ -14,6 +14,7 @@ from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode
 from .models import User
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # Create your views here.
@@ -31,24 +32,17 @@ def login(request):
                 user = get_object_or_404(User, email=email)
 
                 if user.check_password(password):
-
-                    # generate a token
-                    # site = get_current_site(request).__str__()
-                    res = requests.post(f"http://iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com/auth/api/token/", {'email': email, 'password': password})
                     
-                    logger.debug(res.status_code)
-                    logger.debug(str(res.json()))
-
                     # if the token was generated successfully
-                    if res.status_code == 200:
-                        token_response = res.json()
-                        logger.debug('got the token')
+                    if user.is_active:
+                        token = RefreshToken.for_user(user)
+                        
                         return JsonResponse(
                             {
                                 'message': 'You have successfully logged in',
                                 'success': True,
                                 'data': {
-                                    'token': token_response['access'],
+                                    'token': str(token.access_token),
                                     'email': user.email,
                                     'first_name': user.first_name,
                                     'last_name': user.last_name,
@@ -61,7 +55,6 @@ def login(request):
 
                         res = TokenGenerator().send_account_activation_mail(request, user)
 
-                        # failure to generate token is mostly a result of user not been activated
                         return JsonResponse(
                             {
                                 'success': False,
