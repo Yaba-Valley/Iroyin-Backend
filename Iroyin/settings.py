@@ -151,3 +151,4 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'UPDATE_LAST_LOGIN': True
 }
+
