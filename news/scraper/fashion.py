@@ -29,9 +29,13 @@ class GlamourScraper(Scraper):
 
 
 class PeopleScraper(Scraper):
-    def __init__(self, topic='entertainment'):
-        # removed the title from the url because it was causing issues
-        self.url = 'https://people.com/'
+    def __init__(self, topic=False):
+
+        if topic:
+            self.url = f"https://people.com/{topic}"
+        else:
+            self.url = 'https://people.com/tag/news'
+
         self.title = "People.com"
         self.favicon = 'https://people.com/img/favicons/favicon-152.png'
 
@@ -42,18 +46,18 @@ class PeopleScraper(Scraper):
             articles = []
             response_text = await response.text()
             soup = BeautifulSoup(response_text, 'html.parser')
-            
-            # print(soup.find_all('div[class*="category-page-item"]'))
-            for article in soup.select('div[class*="category-page-item"]'):
-                try:
-                    article_title = article.find('span').text.strip()
 
-                    article_image = article.find('img')['src']
-                    article_url = article.find('a')['href']
+            for article in soup.find_all("a", class_="mntl-document-card"):
+                try:
+                    article_title = article.find(
+                        'span', class_='card__title-text').text
+                    article_image = article.find('img').get('src')
+                    article_url = article['href']
+
                     articles.append(
                         {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
 
             scraped_news.extend(articles)
             return scraped_news

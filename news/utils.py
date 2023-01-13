@@ -54,7 +54,7 @@ async def fetch_news_async(scrapers, news=[]):
             tasks.append(task)
 
         await asyncio.gather(*tasks)
-        
+
         # print('TIME TAKEN:', math.floor(time.time() - start_time), 's')
 
         return news
@@ -63,8 +63,15 @@ async def fetch_news_async(scrapers, news=[]):
 def get_all_scrapers():
 
     scrapers = []
-    
+
     for scraper in INTEREST_TO_SCRAPER_MAP.values():
         scrapers.extend(scraper)
 
     return scrapers
+
+
+def test_scraper(scraper):
+    news = []
+    asyncio.run(fetch_news_async(scrapers=[scraper], news=news))
+
+    return news
