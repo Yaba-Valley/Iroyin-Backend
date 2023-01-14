@@ -51,7 +51,8 @@ class PeopleScraper(Scraper):
                 try:
                     article_title = article.find(
                         'span', class_='card__title-text').text
-                    article_image = article.find('img').get('src')
+                    print(article.find('img'))
+                    article_image = article.find('img')['data-src']
                     article_url = article['href']
 
                     articles.append(
