@@ -78,7 +78,7 @@ class GoalDotComScraper(Scraper):
 
             for i in value:
                 try:
-                    img = i.find('img').get('src')
+                    img = i.find('img').get('src').split('?')[0]
                     news = i.find(
                         'h3', {'class': 'widget-news-card__title'})['title']
                     link = self.url+i.find('a')['href']
