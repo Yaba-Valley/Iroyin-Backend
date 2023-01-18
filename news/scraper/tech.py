@@ -45,7 +45,7 @@ class TechCrunchScraper(Scraper):
         elif isStartups:
             self.url = 'https://techcrunch.com/startups'
         else:
-            self.url = "https://techcrunch.com/tag/nigeria"
+            self.url = "https://techcrunch.com/category/cryptocurrency/"
 
         self.title = 'TechCrunch'
         self.favicon_url = 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png?w=60'
