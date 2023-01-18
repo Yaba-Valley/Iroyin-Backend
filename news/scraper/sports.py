@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from .base import Scraper
+from markdownify import markdownify as md
 
 
 class VanguardScraper(Scraper):
@@ -88,6 +89,15 @@ class GoalDotComScraper(Scraper):
 
             scraped_news.extend(headlines)
             return headlines
+    
+    def scrape_news_content(self, url):
+        response_text = requests.get(url).text
+        soup = BeautifulSoup(response_text, 'html.parser')
+        
+        text_content = soup.find('div', class_ = 'article_content__XFYIz')
+        
+        return md(str(text_content));
+        
 
 
 class SkySportScraper(Scraper):

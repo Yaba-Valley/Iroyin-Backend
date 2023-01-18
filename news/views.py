@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
 from news.scraper.tech import TechCrunchScraper
+from news.scraper.sports import GoalDotComScraper
+from news.scraper.fashion import PeopleScraper
 
 
 class GetNews(APIView):
@@ -111,15 +113,21 @@ class Get_News_Content(APIView):
     def get(self, request):
         url = request.GET.get('url')
         news = News.objects.get(url = url)
+        text_content = news.text_content
         
-        if news.text_content == '':
+        if text_content == '':
             if news.website_name == 'TechCrunch':
-                text = TechCrunchScraper().scrape_news_content(url = url)
-                news.text_content = text
+                text_content = TechCrunchScraper().scrape_news_content(url = url)
+            elif news.website_name == 'Goal.com':
+                text_content = GoalDotComScraper().scrape_news_content(url = url)
+            elif news.website_name == 'People.com':
+                text_content = PeopleScraper().scrape_news_content(url = url)
                 
         news.read_count+=1
+        news.text_content = text_content
         news.save()
-        return JsonResponse({ 'text': news.text_content, 'status': 200 })
+        
+        return JsonResponse({ 'text': text_content, 'status': 200 })
 
 
 class Save_Interests(APIView):

@@ -1,5 +1,8 @@
 from bs4 import BeautifulSoup
 from .base import Scraper
+import requests
+from bs4 import BeautifulSoup
+from markdownify import markdownify as md
 
 
 class GlamourScraper(Scraper):
@@ -62,3 +65,10 @@ class PeopleScraper(Scraper):
 
             scraped_news.extend(articles)
             return scraped_news
+
+    def scrape_news_content(self, url):
+        res_text = requests.get(url).text
+        soup = BeautifulSoup(res_text, 'html.parser')
+        text_content = soup.find('div', class_ = 'article-content')
+        
+        return md(str(text_content))

@@ -81,7 +81,7 @@ class TechCrunchScraper(Scraper):
         featured_img = soup.find('img', class_ = 'article__featured-image');
         article_content = soup.find('div', class_ = 'article-content')
         
-        return md(str(featured_img) + str(article_content))
+        return md(str(featured_img) + str(article_content))        
 
 
 
