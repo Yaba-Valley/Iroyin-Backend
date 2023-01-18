@@ -1,4 +1,3 @@
-from urllib import response
 import requests
 from bs4 import BeautifulSoup
 from .base import Scraper
@@ -150,6 +149,7 @@ class LaLigaScraper(Scraper):
         async with async_client.get(self.url + '/en-ES/news') as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
+
             news = soup.find_all(
                 'div', {'class': 'styled__ImageContainer-sc-1si1tif-0'})
 
@@ -193,7 +193,7 @@ class BundesligaScraper(Scraper):
                     article_title = article.find('h2').text
                     article_url = self.url + article.find('a')['href']
                     article_image = article.find('img')['src'].split('?')[0]
-                    
+
                     articles.append(
                         {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
                 except Exception as e:
@@ -205,7 +205,7 @@ class BundesligaScraper(Scraper):
                     article_title = article.text
                     article_url = self.url + article['href']
                     article_image = article.find('img')['src'].split('?')[0]
-                    
+
                     articles.append(
                         {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
                 except Exception as e:
