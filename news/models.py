@@ -15,6 +15,7 @@ class News(models.Model):
     read_count = models.BigIntegerField(default=0)
     categories = models.ManyToManyField(to=Interest)
     time_added = models.DateTimeField(auto_now=True)
+    text_content = models.TextField(default = '')
 
     website_name = models.TextField(default='Unknown')
     website_favicon = models.URLField(

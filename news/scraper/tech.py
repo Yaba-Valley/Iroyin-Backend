@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from .base import Scraper
-
+import requests
+from markdownify import markdownify as md
 
 class FreeCodeCampScraper(Scraper):
 
@@ -72,6 +73,16 @@ class TechCrunchScraper(Scraper):
 
             scraped_news.extend(articles)
             return scraped_news
+        
+    def scrape_news_content(self, url):
+        response_text = requests.get(url, headers = self.headers).text;
+        soup = BeautifulSoup(response_text, 'html.parser')
+        
+        featured_img = soup.find('img', class_ = 'article__featured-image');
+        article_content = soup.find('div', class_ = 'article-content')
+        
+        return md(str(featured_img) + str(article_content))
+
 
 
 class TechTrendsAfricaScraper(Scraper):

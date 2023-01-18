@@ -193,3 +193,4 @@ class Activate_Account(APIView):
             return HttpResponse("Guy how far, this person no dey our databse")
         except DjangoUnicodeDecodeError:
             return HttpResponse('I catch you, couldn\'t decode this unicode')
+

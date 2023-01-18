@@ -13,6 +13,7 @@ urlpatterns = [
     path('news/get_news/', views.GetNews.as_view(), name='index route'),
     path('news/indicate_interaction/', views.Indicate_Interaction.as_view(), name='indicate news interaction'),
     path('news/search/<str:title>', views.Search_News.as_view(), name = 'search for news'),
+    path('news/get-content', views.Get_News_Content.as_view(), name = 'get news content'),
     
     #STATICS
     path('interests/all', views.get_all_interests, name = 'get all interests'),

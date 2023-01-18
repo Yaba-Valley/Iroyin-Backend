@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
+from news.scraper.tech import TechCrunchScraper
 
 
 class GetNews(APIView):
@@ -104,6 +105,21 @@ def get_all_interests(request):
         return JsonResponse({'success': True, 'data': interest_names, 'message': "Successfully retrieved interests"}, status=200)
     except Exception as e:
         return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
+
+
+class Get_News_Content(APIView):
+    def get(self, request):
+        url = request.GET.get('url')
+        news = News.objects.get(url = url)
+        
+        if news.text_content == '':
+            if news.website_name == 'TechCrunch':
+                text = TechCrunchScraper().scrape_news_content(url = url)
+                news.text_content = text
+                
+        news.read_count+=1
+        news.save()
+        return JsonResponse({ 'text': news.text_content, 'status': 200 })
 
 
 class Save_Interests(APIView):
