@@ -260,6 +260,13 @@ class GlassDoorScraper:
             # print(articles)
             return articles
 
+    def scrape_news_content(self, url):
+        response_text = requests.get(url).text
+        soup = BeautifulSoup(response_text)
+        article =soup.find('article', class_ = 'article css-avgnsc css-vtrr42')
+        return md(str(article))
+        
+
 
 class NewsBlockScraper(Scraper):
     def __init__(self):

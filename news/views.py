@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
-from news.scraper.tech import TechCrunchScraper
+from news.scraper.tech import TechCrunchScraper, GlassDoorScraper
 from news.scraper.sports import GoalDotComScraper
 from news.scraper.fashion import PeopleScraper
 
@@ -122,7 +122,9 @@ class Get_News_Content(APIView):
                 text_content = GoalDotComScraper().scrape_news_content(url = url)
             elif news.website_name == 'People.com':
                 text_content = PeopleScraper().scrape_news_content(url = url)
-                
+            elif news.website_name == 'GlassDoor':
+                text_content = GlassDoorScraper().scrape_news_content(url = url)
+            
         news.read_count+=1
         news.text_content = text_content
         news.save()
