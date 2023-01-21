@@ -151,6 +151,13 @@ class EPLScraper(Scraper):
 
             scraped_news.extend(headlines)
             return headlines
+    
+    def scrape_news_content(self, url):
+        res_text = requests.get(url = url).text
+        soup = BeautifulSoup(res_text, 'html.parser')
+        
+        article_content = soup.find('section', class_ = 'standardArticle')
+        return md(str(article_content))
 
 
 class LaLigaScraper(Scraper):
