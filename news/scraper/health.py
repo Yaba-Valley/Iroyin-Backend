@@ -20,7 +20,12 @@ class VeryWellMindScraper(Scraper):
             for article in soup.select('.mntl-document-card'):
 
                 article_title = article.select_one('.card__title-text').text
-                article_image = article.find('img') or ''
+                image = article.find('img');
+                article_image = ''
+                
+                if image:
+                    article_image = image.attrs['data-src']
+                    
                 article_url = article['href']
 
                 articles.append({'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {
