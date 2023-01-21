@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
 from news.scraper.tech import TechCrunchScraper, GlassDoorScraper
-from news.scraper.sports import GoalDotComScraper
+from news.scraper.sports import GoalDotComScraper, SkySportScraper
 from news.scraper.fashion import PeopleScraper
 from news.scraper.health import VeryWellMindScraper
 

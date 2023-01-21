@@ -89,15 +89,14 @@ class GoalDotComScraper(Scraper):
 
             scraped_news.extend(headlines)
             return headlines
-    
+
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
         soup = BeautifulSoup(response_text, 'html.parser')
-        
-        text_content = soup.find('div', class_ = 'article_content__XFYIz')
-        
-        return md(str(text_content));
-        
+
+        text_content = soup.find('div', class_='article_content__XFYIz')
+
+        return md(str(text_content))
 
 
 class SkySportScraper(Scraper):
@@ -121,6 +120,15 @@ class SkySportScraper(Scraper):
 
             scraped_news.extend(headlines)
             return headlines
+
+    def scrape_news_content(self, url):
+        res_text = requests.get(url=url).text
+        soup = BeautifulSoup(res_text, 'html.parser')
+
+        article_content = soup.find(
+            'div', class_='sdc-article-body sdc-article-body--lead')
+        
+        return md(str(article_content))
 
 
 class EPLScraper(Scraper):
