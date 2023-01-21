@@ -10,6 +10,7 @@ from .recommend import Machine
 from news.scraper.tech import TechCrunchScraper, GlassDoorScraper
 from news.scraper.sports import GoalDotComScraper
 from news.scraper.fashion import PeopleScraper
+from news.scraper.health import VeryWellMindScraper
 
 
 class GetNews(APIView):
@@ -124,6 +125,8 @@ class Get_News_Content(APIView):
                 text_content = PeopleScraper().scrape_news_content(url = url)
             elif news.website_name == 'GlassDoor':
                 text_content = GlassDoorScraper().scrape_news_content(url = url)
+            elif news.website_name == 'VeryWellMind':
+                text_content = VeryWellMindScraper().scrape_news_content(url = url)
             
         news.read_count+=1
         news.text_content = text_content
