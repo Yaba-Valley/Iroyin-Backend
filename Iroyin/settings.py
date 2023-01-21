@@ -28,7 +28,7 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com', 'localhost']
@@ -84,7 +84,6 @@ WSGI_APPLICATION = 'Iroyin.wsgi.application'
 
 AUTH_USER_MODEL = 'authentication.User'
 
-# TODO: The value of database should depend on the environment it's working in
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -96,6 +95,13 @@ DATABASES = {
     }
 }
 
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3'
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

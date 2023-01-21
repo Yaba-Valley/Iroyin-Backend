@@ -2,7 +2,7 @@ from re import T
 from news.scraper.fashion import GlamourScraper, PeopleScraper
 from news.scraper.health import VeryWellMindScraper
 from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
-from news.scraper.tech import GlassDoorScraper, NewsBlockScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper
+from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper
 
 
 INTEREST_TO_SCRAPER_MAP = {
