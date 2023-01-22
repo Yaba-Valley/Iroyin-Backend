@@ -222,10 +222,10 @@ def verify_token(request):
                 }, status=200
             )
         else:
-            return JsonResponse({'message': 'Authorization header not set properly', 'success': False})
+            return JsonResponse({'message': 'Authorization header not set properly', 'success': False}, status = 400)
     except Http404:
-        return JsonResponse({'message': 'Could not find user associated with token', 'success': False}, status=404)
+        return JsonResponse({'message': 'Could not find user associated with token', 'success': False}, status=400)
     except TokenError:
-        return JsonResponse({'message': 'Invalid Token - Expired or Invalid', 'success': False}, status=401)
+        return JsonResponse({'message': 'Invalid Token - Expired or Invalid', 'success': False}, status=400)
     except Exception as e:
         return JsonResponse({'message': 'Authorization header not set properly', 'success': False}, status=400)
