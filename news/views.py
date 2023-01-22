@@ -77,8 +77,8 @@ class Search_News(APIView):
 
     def get(self, _, title):
         try:
-            search_news = News.objects.filter(
-                title__contains=title).values_list('title', flat=True)
+            search_news = [news.serialize() for news in News.objects.filter(
+                title__contains=title)]
 
             return Response({'res': list(search_news)})
         except News.DoesNotExist:
@@ -113,30 +113,30 @@ def get_all_interests(request):
 class Get_News_Content(APIView):
     def get(self, request):
         url = request.GET.get('url')
-        news = News.objects.get(url = url)
+        news = News.objects.get(url=url)
         text_content = news.text_content
-        
+
         if text_content == '':
             if news.website_name == 'TechCrunch':
-                text_content = TechCrunchScraper().scrape_news_content(url = url)
+                text_content = TechCrunchScraper().scrape_news_content(url=url)
             elif news.website_name == 'Goal.com':
-                text_content = GoalDotComScraper().scrape_news_content(url = url)
+                text_content = GoalDotComScraper().scrape_news_content(url=url)
             elif news.website_name == 'People.com':
-                text_content = PeopleScraper().scrape_news_content(url = url)
+                text_content = PeopleScraper().scrape_news_content(url=url)
             elif news.website_name == 'GlassDoor':
-                text_content = GlassDoorScraper().scrape_news_content(url = url)
+                text_content = GlassDoorScraper().scrape_news_content(url=url)
             elif news.website_name == 'VeryWellMind':
-                text_content = VeryWellMindScraper().scrape_news_content(url = url)
+                text_content = VeryWellMindScraper().scrape_news_content(url=url)
             elif news.website_name == 'Sky Sports':
-                text_content = SkySportScraper().scrape_news_content(url = url)
+                text_content = SkySportScraper().scrape_news_content(url=url)
             elif news.website_favicon == 'Premier League':
-                text_content = EPLScraper().scrape_news_content(url = url)
-            
-        news.read_count+=1
+                text_content = EPLScraper().scrape_news_content(url=url)
+
+        news.read_count += 1
         news.text_content = text_content
         news.save()
-        
-        return JsonResponse({ 'text': text_content, 'status': 200 })
+
+        return JsonResponse({'text': text_content, 'status': 200})
 
 
 class Save_Interests(APIView):

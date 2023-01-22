@@ -28,10 +28,10 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
-    'iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com', 'localhost']
+    'iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com', 'localhost', '.eu.ngrok.io']
 
 # Application definition
 
@@ -154,7 +154,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'UPDATE_LAST_LOGIN': True
 }
 

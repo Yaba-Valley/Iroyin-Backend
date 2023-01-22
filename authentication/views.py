@@ -12,7 +12,7 @@ from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode
 from .models import User
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, TokenError
 
 
 @csrf_exempt
@@ -30,14 +30,14 @@ def login(request):
 
                     # if the token was generated successfully
                     if user.is_active:
-                        token = RefreshToken.for_user(user)
+                        token = AccessToken.for_user(user)
 
                         return JsonResponse(
                             {
                                 'message': 'You have successfully logged in',
                                 'success': True,
                                 'data': {
-                                    'token': str(token.access_token),
+                                    'token': str(token),
                                     'email': user.email,
                                     'first_name': user.first_name,
                                     'last_name': user.last_name,
@@ -194,3 +194,38 @@ class Activate_Account(APIView):
         except DjangoUnicodeDecodeError:
             return HttpResponse('I catch you, couldn\'t decode this unicode')
 
+
+def verify_token(request):
+    token = request.GET.get('token')
+
+    try:
+        if token:
+            access_token = AccessToken(token)
+            print(token)
+            user = get_object_or_404(
+                User, id=access_token.payload['user_id'])
+
+            print(user)
+
+            return JsonResponse(
+                {
+                    'message': 'Token Verified',
+                    'success': True,
+                    'data': {
+                        'token': str(token),
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'last_login': user.last_login,
+                        'hasSetInterests': user.interests.count() > 0
+                    }
+                }, status=200
+            )
+        else:
+            return JsonResponse({'message': 'Authorization header not set properly', 'success': False})
+    except Http404:
+        return JsonResponse({'message': 'Could not find user associated with token', 'success': False}, status=404)
+    except TokenError:
+        return JsonResponse({'message': 'Invalid Token - Expired or Invalid', 'success': False}, status=401)
+    except Exception as e:
+        return JsonResponse({'message': 'Authorization header not set properly', 'success': False}, status=400)
