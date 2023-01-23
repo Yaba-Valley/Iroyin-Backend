@@ -77,17 +77,21 @@ class Search_News(APIView):
 
     def get(self, request):
         title = request.GET.get('title')
-        try:
-            title_qs = News.objects.filter(title__icontains=title)
-            website_name_qs = News.objects.filter(
-                website_name__icontains=title)
-            union_qs = title_qs.union(website_name_qs)[0:10]
 
-            search_news = [news.serialize() for news in union_qs]
+        if (title == ''):
+            return Response({'res': []}, status=200)
+        else:
+            try:
+                title_qs = News.objects.filter(title__icontains=title)
+                website_name_qs = News.objects.filter(
+                    website_name__icontains=title)
+                union_qs = title_qs.union(website_name_qs)[0:10]
 
-            return Response({'res': list(search_news)})
-        except News.DoesNotExist:
-            return Response({'res': 404})
+                search_news = [news.serialize() for news in union_qs]
+
+                return Response({'res': list(search_news)})
+            except News.DoesNotExist:
+                return Response({'res': 404})
 
 
 class Indicate_Interaction(APIView):
@@ -141,7 +145,7 @@ class Get_News_Content(APIView):
             elif news.website_name == 'Tech Trends Africa':
                 text_content = TechTrendsAfricaScraper().scrape_news_content(url=url)
             elif news.website_name == 'FreeCodeCamp':
-                text_content = FreeCodeCampScraper().scrape_news_content(url = url)
+                text_content = FreeCodeCampScraper().scrape_news_content(url=url)
 
         news.read_count += 1
         if not text_content == 'None':
