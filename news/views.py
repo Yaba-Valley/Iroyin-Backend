@@ -75,10 +75,14 @@ class Search_News(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, _, title):
+    def get(self, request):
+        title = request.GET.get('title')
         try:
-            search_news = [news.serialize() for news in News.objects.filter(
-                title__contains=title)]
+            title_qs = News.objects.filter(title__icontains=title)
+            website_name_qs = News.objects.filter(website_name__icontains=title)
+            union_qs = title_qs.union(website_name_qs)
+            
+            search_news = [news.serialize() for news in union_qs]
 
             return Response({'res': list(search_news)})
         except News.DoesNotExist:
