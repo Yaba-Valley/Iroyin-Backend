@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import math
 import time
 from functools import wraps
 from asyncio.proactor_events import _ProactorBasePipeTransport
@@ -54,8 +55,7 @@ async def fetch_news_async(scrapers, news=[]):
             tasks.append(task)
 
         await asyncio.gather(*tasks)
-
-        # print('TIME TAKEN:', math.floor(time.time() - start_time), 's')
+        print('TIME TAKEN:', math.floor(time.time() - start_time))
 
         return news
 

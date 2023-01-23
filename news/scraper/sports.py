@@ -35,11 +35,12 @@ class PunchScraper(Scraper):
 
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
-
             soup = BeautifulSoup(html_text, 'html.parser')
-
+            
             all_articles = soup.find_all('article')
             headlines = []
+            
+            print(len(all_articles))
 
             for i in all_articles:
                 try:
@@ -52,8 +53,13 @@ class PunchScraper(Scraper):
                     img = 'https://cdn.punchng.com/wp-content/uploads/2021/05/16175056/IMG-20210516-WA0002.jpg'
                     news = i.find('a').text.strip()
                     link = i.find('a')['href']
+                    
+                    print(img, news, link, self.url)
                     headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
                                      'website': self.website, 'favicon': self.favicon}})
+                
+                    
+                    
 
             scraped_news.extend(headlines)
             return scraped_news

@@ -18,7 +18,7 @@ class TestScraper(TestCase):
         run_test(self, scraper.PeopleScraper('entertainment'))
     
     def test_punch_scraper(self):
-        run_test(self, scraper.PunchScraper('sports'))
+        run_test(self, scraper.PunchScraper('business'))
         
     def test_very_well_mind_scraper(self):
         run_test(self, scraper=scraper.VeryWellMindScraper())

@@ -8,10 +8,12 @@ from news.utils import fetch_news_async, get_all_scrapers
 def fetch_news():
     print('started scraping')
     scrapers = get_all_scrapers()
-
+    
     scraped_news = []
 
     asyncio.run(fetch_news_async(scrapers, scraped_news))
+    
+    print(scraped_news)
 
     news_before_db = [News(title=news['title'], url=news['url'], img=news['img'], website_name=news['metadata']
                            ['website'], website_favicon=news['metadata']['favicon']) for news in scraped_news]
