@@ -81,7 +81,7 @@ class Search_News(APIView):
             title_qs = News.objects.filter(title__icontains=title)
             website_name_qs = News.objects.filter(
                 website_name__icontains=title)
-            union_qs = title_qs.union(website_name_qs)
+            union_qs = title_qs.union(website_name_qs)[0:10]
 
             search_news = [news.serialize() for news in union_qs]
 
