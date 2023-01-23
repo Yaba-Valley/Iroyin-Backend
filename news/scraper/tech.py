@@ -35,7 +35,14 @@ class FreeCodeCampScraper(Scraper):
             scraped_news.extend(articles)
             # print(articles)
             return articles
-
+        
+    
+    def scrape_news_content(self, url):
+        res_text = requests.get(url = url).text;
+        soup = BeautifulSoup(res_text, 'html.parser')
+        article_content = soup.find('section', class_ = 'post-content')
+        
+        return md(str(article_content))
 
 class TechCrunchScraper(Scraper):
     def __init__(self, isNigeria=True, isStartups=False):
