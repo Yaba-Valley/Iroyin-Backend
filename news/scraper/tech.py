@@ -222,6 +222,18 @@ class TheNextWebScraper(Scraper):
 
             scraped_news.extend(articles)
             return scraped_news
+        
+    def scrape_news_content(self, url):
+        response_text = requests.get(url = url).text
+        soup = BeautifulSoup(response_text, 'html.parser')
+        
+        print(soup)
+        
+        article_content = soup.find('main', class_ = 'c-article__main max-lg:mb-xxl')
+        
+        print(str(article_content))
+        
+        return md(str(article_content))
 
 
 class GlassDoorScraper:

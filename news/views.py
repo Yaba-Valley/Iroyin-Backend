@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
-from news.scraper.tech import TechCrunchScraper, GlassDoorScraper
+from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from news.scraper.fashion import PeopleScraper
 from news.scraper.health import VeryWellMindScraper
@@ -79,9 +79,10 @@ class Search_News(APIView):
         title = request.GET.get('title')
         try:
             title_qs = News.objects.filter(title__icontains=title)
-            website_name_qs = News.objects.filter(website_name__icontains=title)
+            website_name_qs = News.objects.filter(
+                website_name__icontains=title)
             union_qs = title_qs.union(website_name_qs)
-            
+
             search_news = [news.serialize() for news in union_qs]
 
             return Response({'res': list(search_news)})
@@ -120,7 +121,7 @@ class Get_News_Content(APIView):
         news = News.objects.get(url=url)
         text_content = news.text_content
 
-        if text_content == '':
+        if text_content == '' or text_content == 'None':
             if news.website_name == 'TechCrunch':
                 text_content = TechCrunchScraper().scrape_news_content(url=url)
             elif news.website_name == 'Goal.com':
@@ -133,14 +134,19 @@ class Get_News_Content(APIView):
                 text_content = VeryWellMindScraper().scrape_news_content(url=url)
             elif news.website_name == 'Sky Sports':
                 text_content = SkySportScraper().scrape_news_content(url=url)
-            elif news.website_favicon == 'Premier League':
+            elif news.website_name == 'Premier League':
                 text_content = EPLScraper().scrape_news_content(url=url)
+            elif news.website_name == 'The Next Web':
+                text_content = TheNextWebScraper().scrape_news_content(url=url)
 
         news.read_count += 1
-        news.text_content = text_content
-        news.save()
+        if not text_content == 'None':
+            news.text_content = text_content
+            news.save()
 
-        return JsonResponse({'text': text_content, 'status': 200})
+            return JsonResponse({'text': text_content, 'status': 200})
+        else:
+            return JsonResponse({'text': None, 'status': 400, 'message': 'Unable to retrieve web content'}, status=400)
 
 
 class Save_Interests(APIView):
