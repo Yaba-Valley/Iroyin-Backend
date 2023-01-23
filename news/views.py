@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
-from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper
+from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from news.scraper.fashion import PeopleScraper
 from news.scraper.health import VeryWellMindScraper
@@ -138,6 +138,8 @@ class Get_News_Content(APIView):
                 text_content = EPLScraper().scrape_news_content(url=url)
             elif news.website_name == 'The Next Web':
                 text_content = TheNextWebScraper().scrape_news_content(url=url)
+            elif news.website_name == 'Tech Trends Africa':
+                text_content = TechTrendsAfricaScraper().scrape_news_content(url=url)
 
         news.read_count += 1
         if not text_content == 'None':

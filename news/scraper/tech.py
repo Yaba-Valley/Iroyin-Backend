@@ -90,7 +90,7 @@ class TechTrendsAfricaScraper(Scraper):
         """
         category can either be 'tech-and-innovation', 'business',
         'funding', 'startups', '5g-and-the-internet-of-things', 'gadgets-apps',
-        'blockchain' 
+        'blockchain'
         """
 
         if category:
@@ -130,6 +130,13 @@ class TechTrendsAfricaScraper(Scraper):
             scraped_news.extend(articles)
             # print(articles)
             return articles
+    
+    def scrape_news_content(self, url):
+        res_text = requests.get(url = url).text;
+        soup = BeautifulSoup(res_text, 'html.parser')
+        article_content = soup.find('div', class_ = 'content-inner  jeg_link_underline')
+        
+        return md(str(article_content))
 
 
 class GizModoScraper:
