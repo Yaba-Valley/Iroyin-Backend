@@ -5,6 +5,10 @@ import time
 from functools import wraps
 from asyncio.proactor_events import _ProactorBasePipeTransport
 from news.scraper.interest_scraper import INTEREST_TO_SCRAPER_MAP
+from news.scraper.base import Scraper as BaseScraper
+
+
+default_headers = BaseScraper('default').headers
 
 
 def prepareDataForModel(data, newsInteracted):
@@ -49,7 +53,7 @@ async def fetch_news_async(scrapers, news=[]):
     start_time = time.time()
     tasks = []
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(headers=default_headers) as session:
         for scraper in scrapers:
             task = asyncio.create_task(scraper.scrape(session, news))
             tasks.append(task)

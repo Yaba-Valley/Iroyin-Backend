@@ -3,6 +3,7 @@ from .base import Scraper
 import requests
 from markdownify import markdownify as md
 
+
 class FreeCodeCampScraper(Scraper):
 
     def __init__(self) -> None:
@@ -35,14 +36,14 @@ class FreeCodeCampScraper(Scraper):
             scraped_news.extend(articles)
             # print(articles)
             return articles
-        
-    
+
     def scrape_news_content(self, url):
-        res_text = requests.get(url = url).text;
+        res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
-        article_content = soup.find('section', class_ = 'post-content')
-        
+        article_content = soup.find('section', class_='post-content')
+
         return md(str(article_content))
+
 
 class TechCrunchScraper(Scraper):
     def __init__(self, isNigeria=True, isStartups=False):
@@ -69,27 +70,41 @@ class TechCrunchScraper(Scraper):
             articles = []
 
             for article in all_articles:
-                article_title = article.find(
-                    'a', {'class': 'post-block__title__link'}).text
-                article_url = article.find(
-                    'a', {'class': 'post-block__title__link'})['href']
-                article_image = article.find('img')['src']
+                
+                article_title_element = article.find('a', {'class': 'post-block__title__link'})
+                article_title = ''
+                
+                if article_title_element is not None:
+                    article_title = article_title_element.text;
+                    
+                article_url_element = article.find('a', {'class': 'post-block__title__link'})
+                article_url = ''
+                
+                if article_url_element is not None:
+                    article_url = article_title_element['href']
+                    
+                    
+                article_image_element = article.find('img')
+                article_image = ''
+                
+                if article_image_element is not None:
+                    article_image = article_image_element['src']
+                
 
                 articles.append(
                     {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
             scraped_news.extend(articles)
             return scraped_news
-        
-    def scrape_news_content(self, url):
-        response_text = requests.get(url, headers = self.headers).text;
-        soup = BeautifulSoup(response_text, 'html.parser')
-        
-        featured_img = soup.find('img', class_ = 'article__featured-image');
-        article_content = soup.find('div', class_ = 'article-content')
-        
-        return md(str(featured_img) + str(article_content))        
 
+    def scrape_news_content(self, url):
+        response_text = requests.get(url, headers=self.headers).text
+        soup = BeautifulSoup(response_text, 'html.parser')
+
+        featured_img = soup.find('img', class_='article__featured-image')
+        article_content = soup.find('div', class_='article-content')
+
+        return md(str(featured_img) + str(article_content))
 
 
 class TechTrendsAfricaScraper(Scraper):
@@ -137,12 +152,13 @@ class TechTrendsAfricaScraper(Scraper):
             scraped_news.extend(articles)
             # print(articles)
             return articles
-    
+
     def scrape_news_content(self, url):
-        res_text = requests.get(url = url).text;
+        res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
-        article_content = soup.find('div', class_ = 'content-inner  jeg_link_underline')
-        
+        article_content = soup.find(
+            'div', class_='content-inner  jeg_link_underline')
+
         return md(str(article_content))
 
 
@@ -236,17 +252,18 @@ class TheNextWebScraper(Scraper):
 
             scraped_news.extend(articles)
             return scraped_news
-        
+
     def scrape_news_content(self, url):
-        response_text = requests.get(url = url).text
+        response_text = requests.get(url=url).text
         soup = BeautifulSoup(response_text, 'html.parser')
-        
+
         print(soup)
-        
-        article_content = soup.find('main', class_ = 'c-article__main max-lg:mb-xxl')
-        
+
+        article_content = soup.find(
+            'main', class_='c-article__main max-lg:mb-xxl')
+
         print(str(article_content))
-        
+
         return md(str(article_content))
 
 
@@ -289,9 +306,8 @@ class GlassDoorScraper:
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
         soup = BeautifulSoup(response_text)
-        article =soup.find('article', class_ = 'article css-avgnsc css-vtrr42')
+        article = soup.find('article', class_='article css-avgnsc css-vtrr42')
         return md(str(article))
-        
 
 
 class NewsBlockScraper(Scraper):

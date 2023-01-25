@@ -19,7 +19,7 @@ INTEREST_TO_SCRAPER_MAP = {
         PeopleScraper(topic='politics'),
     ],
     "BUSINESS": [
-        # PunchScraper(topic='business'),
+        PunchScraper(topic='business'),
         TechCrunchScraper(isNigeria=True, isStartups=False),
         TechCrunchScraper(isNigeria=False, isStartups=True),
         TechTrendsAfricaScraper(category='business'),
