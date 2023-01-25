@@ -1,5 +1,4 @@
 import json
-import requests
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
@@ -33,7 +32,8 @@ class GetNews(APIView):
         end = start + news_per_page
 
         try:
-            news = News.objects.order_by('-time_added')[start:end]
+            #news = News.objects.order_by('-time_added')[start:end]
+            news_for_frontend = Machine(request.user.id, news_per_page)
 
             # me = request.user
 
@@ -44,17 +44,14 @@ class GetNews(APIView):
             """
 
             # news = Machine(me.id).recommend(data_to_predict_with)
-
-            news_for_frontend = []
-
-            for n in list(news):
-                news_for_frontend.append(n.serialize())
-                # me.newsSeen.add(n)
-
-            # me.save()
-
-            # time.sleep(3)
-
+            
+            
+            # news_for_frontend =  []
+            # for n in list(news):
+            #     news_for_frontend.append(n.serialize())
+            #     # me.newsSeen.add(n)
+            
+            print(news_for_frontend)
             return JsonResponse({
                 'news': news_for_frontend,
                 'current_page': page_number,
