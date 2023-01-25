@@ -29,13 +29,14 @@ class GetNews(APIView):
             page_number = 1  # first value should be 1
 
         start = (page_number - 1) * news_per_page
-        end = start + news_per_page
 
         try:
-            #news = News.objects.order_by('-time_added')[start:end]
-            news_for_frontend = Machine(request.user.id, news_per_page)
+            recommended = Machine(request.user.id, news_per_page)
+            news_for_frontend = []
 
-            # me = request.user
+            for news in recommended:
+                news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
+                                         'website': news['website_name'], 'favicon': news['website_favicon']}})
 
             """
             what should happen here is that the recommender system is called with the id of the user and 
@@ -43,15 +44,6 @@ class GetNews(APIView):
             news interaction history. After prediction, it should return the news most likely to be liked by the user
             """
 
-            # news = Machine(me.id).recommend(data_to_predict_with)
-            
-            
-            # news_for_frontend =  []
-            # for n in list(news):
-            #     news_for_frontend.append(n.serialize())
-            #     # me.newsSeen.add(n)
-            
-            print(news_for_frontend)
             return JsonResponse({
                 'news': news_for_frontend,
                 'current_page': page_number,
