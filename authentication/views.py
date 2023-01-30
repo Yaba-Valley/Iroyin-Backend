@@ -187,7 +187,7 @@ class Activate_Account(APIView):
             else:
                 return HttpResponse('Invalid token')
 
-            return HttpResponse('hi ' + user.first_name + '. You can now log in normally')
+            return HttpResponse('hi ' + user.first_name + '. You can now log in on the app')
 
         except User.DoesNotExist:
             return HttpResponse("Guy how far, this person no dey our databse")

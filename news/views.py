@@ -12,23 +12,21 @@ from news.scraper.fashion import PeopleScraper
 from news.scraper.health import VeryWellMindScraper
 
 
-class GetNews(APIView):
+class Get_News(APIView):
 
-    # permission_classes = (IsAuthenticated, )
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # print(list(request.headers.keys()), '\n\n',
-        #       list(request.headers.items()), '\n\n', type(request.headers))
+        
+        print(request.headers.get('Authorization'))
+        print(request.user)
+        
         news_per_page = int(request.GET.get('news_per_page'))
+        print(request.user.id)
         # first value should be 1
         page_number = int(request.GET.get('page_number'))
 
         print(news_per_page, page_number)
-
-        if page_number < 1:
-            page_number = 1  # first value should be 1
-
-        start = (page_number - 1) * news_per_page
 
         try:
             recommended = Machine(request.user.id, news_per_page)
@@ -55,9 +53,6 @@ class GetNews(APIView):
         except Exception as e:
             print(e)
             return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
-
-    def post(request):
-        return
 
 
 class Search_News(APIView):
@@ -99,13 +94,26 @@ class Indicate_Interaction(APIView):
         return JsonResponse({'message': 'Interaction has been recorded', 'success': True})
 
 
-def get_all_interests(request):
-    try:
-        interest_names = [{'name': interest.name, 'id': interest.id}
-                          for interest in Interest.objects.all()]
-        return JsonResponse({'success': True, 'data': interest_names, 'message': "Successfully retrieved interests"}, status=200)
-    except Exception as e:
-        return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
+class Get_All_Interests(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    """ 
+    This endpoints returns the list of all the interests
+    """
+
+    def get(self, request):
+
+        print(request.user)
+        try:
+            interest_names = [{'name': interest.name, 'id': interest.id}
+                              for interest in Interest.objects.all()]
+            return JsonResponse({'success': True, 'data': interest_names, 'message': "Successfully retrieved interests"}, status=200)
+        except Exception as e:
+            return JsonResponse({'success': False, 'errors': e, 'message': 'An Error Occurred'}, status=500)
+
+    def post(self, request):
+        return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
 
 class Get_News_Content(APIView):
@@ -170,6 +178,8 @@ class Save_Interests(APIView):
 
 
 class Remove_Interests(APIView):
+
+    permission_classes = [IsAuthenticated]
     """
     This endpoint takes the id of the interests as an array and removes them from the user's profile
     """
