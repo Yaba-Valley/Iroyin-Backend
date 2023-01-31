@@ -14,7 +14,7 @@ from news.scraper.health import VeryWellMindScraper
 
 class Get_News(APIView):
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
