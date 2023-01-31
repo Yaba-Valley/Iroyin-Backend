@@ -14,13 +14,23 @@ from news.scraper.health import VeryWellMindScraper
 
 class Get_News(APIView):
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        
-        print(request.headers.get('Authorization'))
+
+        print(request.headers)
         print(request.user)
-        
+
+        return JsonResponse({'news': [{
+            'title': 'hello jeremiah',
+            'url': 'https://www.glamourmagazine.co.uk/gallery/best-clit-vibrators',
+            'img': 'https://media.glamourmagazine.co.uk/photos/62ff5c021f66d3cf41915471/4:3/w_1600%2Ch_1200%2Cc_limit/CLITORAL%2520VIBRATORS%2520190822%2520SQUARE.jpg',
+            'metadata': {
+                'website': 'Glamour',
+                'favicon': 'https://www.glamourmagazine.co.uk/verso/static/glamour-international/assets/favicon.ico'
+            }
+        }]}, status=200)
+
         news_per_page = int(request.GET.get('news_per_page'))
         print(request.user.id)
         # first value should be 1
@@ -60,6 +70,10 @@ class Search_News(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+
+        print(request.headers)
+        print(request.user)
+
         title = request.GET.get('title')
 
         if (title == ''):
