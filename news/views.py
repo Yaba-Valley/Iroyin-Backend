@@ -18,25 +18,9 @@ class Get_News(APIView):
 
     def get(self, request):
 
-        print(request.headers)
-        print(request.user)
-
-        return JsonResponse({'news': [{
-            'title': 'hello jeremiah',
-            'url': 'https://www.glamourmagazine.co.uk/gallery/best-clit-vibrators',
-            'img': 'https://media.glamourmagazine.co.uk/photos/62ff5c021f66d3cf41915471/4:3/w_1600%2Ch_1200%2Cc_limit/CLITORAL%2520VIBRATORS%2520190822%2520SQUARE.jpg',
-            'metadata': {
-                'website': 'Glamour',
-                'favicon': 'https://www.glamourmagazine.co.uk/verso/static/glamour-international/assets/favicon.ico'
-            }
-        }]}, status=200)
-
         news_per_page = int(request.GET.get('news_per_page'))
-        print(request.user.id)
         # first value should be 1
         page_number = int(request.GET.get('page_number'))
-
-        print(news_per_page, page_number)
 
         try:
             recommended = Machine(request.user.id, news_per_page)
@@ -45,12 +29,6 @@ class Get_News(APIView):
             for news in recommended:
                 news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
                                          'website': news['website_name'], 'favicon': news['website_favicon']}})
-
-            """
-            what should happen here is that the recommender system is called with the id of the user and 
-            the number of news to be returned, the model has access to the database and can get the user's 
-            news interaction history. After prediction, it should return the news most likely to be liked by the user
-            """
 
             return JsonResponse({
                 'news': news_for_frontend,
@@ -70,9 +48,6 @@ class Search_News(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-
-        print(request.headers)
-        print(request.user)
 
         title = request.GET.get('title')
 
