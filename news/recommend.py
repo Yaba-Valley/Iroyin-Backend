@@ -42,7 +42,7 @@ def get_interacted_and_new_news(id):
 
 def Machine(id, page):
     train, test = get_interacted_and_new_news(id)
-    vectorizer = TfidfVectorizer(lowercase=True, ngram_range=(1,2), stop_words='english', max_df=0.95, min_df=0.01)
+    vectorizer = TfidfVectorizer(lowercase=True, ngram_range=(1,2), stop_words='english')
 
     train_array= vectorizer.fit_transform(train['title'] ).toarray().mean(axis=0) #.apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
 
