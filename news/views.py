@@ -1,6 +1,6 @@
 import json
 from django.http import JsonResponse, HttpResponse, Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -198,3 +198,15 @@ class UserInterests(APIView):
         interests = [{'name': interest.name, 'id': interest.id}
                      for interest in me.interests.all()]
         return Response({'success': True, 'interests': interests, 'message': 'Successfully retrieved user interest'})
+
+
+class Redirect_To_App(APIView):
+    def get(self, request):
+        news_url = request.GET.get('url')
+        route = request.GET.get('route')
+        news = News.objects.get(url=news_url)
+        host = request.GET.get('host')
+        
+        expo_url = f'{host}/--/{route}?title={news.title}&url={news.url}&img={news.img}&favicon={news.website_favicon}&website={news.website_name}'
+
+        return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})

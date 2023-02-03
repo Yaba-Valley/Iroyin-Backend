@@ -17,6 +17,7 @@ urlpatterns = [
     path('news/search/', views.Search_News.as_view(), name='search for news'),
     path('news/get-content', views.Get_News_Content.as_view(),
          name='get news content'),
+    path('news/redirect', views.Redirect_To_App.as_view(), name='redirect to app'),
 
     # STATICS
     path('interests/all', views.Get_All_Interests.as_view(),
