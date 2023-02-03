@@ -8,9 +8,8 @@
 </head>
 <body>
     <p>Redirecting... </p>
-    <p>If nothing happens, click <a href = "{{redirect_url}}">here</a></p>
     <script>
-        window.location.href = "{{ redirect_url }}"
+        window.location.href = decodeURI("{{ redirect_url }}")
     </script>
 </body>
 </html>
