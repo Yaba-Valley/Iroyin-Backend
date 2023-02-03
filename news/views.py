@@ -207,6 +207,6 @@ class Redirect_To_App(APIView):
         news = News.objects.get(url=news_url)
         host = request.GET.get('host')
         
-        expo_url = f'{host}/--/{route}?title={news.title}&url={news.url}&img={news.img}&favicon={news.website_favicon}&website={news.website_name}'
+        expo_url = f'{host}{route}?title={news.title}&url={news.url}&img={news.img}&favicon={news.website_favicon}&website={news.website_name}'
 
         return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})
