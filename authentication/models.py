@@ -68,6 +68,9 @@ class User(AbstractBaseUser):
     newInteractedWith = models.ManyToManyField(
         to=News, related_name='readers_interacted', verbose_name='News User Interacted With')
     interests = models.ManyToManyField(to=Interest, related_name='users')
+    saved_news = models.ManyToManyField(to = News, related_name = 'savers', verbose_name="news saved")
+    liked_news = models.ManyToManyField(to = News, related_name = 'likers', verbose_name = 'news liked')
+    shared_news = models.ManyToManyField(to = News, related_name = 'sharers', verbose_name = 'news shared')
 
     USERNAME_FIELD = 'email'
 
