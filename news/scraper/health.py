@@ -12,9 +12,9 @@ class VeryWellMindScraper(Scraper):
 
         Scraper.__init__(self, 'VeryWellMind Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
-            print(f'scraping {self.url}\n\n')
+            print(f'scraping {self.url}')
             async with async_client.get(self.url, headers=self.headers) as response:
                 request_text = await response.text()
                 soup = BeautifulSoup(request_text, 'html.parser')
@@ -40,7 +40,7 @@ class VeryWellMindScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url, 'is not working')
-            print(e)
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):

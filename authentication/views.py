@@ -127,7 +127,7 @@ def register(request):
                                                    'registered_user': test_user})
 
                 welcome_mail_res = send_email('Heeyyyy, We\'re sooo happy to have you here😊🎉🎉',
-                                              template_string, email, f"{first_name} {last_name}")
+                                              template_string, [{'email': email, 'fullName': f"{first_name} {last_name}"}])
 
                 activation_mail_res = TokenGenerator().send_account_activation_mail(request, test_user)
 
@@ -222,7 +222,7 @@ def verify_token(request):
                 }, status=200
             )
         else:
-            return JsonResponse({'message': 'Authorization header not set properly', 'success': False}, status = 400)
+            return JsonResponse({'message': 'Authorization header not set properly', 'success': False}, status=400)
     except Http404:
         return JsonResponse({'message': 'Could not find user associated with token', 'success': False}, status=400)
     except TokenError:

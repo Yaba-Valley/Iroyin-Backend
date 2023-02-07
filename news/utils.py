@@ -6,6 +6,8 @@ from functools import wraps
 from asyncio.proactor_events import _ProactorBasePipeTransport
 from news.scraper.interest_scraper import INTEREST_TO_SCRAPER_MAP
 from news.scraper.base import Scraper as BaseScraper
+from django.template.loader import render_to_string
+from authentication.utils import send_email
 
 
 default_headers = BaseScraper('default').headers
@@ -52,14 +54,35 @@ async def fetch_news_async(scrapers, news=[]):
 
     start_time = time.time()
     tasks = []
+    failed_scrapers = []
 
     async with aiohttp.ClientSession(headers=default_headers) as session:
         for scraper in scrapers:
-            task = asyncio.create_task(scraper.scrape(session, news))
+            task = asyncio.create_task(
+                scraper.scrape(session, news, failed_scrapers))
             tasks.append(task)
 
         await asyncio.gather(*tasks)
-        print('TIME TAKEN:', math.floor(time.time() - start_time))
+
+        time_taken = math.floor(time.time() - start_time)
+        print('TIME TAKEN:', time_taken)
+
+        email_text = render_to_string(
+            'scraperInfo.html', {'failed_scrapers': failed_scrapers, 'time_taken': time_taken})
+        
+        print(failed_scrapers)
+
+        # res = send_email(
+        #     f'Scraper Information ({len(scrapers)} ran, {len(failed_scrapers)} failed, {len(scrapers) - len(failed_scrapers)} successful)',
+        #     email_text,
+        #     [
+        #         {'email': 'jeremiahlena13@gmail.com', 'fullName': 'Jeremiah Lena'},
+        #         {'email': 'ikpeleambroseobinna@gmail.com',
+        #             'fullName': 'Ikepele Ambrose'}
+        #     ]
+        # )
+        
+        # print(res)
 
         return news
 

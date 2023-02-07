@@ -6,7 +6,10 @@ from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 
 
-def send_email(subject, body, receipient_email, receipient_fullName):
+def send_email(subject, body, receipients):
+    """ 
+    type Receipients  = Array<{email: String, fullName?: string}>
+    """
 
     import environ
     from mailjet_rest import Client
@@ -16,7 +19,7 @@ def send_email(subject, body, receipient_email, receipient_fullName):
     environ.Env.read_env()
 
     mailjet = Client(auth=(env('MAILJET_API_KEY'),
-                     env('MAILJET_SECRET_KEY')), version = 'v3.1')
+                     env('MAILJET_SECRET_KEY')), version='v3.1')
 
     data = {
         "Messages": [
@@ -27,9 +30,9 @@ def send_email(subject, body, receipient_email, receipient_fullName):
                 },
                 "To": [
                     {
-                        "Email": receipient_email,
-                        "Name": receipient_fullName
-                    }
+                        "Email": receipient['email'],
+                        "Name": receipient["fullName"]
+                    } for receipient in receipients
                 ],
                 "Subject": subject,
                 "TextPart": subject,
@@ -38,9 +41,7 @@ def send_email(subject, body, receipient_email, receipient_fullName):
         ]
     }
 
-
     result = mailjet.send.create(data=data)
-    print(receipient_fullName)
     print(f"{subject} return {str(result.status_code)}")
     return result
 
@@ -57,12 +58,11 @@ class TokenGenerator(PasswordResetTokenGenerator):
         template_string = render_to_string('activateAccount.html', {
                                            'user': user, 'uid': uid, 'token': token, 'site': site})
 
-        res = send_email('Confirm your email', template_string,
-                   user.email, f"{user.first_name} {user.last_name}")
-    
+        res = send_email('Confirm your email', template_string, [
+                         {'email': user.email, 'fullName': f"{user.first_name} {user.last_name}"}])
+
         print(res)
-        
-        return res.status_code;
-    
-    
+
+        return res.status_code
+
     # test silly push

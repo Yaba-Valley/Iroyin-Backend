@@ -13,7 +13,7 @@ class FreeCodeCampScraper(Scraper):
 
         Scraper.__init__(self, 'FreeCodeCamp Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(self.url + '/news')
             async with async_client.get(self.url + '/news', headers=self.headers) as response:
@@ -39,7 +39,7 @@ class FreeCodeCampScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url + '/news is not working')
-            print(e, '\n\n');
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):
@@ -51,7 +51,7 @@ class FreeCodeCampScraper(Scraper):
 
 
 class TechCrunchScraper(Scraper):
-    def __init__(self, category = 'plus'):
+    def __init__(self, category='plus'):
         """ 
         category can be any of the following:
         [plus, startups, venture, security, crypto, apps, fintech, hardware, transportation, entertainment, nigeria]
@@ -78,14 +78,13 @@ class TechCrunchScraper(Scraper):
             self.url = 'https://techcrunch.com/category/media-entertainment/'
         else:
             self.url = 'https://techcrunch.com/tag/nigeria'
-            
 
         self.title = 'TechCrunch'
         self.favicon_url = 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png?w=60'
 
         Scraper.__init__(self, 'TechCrunch Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(self.url)
             async with async_client.get(self.url, headers=self.headers) as response:
@@ -96,26 +95,26 @@ class TechCrunchScraper(Scraper):
                 articles = []
 
                 for article in all_articles:
-                    
-                    article_title_element = article.find('a', {'class': 'post-block__title__link'})
+
+                    article_title_element = article.find(
+                        'a', {'class': 'post-block__title__link'})
                     article_title = ''
-                    
+
                     if article_title_element is not None:
-                        article_title = article_title_element.text;
-                        
-                    article_url_element = article.find('a', {'class': 'post-block__title__link'})
+                        article_title = article_title_element.text
+
+                    article_url_element = article.find(
+                        'a', {'class': 'post-block__title__link'})
                     article_url = ''
-                    
+
                     if article_url_element is not None:
                         article_url = article_title_element['href']
-                        
-                        
+
                     article_image_element = article.find('img')
                     article_image = ''
-                    
+
                     if article_image_element is not None:
                         article_image = article_image_element['src']
-                    
 
                     articles.append(
                         {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
@@ -124,7 +123,7 @@ class TechCrunchScraper(Scraper):
                 return scraped_news
         except Exception as e:
             print(self.url + ' is not working')
-            print(e, '\n\n');
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):
@@ -155,33 +154,38 @@ class TechTrendsAfricaScraper(Scraper):
 
         Scraper.__init__(self, 'Tech Trends Scraper')
 
-    async def scrape(self, async_client, scraped_news):
-        print(self.url)
-        async with async_client.get(self.url, headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            print(self.url)
+            async with async_client.get(self.url, headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-            news = soup.find_all('article')
+                news = soup.find_all('article')
 
-            articles = []
+                articles = []
 
-            for article in news:
-                article_title = article.select_one('.jeg_post_title').text
-                article_url = article.select_one(
-                    '.jeg_post_title').find('a')['href']
+                for article in news:
+                    article_title = article.select_one('.jeg_post_title').text
+                    article_url = article.select_one(
+                        '.jeg_post_title').find('a')['href']
 
-                if article.find('img') == None:
-                    article_image = article.find(
-                        'div', {'class': 'thumbnail-container thumbnail-background'})['data-src']
-                else:
-                    article_image = article.find('img')['data-src']
+                    if article.find('img') == None:
+                        article_image = article.find(
+                            'div', {'class': 'thumbnail-container thumbnail-background'})['data-src']
+                    else:
+                        article_image = article.find('img')['data-src']
 
-                articles.append(
-                    {'title': article_title.strip(), 'url': article_url, 'img': article_image.split('?')[0], 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    articles.append(
+                        {'title': article_title.strip(), 'url': article_url, 'img': article_image.split('?')[0], 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-            scraped_news.extend(articles)
-            # print(articles)
-            return articles
+                scraped_news.extend(articles)
+                # print(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
@@ -200,31 +204,35 @@ class GizModoScraper:
 
         Scraper.__init__(self, 'GizModo Scraper')
 
-    async def scrape(self, async_client, scraped_news):
-        print(self.url)
-        async with async_client.get(self.url) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            print(self.url)
+            async with async_client.get(self.url) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-            news = soup.find_all('article')
+                news = soup.find_all('article')
 
-            articles = []
+                articles = []
 
-            for article in news:
-                try:
-                    article_title = article.select_one('h4').text
-                    article_url = article.select_one('a')['href']
-                    article_image = article.select_one('img')['src']
+                for article in news:
+                    try:
+                        article_title = article.select_one('h4').text
+                        article_url = article.select_one('a')['href']
+                        article_image = article.select_one('img')['src']
 
-                    articles.append({'title': article_title.strip(),
-                                    'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                        articles.append({'title': article_title.strip(),
+                                        'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-                except:
-                    continue
+                    except:
+                        continue
 
-            scraped_news.extend(articles)
-            # print(articles)
-            return articles
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            pass
 
 
 class TheNextWebScraper(Scraper):
@@ -244,44 +252,49 @@ class TheNextWebScraper(Scraper):
 
         Scraper.__init__(self, 'TheNextWeb Scraper')
 
-    async def scrape(self, async_client, scraped_news):
-        print(self.url + self.category)
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            print(self.url + self.category)
+            articles = []
+            async with async_client.get(self.url + self.category) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-        articles = []
-        async with async_client.get(self.url + self.category) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+                all_articles = soup.find_all('article')
 
-            all_articles = soup.find_all('article')
+                try:
+                    for article in all_articles:
+                        if ''.join(article.attrs['class']).find('c-listArticle') != -1:
+                            article_title = article.select_one(
+                                'h4').text.strip()
+                            article_url = self.url + \
+                                article.select_one('h4').find('a')['href']
+                            article_image = article.select_one('img').attrs.get(
+                                'data-src') or article.select_one('img').attrs.get('src')
 
-            try:
-                for article in all_articles:
-                    if ''.join(article.attrs['class']).find('c-listArticle') != -1:
-                        article_title = article.select_one('h4').text.strip()
-                        article_url = self.url + \
-                            article.select_one('h4').find('a')['href']
-                        article_image = article.select_one('img').attrs.get(
-                            'data-src') or article.select_one('img').attrs.get('src')
+                            articles.append(
+                                {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-                        articles.append(
-                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                        else:
+                            article_title = article.select_one(
+                                'h3').text.strip()
+                            article_url = self.url + \
+                                article.select_one('a')['href']
+                            article_image = article.select_one('img').attrs.get(
+                                'data-src') or article.select_one('img').attrs.get('src')
 
-                    else:
-                        article_title = article.select_one('h3').text.strip()
-                        article_url = self.url + \
-                            article.select_one('a')['href']
-                        article_image = article.select_one('img').attrs.get(
-                            'data-src') or article.select_one('img').attrs.get('src')
+                            articles.append(
+                                {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-                        articles.append(
-                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                except Exception as e:
+                    pass
 
-            except Exception as e:
-                # print(e)
-                pass
-
-            scraped_news.extend(articles)
-            return scraped_news
+                scraped_news.extend(articles)
+                return scraped_news
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url=url).text
@@ -301,33 +314,38 @@ class GlassDoorScraper:
 
         Scraper.__init__(self, 'GlassDoor Scraper')
 
-    async def scrape(self, async_client, scraped_news):
-        articles = []
-        print(self.url + '/blog')
-        async with async_client.get(self.url + '/blog') as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            articles = []
+            print(self.url + '/blog')
+            async with async_client.get(self.url + '/blog') as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-            for article in soup.select('.post'):
-                article_title = article.select_one('h3').text
-                article_url = self.url + article.select_one('a')['href']
-                article_image = article.select_one(
-                    '.css-6uzs0z')['style'].split('url(')[1].split(')')[0]
+                for article in soup.select('.post'):
+                    article_title = article.select_one('h3').text
+                    article_url = self.url + article.select_one('a')['href']
+                    article_image = article.select_one(
+                        '.css-6uzs0z')['style'].split('url(')[1].split(')')[0]
 
-                articles.append(
-                    {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    articles.append(
+                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-            for article in soup.select('.featured-article'):
-                article_title = article.select_one('h2').text
-                article_url = article.select_one('a')['href']
-                article_image = article.select_one('img')['src']
+                for article in soup.select('.featured-article'):
+                    article_title = article.select_one('h2').text
+                    article_url = article.select_one('a')['href']
+                    article_image = article.select_one('img')['src']
 
-                articles.append(
-                    {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    articles.append(
+                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-            scraped_news.extend(articles)
-            # print(articles)
-            return articles
+                scraped_news.extend(articles)
+                # print(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
@@ -343,26 +361,31 @@ class NewsBlockScraper(Scraper):
         self.favicon_url = 'https://newblock.news/wp-content/uploads/2022/01/cropped-webicon-192x192.png'
         Scraper.__init__(self, 'NewsBlock Scraper')
 
-    async def scrape(self, async_client, scraped_news):
-        print(self.url)
-        async with async_client.get(self.url, headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            print(self.url)
+            async with async_client.get(self.url, headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-            news = soup.find_all('article')
+                news = soup.find_all('article')
 
-            articles = []
+                articles = []
 
-            for article in news:
-                try:
-                    article_title = article.find('h3').text
-                    article_image = article.find('img')['data-src']
-                    article_url = article.find('a')['href']
-                    articles.append(
-                        {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-                except:
-                    pass
+                for article in news:
+                    try:
+                        article_title = article.find('h3').text
+                        article_image = article.find('img')['data-src']
+                        article_url = article.find('a')['href']
+                        articles.append(
+                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    except:
+                        pass
 
-            scraped_news.extend(articles)
-            # print(articles)
-            return articles
+                scraped_news.extend(articles)
+                # print(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            pass

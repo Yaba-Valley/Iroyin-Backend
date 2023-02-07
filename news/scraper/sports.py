@@ -31,7 +31,7 @@ class PunchScraper(Scraper):
 
         Scraper.__init__(self, 'Punch Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             async with async_client.get(self.url, headers=self.headers) as response:
                 html_text = await response.text()
@@ -67,7 +67,7 @@ class PunchScraper(Scraper):
 
         except Exception as e:
             print(self.url, 'is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
 
@@ -80,7 +80,7 @@ class GoalDotComScraper(Scraper):
 
         Scraper.__init__(self, 'goal.com scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(f'{self.url}/en-ng/news/1')
 
@@ -104,7 +104,7 @@ class GoalDotComScraper(Scraper):
                 return headlines
         except Exception as e:
             print(f'{self.url}/en-ng/news/1 is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):
@@ -124,7 +124,7 @@ class SkySportScraper(Scraper):
 
         Scraper.__init__(self, 'SkySport Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(self.url)
             async with async_client.get(self.url, headers=self.headers) as response:
@@ -140,7 +140,7 @@ class SkySportScraper(Scraper):
                 return headlines
         except Exception as e:
             print(f'{self.url} is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):
@@ -161,7 +161,7 @@ class EPLScraper(Scraper):
 
         Scraper.__init__(self, 'EPL Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(f'{self.url}/news')
 
@@ -177,7 +177,7 @@ class EPLScraper(Scraper):
                 return headlines
         except Exception as e:
             print(f'{self.url}/news is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):
@@ -197,7 +197,7 @@ class LaLigaScraper(Scraper):
 
         Scraper.__init__(self, 'LaLiga Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(self.url + '/en-ES/news')
             async with async_client.get(self.url + '/en-ES/news') as response:
@@ -224,7 +224,7 @@ class LaLigaScraper(Scraper):
                 return articles
         except Exception as e:
             print(f'{self.url}/en-ES/news is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
 
@@ -236,7 +236,7 @@ class BundesligaScraper(Scraper):
 
         Scraper.__init__(self, 'Bundesliga Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(self.url + '/en/bundesliga')
             async with async_client.get(self.url + '/en/bundesliga', headers=self.headers) as response:
@@ -277,5 +277,5 @@ class BundesligaScraper(Scraper):
                 return articles
         except Exception as e:
             print(f'{self.url}/en/bundesliga is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass

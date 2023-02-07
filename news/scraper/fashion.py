@@ -14,9 +14,9 @@ class GlamourScraper(Scraper):
 
         Scraper.__init__(self, 'Glamour Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
-            print(f'scraping {self.url}/topic/{self.topic}\n\n')
+            print(f'scraping {self.url}/topic/{self.topic}')
             async with async_client.get(self.url+'/topic/'+self.topic, headers=self.headers) as response:
                 articles = []
                 request_text = await response.text()
@@ -33,7 +33,7 @@ class GlamourScraper(Scraper):
                 return articles
         except Exception as e:
             print(f'{self.url}/topic/{self.topic}')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
 
@@ -50,7 +50,7 @@ class PeopleScraper(Scraper):
 
         Scraper.__init__(self, 'People Scraper')
 
-    async def scrape(self, async_client, scraped_news):
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
 
         try:
             print('scraping', self.url)
@@ -75,7 +75,7 @@ class PeopleScraper(Scraper):
                 return scraped_news
         except Exception as e:
             print(self.url, 'is not working')
-            print(e, '\n\n')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
 
     def scrape_news_content(self, url):
