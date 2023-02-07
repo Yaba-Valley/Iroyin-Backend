@@ -20,6 +20,8 @@ def fetch_news():
     News.objects.bulk_create(news_before_db, ignore_conflicts=True)
     # except Exception as e:
         # pass
+        
+    print(len(news_before_db))
 
     return True
 

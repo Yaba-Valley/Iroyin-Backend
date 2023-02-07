@@ -15,21 +15,26 @@ class GlamourScraper(Scraper):
         Scraper.__init__(self, 'Glamour Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(f'scraping {self.url}/topic/{self.topic}\n\n');
-        async with async_client.get(self.url+'/topic/'+self.topic, headers=self.headers) as response:
-            articles = []
-            request_text = await response.text()
-            soup = BeautifulSoup(request_text, 'html.parser')
+        try:
+            print(f'scraping {self.url}/topic/{self.topic}\n\n')
+            async with async_client.get(self.url+'/topic/'+self.topic, headers=self.headers) as response:
+                articles = []
+                request_text = await response.text()
+                soup = BeautifulSoup(request_text, 'html.parser')
 
-            for article in soup.select('div[class*="SummaryItemWrapper"]'):
-                article_title = article.text
-                article_image = article.find('img')['src']
-                article_url = article.find('a')['href']
-                articles.append(
-                    {'title': article_title, 'url': self.url+article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
+                for article in soup.select('div[class*="SummaryItemWrapper"]'):
+                    article_title = article.text
+                    article_image = article.find('img')['src']
+                    article_url = article.find('a')['href']
+                    articles.append(
+                        {'title': article_title, 'url': self.url+article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
 
-            scraped_news.extend(articles)
-            return articles
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(f'{self.url}/topic/{self.topic}')
+            print(e, '\n\n')
+            pass
 
 
 class PeopleScraper(Scraper):
@@ -46,30 +51,36 @@ class PeopleScraper(Scraper):
         Scraper.__init__(self, 'People Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print('scraping', self.url)
-        async with async_client.get(self.url, headers=self.headers) as response:
-            articles = []
-            response_text = await response.text()
-            soup = BeautifulSoup(response_text, 'html.parser')
 
-            for article in soup.find_all("a", class_="mntl-document-card"):
-                try:
-                    article_title = article.find(
-                        'span', class_='card__title-text').text
-                    article_image = article.find('img')['data-src']
-                    article_url = article['href']
+        try:
+            print('scraping', self.url)
+            async with async_client.get(self.url, headers=self.headers) as response:
+                articles = []
+                response_text = await response.text()
+                soup = BeautifulSoup(response_text, 'html.parser')
 
-                    articles.append(
-                        {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
-                except Exception as e:
-                    print(e)
+                for article in soup.find_all("a", class_="mntl-document-card"):
+                    try:
+                        article_title = article.find(
+                            'span', class_='card__title-text').text
+                        article_image = article.find('img')['data-src']
+                        article_url = article['href']
 
-            scraped_news.extend(articles)
-            return scraped_news
+                        articles.append(
+                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
+                    except Exception as e:
+                        print(e)
+
+                scraped_news.extend(articles)
+                return scraped_news
+        except Exception as e:
+            print(self.url, 'is not working')
+            print(e, '\n\n')
+            pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url).text
         soup = BeautifulSoup(res_text, 'html.parser')
-        text_content = soup.find('div', class_ = 'article-content')
-        
+        text_content = soup.find('div', class_='article-content')
+
         return md(str(text_content))

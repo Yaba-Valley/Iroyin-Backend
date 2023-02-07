@@ -32,42 +32,43 @@ class PunchScraper(Scraper):
         Scraper.__init__(self, 'Punch Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print('scraping', self.url);
-        
-        async with async_client.get(self.url, headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+        try:
+            async with async_client.get(self.url, headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-            all_articles = soup.find_all('article')
-            headlines = []
+                all_articles = soup.find_all('article')
+                headlines = []
 
-            print(len(all_articles))
+                for i in all_articles:
+                    try:
+                        img = i.find('img').attrs.get('data-src')
+                        img_src_set = i.find('img').attrs.get('data-srcset')
 
-            for i in all_articles:
-                try:
-                    img = i.find('img').attrs.get('data-src')
-                    img_src_set = i.find('img').attrs.get('data-srcset')
-                    
-                    if img_src_set:
-                        last_src_set = img_src_set.split(', ')[-1];
-                        img = last_src_set.split(' ')[0]
-                        print('has srcset', img)
-                        
-                    news = i.find('a').text.strip()
-                    link = i.find('a')['href']
-                    headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
-                                     'website': self.website, 'favicon': self.favicon}})
-                except:
-                    img = 'https://cdn.punchng.com/wp-content/uploads/2021/05/16175056/IMG-20210516-WA0002.jpg'
-                    news = i.find('a').text.strip()
-                    link = i.find('a')['href']
+                        if img_src_set:
+                            last_src_set = img_src_set.split(', ')[-1]
+                            img = last_src_set.split(' ')[0]
 
-                    print(img, news, link, self.url)
-                    headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
-                                     'website': self.website, 'favicon': self.favicon}})
+                        news = i.find('a').text.strip()
+                        link = i.find('a')['href']
+                        headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
+                            'website': self.website, 'favicon': self.favicon}})
+                    except:
+                        img = 'https://cdn.punchng.com/wp-content/uploads/2021/05/16175056/IMG-20210516-WA0002.jpg'
+                        news = i.find('a').text.strip()
+                        link = i.find('a')['href']
 
-            scraped_news.extend(headlines)
-            return scraped_news
+                        print(img, news, link, self.url)
+                        headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
+                            'website': self.website, 'favicon': self.favicon}})
+
+                scraped_news.extend(headlines)
+                return scraped_news
+
+        except Exception as e:
+            print(self.url, 'is not working')
+            print(e, '\n\n')
+            pass
 
 
 class GoalDotComScraper(Scraper):
@@ -80,27 +81,31 @@ class GoalDotComScraper(Scraper):
         Scraper.__init__(self, 'goal.com scraper')
 
     async def scrape(self, async_client, scraped_news):
-        
-        print(f'{self.url}/en-ng/news/1');
-        
-        async with async_client.get(self.url + '/en-ng/news/1') as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
-            value = soup.find_all('article')
-            headlines = []
+        try:
+            print(f'{self.url}/en-ng/news/1')
 
-            for i in value:
-                try:
-                    img = i.find('img').get('src').split('?')[0]
-                    news = i.find('h3', class_='title h5').text
-                    link = self.url+i.find('a')['href']
-                    headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
-                                     'website': self.website, 'favicon': self.favicon}})
-                except Exception as e:
-                    print(e)
+            async with async_client.get(self.url + '/en-ng/news/1') as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+                value = soup.find_all('article')
+                headlines = []
 
-            scraped_news.extend(headlines)
-            return headlines
+                for i in value:
+                    try:
+                        img = i.find('img').get('src').split('?')[0]
+                        news = i.find('h3', class_='title h5').text
+                        link = self.url+i.find('a')['href']
+                        headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
+                            'website': self.website, 'favicon': self.favicon}})
+                    except Exception as e:
+                        print(e)
+
+                scraped_news.extend(headlines)
+                return headlines
+        except Exception as e:
+            print(f'{self.url}/en-ng/news/1 is not working')
+            print(e, '\n\n')
+            pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
@@ -120,18 +125,23 @@ class SkySportScraper(Scraper):
         Scraper.__init__(self, 'SkySport Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self.url)
-        async with async_client.get(self.url, headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
-            news = soup.find_all(
-                'div', {'class': 'news-list__item news-list__item--show-thumb-bp30'})
+        try:
+            print(self.url)
+            async with async_client.get(self.url, headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+                news = soup.find_all(
+                    'div', {'class': 'news-list__item news-list__item--show-thumb-bp30'})
 
-            headlines = [{'title': article.find('a', {'class': 'news-list__headline-link'}).text.strip(), 'url': article.find('a', {'class': 'news-list__headline-link'})['href'], 'img':article.find('img')['data-src'], 'metadata': {'favicon': self.favicon, 'website': self.website}}
-                         for article in news]
+                headlines = [{'title': article.find('a', {'class': 'news-list__headline-link'}).text.strip(), 'url': article.find('a', {'class': 'news-list__headline-link'})['href'], 'img':article.find('img')['data-src'], 'metadata': {'favicon': self.favicon, 'website': self.website}}
+                             for article in news]
 
-            scraped_news.extend(headlines)
-            return headlines
+                scraped_news.extend(headlines)
+                return headlines
+        except Exception as e:
+            print(f'{self.url} is not working')
+            print(e, '\n\n')
+            pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
@@ -152,18 +162,23 @@ class EPLScraper(Scraper):
         Scraper.__init__(self, 'EPL Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(f'{self.url}/news')
+        try:
+            print(f'{self.url}/news')
 
-        async with async_client.get(self.url+'/news', headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
-            news = soup.find_all('a', {'class': 'thumbnail thumbLong'})
+            async with async_client.get(self.url+'/news', headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+                news = soup.find_all('a', {'class': 'thumbnail thumbLong'})
 
-            headlines = [{'title': article.find('span', {'class': 'title'}).text, 'url': self.url +
-                          article['href'], 'img':article.find('img')['src'].strip(), 'metadata': {'website': self.title, 'favicon': self.favicon}} for article in news]
+                headlines = [{'title': article.find('span', {'class': 'title'}).text, 'url': self.url +
+                              article['href'], 'img':article.find('img')['src'].strip(), 'metadata': {'website': self.title, 'favicon': self.favicon}} for article in news]
 
-            scraped_news.extend(headlines)
-            return headlines
+                scraped_news.extend(headlines)
+                return headlines
+        except Exception as e:
+            print(f'{self.url}/news is not working')
+            print(e, '\n\n')
+            pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
@@ -183,29 +198,34 @@ class LaLigaScraper(Scraper):
         Scraper.__init__(self, 'LaLiga Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self.url + '/en-ES/news')
-        async with async_client.get(self.url + '/en-ES/news') as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
+        try:
+            print(self.url + '/en-ES/news')
+            async with async_client.get(self.url + '/en-ES/news') as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
 
-            news = soup.find_all(
-                'div', {'class': 'styled__ImageContainer-sc-1si1tif-0'})
+                news = soup.find_all(
+                    'div', {'class': 'styled__ImageContainer-sc-1si1tif-0'})
 
-            articles = []
+                articles = []
 
-            try:
-                for article in news:
-                    title = article.find('h3').text
-                    url = self.url + article.find('a')['href']
-                    img = 'https://assets.laliga.com/assets/2019/10/09/medium/47d73a0eff4508d03ea51f26384bcba2.jpeg'
-                    articles.append({'title': title, 'url': url, 'img': img, 'metadata': {
-                                    'website': self.title, 'favicon': self.favicon_url}})
-            except Exception as e:
-                print(e)
-                pass
+                try:
+                    for article in news:
+                        title = article.find('h3').text
+                        url = self.url + article.find('a')['href']
+                        img = 'https://assets.laliga.com/assets/2019/10/09/medium/47d73a0eff4508d03ea51f26384bcba2.jpeg'
+                        articles.append({'title': title, 'url': url, 'img': img, 'metadata': {
+                                        'website': self.title, 'favicon': self.favicon_url}})
+                except Exception as e:
+                    print(e)
+                    pass
 
-            scraped_news.extend(articles)
-            return articles
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(f'{self.url}/en-ES/news is not working')
+            print(e, '\n\n')
+            pass
 
 
 class BundesligaScraper(Scraper):
@@ -217,38 +237,45 @@ class BundesligaScraper(Scraper):
         Scraper.__init__(self, 'Bundesliga Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self.url + '/en/bundesliga')
-        async with async_client.get(self.url + '/en/bundesliga', headers=self.headers) as response:
+        try:
+            print(self.url + '/en/bundesliga')
+            async with async_client.get(self.url + '/en/bundesliga', headers=self.headers) as response:
 
-            articles = []
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
-            news = soup.select('.teaser')
-            other_news = soup.select('.topListEntry')
+                articles = []
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+                news = soup.select('.teaser')
+                other_news = soup.select('.topListEntry')
 
-            for article in news:
-                try:
-                    article_title = article.find('h2').text
-                    article_url = self.url + article.find('a')['href']
-                    article_image = article.find('img')['src'].split('?')[0]
+                for article in news:
+                    try:
+                        article_title = article.find('h2').text
+                        article_url = self.url + article.find('a')['href']
+                        article_image = article.find(
+                            'img')['src'].split('?')[0]
 
-                    articles.append(
-                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-                except Exception as e:
-                    print(e)
-                    pass
+                        articles.append(
+                            {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    except Exception as e:
+                        print(e)
+                        pass
 
-            for article in other_news:
-                try:
-                    article_title = article.text
-                    article_url = self.url + article['href']
-                    article_image = article.find('img')['src'].split('?')[0]
+                for article in other_news:
+                    try:
+                        article_title = article.text
+                        article_url = self.url + article['href']
+                        article_image = article.find(
+                            'img')['src'].split('?')[0]
 
-                    articles.append(
-                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-                except Exception as e:
-                    print(e)
-                    pass
+                        articles.append(
+                            {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    except Exception as e:
+                        print(e)
+                        pass
 
-            scraped_news.extend(articles)
-            return articles
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(f'{self.url}/en/bundesliga is not working')
+            print(e, '\n\n')
+            pass

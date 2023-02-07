@@ -14,28 +14,33 @@ class FreeCodeCampScraper(Scraper):
         Scraper.__init__(self, 'FreeCodeCamp Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self.url + '/news')
-        async with async_client.get(self.url + '/news', headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
-            news = soup.find_all('article', {'class': 'post-card'})
+        try:
+            print(self.url + '/news')
+            async with async_client.get(self.url + '/news', headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+                news = soup.find_all('article', {'class': 'post-card'})
 
-            articles = []
+                articles = []
 
-            for article in news:
-                article_title = article.find(
-                    'h2', {'class': 'post-card-title'}).text
-                article_image = article.select_one(
-                    '.post-card-image-link img')['src']
-                article_url = article.find(
-                    'h2', {'class': 'post-card-title'}).find('a')['href']
+                for article in news:
+                    article_title = article.find(
+                        'h2', {'class': 'post-card-title'}).text
+                    article_image = article.select_one(
+                        '.post-card-image-link img')['src']
+                    article_url = article.find(
+                        'h2', {'class': 'post-card-title'}).find('a')['href']
 
-                articles.append({'title': article_title.strip(), 'url': self.url +
-                                article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    articles.append({'title': article_title.strip(), 'url': self.url +
+                                    article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-            scraped_news.extend(articles)
-            # print(articles)
-            return articles
+                scraped_news.extend(articles)
+                # print(articles)
+                return articles
+        except Exception as e:
+            print(self.url + '/news is not working')
+            print(e, '\n\n');
+            pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
@@ -61,41 +66,46 @@ class TechCrunchScraper(Scraper):
         Scraper.__init__(self, 'TechCrunch Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(self.url)
-        async with async_client.get(self.url, headers=self.headers) as response:
-            html_text = await response.text()
-            soup = BeautifulSoup(html_text, 'html.parser')
-            all_articles = soup.find_all('div', {'class': 'post-block'})
+        try:
+            print(self.url)
+            async with async_client.get(self.url, headers=self.headers) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+                all_articles = soup.find_all('div', {'class': 'post-block'})
 
-            articles = []
+                articles = []
 
-            for article in all_articles:
-                
-                article_title_element = article.find('a', {'class': 'post-block__title__link'})
-                article_title = ''
-                
-                if article_title_element is not None:
-                    article_title = article_title_element.text;
+                for article in all_articles:
                     
-                article_url_element = article.find('a', {'class': 'post-block__title__link'})
-                article_url = ''
-                
-                if article_url_element is not None:
-                    article_url = article_title_element['href']
+                    article_title_element = article.find('a', {'class': 'post-block__title__link'})
+                    article_title = ''
                     
+                    if article_title_element is not None:
+                        article_title = article_title_element.text;
+                        
+                    article_url_element = article.find('a', {'class': 'post-block__title__link'})
+                    article_url = ''
                     
-                article_image_element = article.find('img')
-                article_image = ''
-                
-                if article_image_element is not None:
-                    article_image = article_image_element['src']
-                
+                    if article_url_element is not None:
+                        article_url = article_title_element['href']
+                        
+                        
+                    article_image_element = article.find('img')
+                    article_image = ''
+                    
+                    if article_image_element is not None:
+                        article_image = article_image_element['src']
+                    
 
-                articles.append(
-                    {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                    articles.append(
+                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 
-            scraped_news.extend(articles)
-            return scraped_news
+                scraped_news.extend(articles)
+                return scraped_news
+        except Exception as e:
+            print(self.url + ' is not working')
+            print(e, '\n\n');
+            pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url, headers=self.headers).text

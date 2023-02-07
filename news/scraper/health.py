@@ -13,29 +13,35 @@ class VeryWellMindScraper(Scraper):
         Scraper.__init__(self, 'VeryWellMind Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        print(f'scraping {self.url}\n\n');
-        async with async_client.get(self.url, headers=self.headers) as response:
-            request_text = await response.text()
-            soup = BeautifulSoup(request_text, 'html.parser')
+        try:
+            print(f'scraping {self.url}\n\n')
+            async with async_client.get(self.url, headers=self.headers) as response:
+                request_text = await response.text()
+                soup = BeautifulSoup(request_text, 'html.parser')
 
-            articles = []
+                articles = []
 
-            for article in soup.select('.mntl-document-card'):
+                for article in soup.select('.mntl-document-card'):
 
-                article_title = article.select_one('.card__title-text').text
-                image = article.find('img')
-                article_image = ''
+                    article_title = article.select_one(
+                        '.card__title-text').text
+                    image = article.find('img')
+                    article_image = ''
 
-                if image:
-                    article_image = image.attrs['data-src']
+                    if image:
+                        article_image = image.attrs['data-src']
 
-                article_url = article['href']
+                    article_url = article['href']
 
-                articles.append({'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {
-                                'website': self.title, 'favicon': self.favicon}})
+                    articles.append({'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {
+                                    'website': self.title, 'favicon': self.favicon}})
 
-            scraped_news.extend(articles)
-            return articles
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(self.url, 'is not working')
+            print(e)
+            pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url).text
@@ -43,9 +49,7 @@ class VeryWellMindScraper(Scraper):
 
         article_content = soup.find(
             'div', class_='comp structured-content article-content expert-content right-rail__offset lock-journey health-sc-page mntl-sc-page mntl-block')
-        
+
         print(article_content)
 
         return md(str(article_content))
-
-# print(VeryWellMindScraper().scrape())
