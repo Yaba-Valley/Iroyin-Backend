@@ -15,6 +15,7 @@ class GlamourScraper(Scraper):
         Scraper.__init__(self, 'Glamour Scraper')
 
     async def scrape(self, async_client, scraped_news):
+        print(f'scraping {self.url}/topic/{self.topic}\n\n');
         async with async_client.get(self.url+'/topic/'+self.topic, headers=self.headers) as response:
             articles = []
             request_text = await response.text()
@@ -45,6 +46,7 @@ class PeopleScraper(Scraper):
         Scraper.__init__(self, 'People Scraper')
 
     async def scrape(self, async_client, scraped_news):
+        print('scraping', self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             articles = []
             response_text = await response.text()
@@ -54,7 +56,6 @@ class PeopleScraper(Scraper):
                 try:
                     article_title = article.find(
                         'span', class_='card__title-text').text
-                    print(article.find('img'))
                     article_image = article.find('img')['data-src']
                     article_url = article['href']
 

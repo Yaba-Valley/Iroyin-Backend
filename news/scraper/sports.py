@@ -32,19 +32,27 @@ class PunchScraper(Scraper):
         Scraper.__init__(self, 'Punch Scraper')
 
     async def scrape(self, async_client, scraped_news):
-
+        print('scraping', self.url);
+        
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
-            
+
             all_articles = soup.find_all('article')
             headlines = []
-            
+
             print(len(all_articles))
 
             for i in all_articles:
                 try:
-                    img = i.find('img').get('data-src')
+                    img = i.find('img').attrs.get('data-src')
+                    img_src_set = i.find('img').attrs.get('data-srcset')
+                    
+                    if img_src_set:
+                        last_src_set = img_src_set.split(', ')[-1];
+                        img = last_src_set.split(' ')[0]
+                        print('has srcset', img)
+                        
                     news = i.find('a').text.strip()
                     link = i.find('a')['href']
                     headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
@@ -53,13 +61,10 @@ class PunchScraper(Scraper):
                     img = 'https://cdn.punchng.com/wp-content/uploads/2021/05/16175056/IMG-20210516-WA0002.jpg'
                     news = i.find('a').text.strip()
                     link = i.find('a')['href']
-                    
+
                     print(img, news, link, self.url)
                     headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
                                      'website': self.website, 'favicon': self.favicon}})
-                
-                    
-                    
 
             scraped_news.extend(headlines)
             return scraped_news
@@ -75,18 +80,19 @@ class GoalDotComScraper(Scraper):
         Scraper.__init__(self, 'goal.com scraper')
 
     async def scrape(self, async_client, scraped_news):
-
+        
+        print(f'{self.url}/en-ng/news/1');
+        
         async with async_client.get(self.url + '/en-ng/news/1') as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
-            value = soup.find_all('tr')
+            value = soup.find_all('article')
             headlines = []
 
             for i in value:
                 try:
                     img = i.find('img').get('src').split('?')[0]
-                    news = i.find(
-                        'h3', {'class': 'widget-news-card__title'})['title']
+                    news = i.find('h3', class_='title h5').text
                     link = self.url+i.find('a')['href']
                     headlines.append({'title': news, 'url': link, 'img': img, 'metadata': {
                                      'website': self.website, 'favicon': self.favicon}})
@@ -114,7 +120,7 @@ class SkySportScraper(Scraper):
         Scraper.__init__(self, 'SkySport Scraper')
 
     async def scrape(self, async_client, scraped_news):
-
+        print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -133,7 +139,7 @@ class SkySportScraper(Scraper):
 
         article_content = soup.find(
             'div', class_='sdc-article-body sdc-article-body--lead')
-        
+
         return md(str(article_content))
 
 
@@ -146,6 +152,7 @@ class EPLScraper(Scraper):
         Scraper.__init__(self, 'EPL Scraper')
 
     async def scrape(self, async_client, scraped_news):
+        print(f'{self.url}/news')
 
         async with async_client.get(self.url+'/news', headers=self.headers) as response:
             html_text = await response.text()
@@ -157,12 +164,12 @@ class EPLScraper(Scraper):
 
             scraped_news.extend(headlines)
             return headlines
-    
+
     def scrape_news_content(self, url):
-        res_text = requests.get(url = url).text
+        res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
-        
-        article_content = soup.find('section', class_ = 'standardArticle')
+
+        article_content = soup.find('section', class_='standardArticle')
         return md(str(article_content))
 
 
@@ -176,7 +183,7 @@ class LaLigaScraper(Scraper):
         Scraper.__init__(self, 'LaLiga Scraper')
 
     async def scrape(self, async_client, scraped_news):
-
+        print(self.url + '/en-ES/news')
         async with async_client.get(self.url + '/en-ES/news') as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -210,7 +217,7 @@ class BundesligaScraper(Scraper):
         Scraper.__init__(self, 'Bundesliga Scraper')
 
     async def scrape(self, async_client, scraped_news):
-
+        print(self.url + '/en/bundesliga')
         async with async_client.get(self.url + '/en/bundesliga', headers=self.headers) as response:
 
             articles = []

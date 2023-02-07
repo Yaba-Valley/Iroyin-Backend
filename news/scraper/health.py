@@ -13,6 +13,7 @@ class VeryWellMindScraper(Scraper):
         Scraper.__init__(self, 'VeryWellMind Scraper')
 
     async def scrape(self, async_client, scraped_news):
+        print(f'scraping {self.url}\n\n');
         async with async_client.get(self.url, headers=self.headers) as response:
             request_text = await response.text()
             soup = BeautifulSoup(request_text, 'html.parser')

@@ -14,7 +14,7 @@ class FreeCodeCampScraper(Scraper):
         Scraper.__init__(self, 'FreeCodeCamp Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        # print(self)
+        print(self.url + '/news')
         async with async_client.get(self.url + '/news', headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -61,7 +61,7 @@ class TechCrunchScraper(Scraper):
         Scraper.__init__(self, 'TechCrunch Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        # print(self.url)
+        print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -126,7 +126,7 @@ class TechTrendsAfricaScraper(Scraper):
         Scraper.__init__(self, 'Tech Trends Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        # print(self)
+        print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -171,7 +171,7 @@ class GizModoScraper:
         Scraper.__init__(self, 'GizModo Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        # print(self)
+        print(self.url)
         async with async_client.get(self.url) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -215,7 +215,7 @@ class TheNextWebScraper(Scraper):
         Scraper.__init__(self, 'TheNextWeb Scraper')
 
     async def scrape(self, async_client, scraped_news):
-        # print(self)
+        print(self.url + self.category)
 
         articles = []
         async with async_client.get(self.url + self.category) as response:
@@ -257,12 +257,8 @@ class TheNextWebScraper(Scraper):
         response_text = requests.get(url=url).text
         soup = BeautifulSoup(response_text, 'html.parser')
 
-        print(soup)
-
         article_content = soup.find(
             'main', class_='c-article__main max-lg:mb-xxl')
-
-        print(str(article_content))
 
         return md(str(article_content))
 
@@ -277,7 +273,7 @@ class GlassDoorScraper:
 
     async def scrape(self, async_client, scraped_news):
         articles = []
-
+        print(self.url + '/blog')
         async with async_client.get(self.url + '/blog') as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
@@ -318,6 +314,7 @@ class NewsBlockScraper(Scraper):
         Scraper.__init__(self, 'NewsBlock Scraper')
 
     async def scrape(self, async_client, scraped_news):
+        print(self.url)
         async with async_client.get(self.url, headers=self.headers) as response:
             html_text = await response.text()
             soup = BeautifulSoup(html_text, 'html.parser')
