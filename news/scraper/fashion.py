@@ -10,6 +10,10 @@ class GlamourScraper(Scraper):
         self.url = 'https://www.glamourmagazine.co.uk'
         self.title = 'Glamour'
         self.topic = topic
+        """ 
+        topic can be either of the following:
+        makeup, hair, skin, fashion, empowerment, entertainment, wellness, 
+        """
         self.favicon = 'https://www.glamourmagazine.co.uk/verso/static/glamour-international/assets/favicon.ico'
 
         Scraper.__init__(self, 'Glamour Scraper')

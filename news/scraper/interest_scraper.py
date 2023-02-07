@@ -1,8 +1,8 @@
-from re import T
 from news.scraper.fashion import GlamourScraper, PeopleScraper
 from news.scraper.health import VeryWellMindScraper
 from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
-from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper
+from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper
+from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
 
 
 INTEREST_TO_SCRAPER_MAP = {
@@ -20,6 +20,7 @@ INTEREST_TO_SCRAPER_MAP = {
         PeopleScraper(topic='politics'),
         TechCrunchScraper('politics'),
         TechCrunchScraper('nigeria'),
+        InvestopediaScraper('political-news'),
     ],
     "BUSINESS": [
         PunchScraper(topic='business'),
@@ -30,6 +31,7 @@ INTEREST_TO_SCRAPER_MAP = {
         TechTrendsAfricaScraper(category='startups'),
         GlassDoorScraper(),
         TheNextWebScraper(category='growth-quarters'),
+        InvestopediaScraper('economic-news')
     ],
     "ENTERTAINMENT": [
         PunchScraper(topic='entertainment'),
@@ -42,7 +44,8 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('venture'),
         TechCrunchScraper('finance'),
         TechTrendsAfricaScraper(category='business'),
-        TechTrendsAfricaScraper(category='startups'),                           
+        TechTrendsAfricaScraper(category='startups'),
+        InvestopediaScraper('company-news')
     ],
     "FASHION": [
         GlamourScraper(topic='skin'),
@@ -58,7 +61,8 @@ INTEREST_TO_SCRAPER_MAP = {
         TheNextWebScraper(category='hardfork'),
         TechCrunchScraper('crypto'),
         # NewsBlockScraper(),
-        TechTrendsAfricaScraper(category='blockchain')
+        TechTrendsAfricaScraper(category='blockchain'),
+        InvestopediaScraper('crypto-news')
     ],
     "HEALTH": [
         VeryWellMindScraper(),
@@ -69,6 +73,12 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('apps'),
         TechCrunchScraper('hardware'),
         TechCrunchScraper('security'),
+        FreeCodeCampScraper()  
+    ],
+    'FINANCE': [
+        FinanceSamuraiScraper(),
+        InvestopediaScraper('market-news'),
+        InvestopediaScraper('personal-finance-news')
     ],
     'PROGRAMMING': [],
     'MEN\'S FASHION': [],

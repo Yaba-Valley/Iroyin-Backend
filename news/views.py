@@ -10,6 +10,7 @@ from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScr
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from news.scraper.fashion import PeopleScraper
 from news.scraper.health import VeryWellMindScraper
+from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
 from authentication.models import User
 
 
@@ -30,7 +31,7 @@ class Get_News(APIView):
             for news in recommended:
                 news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
                                          'website': news['website_name'], 'favicon': news['website_favicon']}})
-            
+
             return JsonResponse({
                 'news': news_for_frontend,
                 'current_page': page_number,
@@ -75,7 +76,7 @@ class Indicate_Interaction(APIView):
         request_body = json.loads(request_body_unicode)
         news_url = request_body['news_url']
         effect = request_body['effect']
-        
+
         """ 
         the `effect` field is either "POSITIVE" or "NEGATIVE", 
         positive is when the the effect is going to increase the value of the database, eg, liking or saving a news
@@ -84,14 +85,14 @@ class Indicate_Interaction(APIView):
         
         the `action` field is either of the following: READ, LIKE, SAVE, SHARE
         """
-        
-        action = request_body['action'] 
-        
+
+        action = request_body['action']
+
         try:
-            active_user = User.objects.get(id = request.user.id)
+            active_user = User.objects.get(id=request.user.id)
             print(active_user, request.user)
             current_news = get_object_or_404(News, url=news_url)
-            
+
             if action.upper() == 'SHARE':
                 if effect == 'POSITIVE':
                     active_user.shared_news.add(current_news)
@@ -107,11 +108,10 @@ class Indicate_Interaction(APIView):
                     active_user.saved_news.add(current_news)
                 else:
                     active_user.saved_news.remove(current_news)
-            elif action.upper() == 'READ':       
+            elif action.upper() == 'READ':
                 active_user.newInteractedWith.add(current_news)
             else:
                 active_user.newInteractedWith.add(current_news)
-                
 
         except Http404:
             return JsonResponse({'message': f'News with url {news_url} does not exist', 'success': False})
@@ -167,6 +167,10 @@ class Get_News_Content(APIView):
                 text_content = TechTrendsAfricaScraper().scrape_news_content(url=url)
             elif news.website_name == 'FreeCodeCamp':
                 text_content = FreeCodeCampScraper().scrape_news_content(url=url)
+            elif news.website_name == 'FinanceSamurai':
+                text_content = FinanceSamuraiScraper().scrape_news_content(url=url)
+            elif news.website_favicon == 'Investopedia':
+                text_content = InvestopediaScraper().scrape_news_content(url=url)
 
         news.read_count += 1
         if not text_content == 'None':
@@ -240,9 +244,9 @@ class Redirect_To_App(APIView):
         news_url = request.GET.get('url')
         route = request.GET.get('route')
         host = request.GET.get('host')
-        
+
         news = News.objects.get(url=news_url)
-        
+
         expo_url = f'{host}{route}?title={news.title}&url={news.url}&img={news.img}&favicon={news.website_favicon}&website={news.website_name}'
 
         return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})
