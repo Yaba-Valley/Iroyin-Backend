@@ -51,14 +51,34 @@ class FreeCodeCampScraper(Scraper):
 
 
 class TechCrunchScraper(Scraper):
-    def __init__(self, isNigeria=True, isStartups=False):
-
-        if isNigeria:
-            self.url = 'https://techcrunch.com/tag/nigeria'
-        elif isStartups:
-            self.url = 'https://techcrunch.com/startups'
+    def __init__(self, category = 'plus'):
+        """ 
+        category can be any of the following:
+        [plus, startups, venture, security, crypto, apps, fintech, hardware, transportation, entertainment, nigeria]
+        """
+        if category == 'plus':
+            self.url = 'https://techcrunch.com/techcrunchplus'
+        elif category == 'startups':
+            self.url = 'https://techcrunch.com/category/startups/'
+        elif category == 'venture':
+            self.url = 'https://techcrunch.com/category/venture/'
+        elif category == 'security':
+            self.url = 'https://techcrunch.com/category/security/'
+        elif category == 'crypto':
+            self.url = 'https://techcrunch.com/category/cryptocurrency/'
+        elif category == 'apps':
+            self.url = 'https://techcrunch.com/category/apps/'
+        elif category == 'fintech':
+            self.url = 'https://techcrunch.com/category/fintech/'
+        elif category == 'hardware':
+            self.url = 'https://techcrunch.com/category/hardware/'
+        elif category == 'transportation':
+            self.url = 'https://techcrunch.com/category/transportation/'
+        elif category == 'entertainment':
+            self.url = 'https://techcrunch.com/category/media-entertainment/'
         else:
-            self.url = "https://techcrunch.com/category/cryptocurrency/"
+            self.url = 'https://techcrunch.com/tag/nigeria'
+            
 
         self.title = 'TechCrunch'
         self.favicon_url = 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png?w=60'

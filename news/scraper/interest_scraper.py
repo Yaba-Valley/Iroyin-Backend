@@ -12,29 +12,35 @@ INTEREST_TO_SCRAPER_MAP = {
         GoalDotComScraper(),
         SkySportScraper(),
         EPLScraper(),
-        BundesligaScraper()
+        BundesligaScraper(),
+        TechCrunchScraper('sports')
     ],
     "POLITICS": [
         PunchScraper(topic = 'politics'),
         PeopleScraper(topic='politics'),
+        TechCrunchScraper('politics'),
+        TechCrunchScraper('nigeria'),
     ],
     "BUSINESS": [
         PunchScraper(topic='business'),
-        TechCrunchScraper(isNigeria=True, isStartups=False),
-        TechCrunchScraper(isNigeria=False, isStartups=True),
+        TechCrunchScraper('business'),
+        TechCrunchScraper('fintech'),
+        TechCrunchScraper('plus'),
         TechTrendsAfricaScraper(category='business'),
         TechTrendsAfricaScraper(category='startups'),
         GlassDoorScraper(),
-        TheNextWebScraper(category='growth-quarters')
+        TheNextWebScraper(category='growth-quarters'),
     ],
     "ENTERTAINMENT": [
-        # PunchScraper(topic='entertainment'),
+        PunchScraper(topic='entertainment'),
         PeopleScraper(topic='entertainment'),
+        TechCrunchScraper('entertainment'),
         GlamourScraper()
     ],
     "STARTUPS & FUNDING": [
-        TechCrunchScraper(isNigeria=True, isStartups=False),
-        TechCrunchScraper(isNigeria=False, isStartups=True),
+        TechCrunchScraper('startups'),
+        TechCrunchScraper('venture'),
+        TechCrunchScraper('finance'),
         TechTrendsAfricaScraper(category='business'),
         TechTrendsAfricaScraper(category='startups'),                           
     ],
@@ -50,6 +56,7 @@ INTEREST_TO_SCRAPER_MAP = {
     ],
     "CRYPTO": [
         TheNextWebScraper(category='hardfork'),
+        TechCrunchScraper('crypto'),
         # NewsBlockScraper(),
         TechTrendsAfricaScraper(category='blockchain')
     ],
@@ -58,7 +65,11 @@ INTEREST_TO_SCRAPER_MAP = {
         PeopleScraper(topic = 'health'),
         GlamourScraper(topic = 'wellness')   
     ],
-    'TECH': [],
+    'TECH': [
+        TechCrunchScraper('apps'),
+        TechCrunchScraper('hardware'),
+        TechCrunchScraper('security'),
+    ],
     'PROGRAMMING': [],
     'MEN\'S FASHION': [],
     'WOMEN\'S FASHION': [],
