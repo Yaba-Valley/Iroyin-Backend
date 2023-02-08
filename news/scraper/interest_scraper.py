@@ -1,14 +1,14 @@
 from news.scraper.fashion import GlamourScraper, PeopleScraper
-from news.scraper.health import VeryWellMindScraper
+from news.scraper.health import VeryWellMindScraper, VeryWellHealthScraper, VeryWellFamilyScraper, VeryWellFitScraper
 from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
-from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper
+from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper, BitcoinNewsScraper
 from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
 
 
 INTEREST_TO_SCRAPER_MAP = {
     'SPORTS': [
-        PunchScraper(topic='sports'), 
-        LaLigaScraper(), 
+        PunchScraper(topic='sports'),
+        LaLigaScraper(),
         GoalDotComScraper(),
         SkySportScraper(),
         EPLScraper(),
@@ -16,7 +16,7 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('sports')
     ],
     "POLITICS": [
-        PunchScraper(topic = 'politics'),
+        PunchScraper(topic='politics'),
         PeopleScraper(topic='politics'),
         TechCrunchScraper('politics'),
         TechCrunchScraper('nigeria'),
@@ -60,20 +60,24 @@ INTEREST_TO_SCRAPER_MAP = {
     "CRYPTO": [
         TheNextWebScraper(category='hardfork'),
         TechCrunchScraper('crypto'),
+        BitcoinNewsScraper(),
         # NewsBlockScraper(),
         TechTrendsAfricaScraper(category='blockchain'),
         InvestopediaScraper('crypto-news')
     ],
     "HEALTH": [
         VeryWellMindScraper(),
-        PeopleScraper(topic = 'health'),
-        GlamourScraper(topic = 'wellness')   
+        VeryWellHealthScraper(),
+        VeryWellFamilyScraper(),
+        VeryWellFitScraper(),
+        PeopleScraper(topic='health'),
+        GlamourScraper(topic='wellness')
     ],
     'TECH': [
         TechCrunchScraper('apps'),
         TechCrunchScraper('hardware'),
         TechCrunchScraper('security'),
-        FreeCodeCampScraper()  
+        FreeCodeCampScraper()
     ],
     'FINANCE': [
         FinanceSamuraiScraper(),
@@ -87,5 +91,5 @@ INTEREST_TO_SCRAPER_MAP = {
     'NIGERIA': [],
     'LOCAL': [],
     'GLOBAL': [],
-    
+
 }

@@ -389,3 +389,56 @@ class NewsBlockScraper(Scraper):
             print(self.url + ' is not working')
             failed_scrapers.append({ 'url': self.url, 'error': str(e) })
             pass
+
+
+class BitcoinNewsScraper(Scraper):
+    def __init__(self) -> None:
+        Scraper.__init__(self, 'Bitcoin News')
+        self.url = 'https://news.bitcoin.com'
+        self.title = 'Bitcoin News'
+        self.favicon_url = 'https://static.news.bitcoin.com/wp-content/uploads/2019/07/favicon-3.png'
+        
+        
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            articles = []
+            print(self.url)
+            async with async_client.get(self.url) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+
+                for article in soup.select('.story'):
+                    article_title = article.find('h6')
+                    if article_title is not None:
+                        article_title = article_title.text;
+                    else:
+                        article_title = article.find('h5').text
+                        
+                        
+                    article_url = article.find('a')['href']
+                    article_image = article.find('img')
+                                        
+                    if article_image is None:
+                        article_image = ''
+                    else:
+                        article_image = article_image.attrs.get('srcset').split(', ')[-1].split(' ')[0]
+
+                    print(article_title, article_image, article_url)
+                    
+                    articles.append(
+                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            pass
+
+    def scrape_news_content(self, url):
+        response_text = requests.get(url).text
+        soup = BeautifulSoup(response_text)
+        article = soup.find('article', class_='article css-avgnsc css-vtrr42')
+        return md(str(article))
+
+

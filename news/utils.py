@@ -50,7 +50,7 @@ _ProactorBasePipeTransport.__del__ = silence_event_loop_closed(
     _ProactorBasePipeTransport.__del__)
 
 
-async def fetch_news_async(scrapers, news=[]):
+async def fetch_news_async(scrapers, news=[], send_mail = False):
 
     start_time = time.time()
     tasks = []
@@ -66,30 +66,31 @@ async def fetch_news_async(scrapers, news=[]):
 
         time_taken = math.floor(time.time() - start_time)
         print('TIME TAKEN:', time_taken)
+        
+        if send_mail:
+            email_text = render_to_string(
+                'scraperInfo.html', {'failed_scrapers': failed_scrapers, 'time_taken': time_taken})
 
-        email_text = render_to_string(
-            'scraperInfo.html', {'failed_scrapers': failed_scrapers, 'time_taken': time_taken})
+            res = send_email(
+                f'Scraper Information ({len(scrapers)} ran, {len(failed_scrapers)} failed, {len(scrapers) - len(failed_scrapers)} successful)',
+                email_text,
+                [
+                    {
+                        'email': 'jeremiahlena13@gmail.com',
+                        'fullName': 'Jeremiah Lena'
+                    },
+                    {
+                        'email': 'ikpeleambroseobinna@gmail.com',
+                        'fullName': 'Ikepele Ambrose'
+                    },
+                    {
+                        'email': 'odeogberinoluwadamilola@gmail.com',
+                        'fullName': 'Oluwadamilola Odeogberin'
+                    }
+                ]
+            )
 
-        res = send_email(
-            f'Scraper Information ({len(scrapers)} ran, {len(failed_scrapers)} failed, {len(scrapers) - len(failed_scrapers)} successful)',
-            email_text,
-            [
-                {
-                    'email': 'jeremiahlena13@gmail.com',
-                    'fullName': 'Jeremiah Lena'
-                },
-                {
-                    'email': 'ikpeleambroseobinna@gmail.com',
-                    'fullName': 'Ikepele Ambrose'
-                },
-                {
-                    'email': 'odeogberinoluwadamilola@gmail.com',
-                    'fullName': 'Oluwadamilola Odeogberin'
-                }
-            ]
-        )
-
-        # print(res)
+            print(res)
 
         return news
 
@@ -104,8 +105,8 @@ def get_all_scrapers():
     return scrapers
 
 
-def test_scraper(scraper):
+def test_scraper(scraper, send_mail = False):
     news = []
-    asyncio.run(fetch_news_async(scrapers=[scraper], news=news))
+    asyncio.run(fetch_news_async(scrapers=[scraper], news=news, send_mail = send_mail))
 
     return news

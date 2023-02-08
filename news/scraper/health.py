@@ -10,7 +10,7 @@ class VeryWellMindScraper(Scraper):
         self.title = 'VeryWellMind'
         self.favicon = 'https://www.verywellmind.com/favicon.ico'
 
-        Scraper.__init__(self, 'VeryWellMind Scraper')
+        Scraper.__init__(self, 'VeryWellMind')
 
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
@@ -40,7 +40,7 @@ class VeryWellMindScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url, 'is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
@@ -53,3 +53,30 @@ class VeryWellMindScraper(Scraper):
         print(article_content)
 
         return md(str(article_content))
+
+
+class VeryWellHealthScraper(VeryWellMindScraper):
+
+    def __init__(self) -> None:
+        VeryWellMindScraper.__init__(self)
+        self.url = 'https://www.verywellhealth.com/health-news-4844929'
+        self.title = 'VeryWellHealth'
+        self.favicon = 'https://www.verywellhealth.com/favicon.ico'
+
+
+class VeryWellFitScraper(VeryWellMindScraper):
+
+    def __init__(self) -> None:
+        VeryWellMindScraper.__init__(self)
+        self.url = 'https://www.verywellfit.com/nutrition-and-fitness-news-4844931'
+        self.title = 'VeryWellFit'
+        self.favicon = 'https://www.verywellfit.com/favicon.ico'
+
+
+class VeryWellFamilyScraper(VeryWellMindScraper):
+    
+    def __init__(self) -> None:
+        VeryWellMindScraper.__init__(self)
+        self.url = 'https://www.verywellfamily.com/family-news-4844932'
+        self.title = 'VeryWellFamily'
+        self.favicon = 'https://www.verywellfamily.com/favicon.ico'
