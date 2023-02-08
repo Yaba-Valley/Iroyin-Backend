@@ -30,7 +30,7 @@ def get_interacted_and_new_news(id):
             SELECT news_news.*
             FROM news_news
             LEFT OUTER JOIN authentication_user_newInteractedWith ON news_news.id= authentication_user_newInteractedWith.news_id
-            WHERE (authentication_user_newInteractedWith.user_id <> {id} OR authentication_user_newInteractedWith.user_id IS NULL) AND time_added >= now() - INTERVAL 1 DAY
+            WHERE (authentication_user_newInteractedWith.user_id <> {id} OR authentication_user_newInteractedWith.user_id IS NULL) AND time_added >= now() - INTERVAL 7 DAY
             ORDER BY time_added DESC
             '''
     last_24_hours_uninteracted_by_user = pd.read_sql_query(query, engine)
