@@ -33,9 +33,30 @@ def get_interacted_and_new_news(id):
                             INNER JOIN authentication_user_liked_news        
                                 ON news_news.id=authentication_user_liked_news.news_id
                             WHERE authentication_user_liked_news.user_id={id} )
+                            
+                            UNION ALL
+                            
+                            (SELECT 
+                                news_news.title
+                                , news_news.id         
+                            FROM news_news
+                            INNER JOIN authentication_user_saved_news        
+                                ON news_news.id=authentication_user_saved_news.news_id
+                            WHERE authentication_user_saved_news.user_id={id} )
+                            
+                            UNION ALL
+                            
+                            (SELECT 
+                                news_news.title
+                                , news_news.id         
+                            FROM news_news
+                            INNER JOIN authentication_user_shared_news        
+                                ON news_news.id=authentication_user_shared_news.news_id
+                            WHERE authentication_user_shared_news.user_id={id} )
+                            
                         ) AS Interact
                 GROUP BY title
-                WHERE  title LIKE '%Biden Admin Commits Over $300 Million to Support Kids\' Mental Health%'
+                ORDER BY count DESC
                 """
 
     interacted = pd.read_sql_query(query, engine)
