@@ -57,9 +57,10 @@ class Search_News(APIView):
             return Response({'res': []}, status=200)
         else:
             try:
-                title_qs = News.objects.filter(title__icontains=title)
+                title_qs = News.objects.filter(
+                    title__icontains=title).order_by('-time_added')
                 website_name_qs = News.objects.filter(
-                    website_name__icontains=title)
+                    website_name__icontains=title).order_by('-time_added')
                 union_qs = title_qs.union(website_name_qs)[0:10]
 
                 search_news = [news.serialize() for news in union_qs]

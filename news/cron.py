@@ -11,7 +11,7 @@ def fetch_news():
     
     scraped_news = []
 
-    asyncio.run(fetch_news_async(scrapers, scraped_news))
+    asyncio.run(fetch_news_async(scrapers, scraped_news, True))
 
     news_before_db = [News(title=news['title'], url=news['url'], img=news['img'], website_name=news['metadata']
                            ['website'], website_favicon=news['metadata']['favicon']) for news in scraped_news]
