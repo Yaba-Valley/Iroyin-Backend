@@ -19,14 +19,48 @@ engine = create_engine(path)
 
 def get_interacted_and_new_news(id):
 
-    query = f"""SELECT 
-	                news_news.title
-                    , news_news.id         
-                FROM news_news
-                INNER JOIN authentication_user_newInteractedWith        
-                    ON news_news.id=authentication_user_newInteractedWith.news_id
-                WHERE authentication_user_newInteractedWith.user_id={id}"""
-
+    query = f"""SELECT title, COUNT(title) AS 'count'
+                FROM    (   (SELECT 
+	                        news_news.title
+                            , news_news.id         
+                            FROM news_news
+                            INNER JOIN authentication_user_newInteractedWith        
+                            ON news_news.id=authentication_user_newInteractedWith.news_id
+                            WHERE authentication_user_newInteractedWith.user_id={id})
+                            
+                            UNION ALL
+                            (SELECT 
+                                news_news.title
+                                , news_news.id         
+                            FROM news_news
+                            INNER JOIN authentication_user_liked_news        
+                                ON news_news.id=authentication_user_liked_news.news_id
+                            WHERE authentication_user_liked_news.user_id={id} )
+                            
+                            UNION ALL
+                            
+                            (SELECT 
+                                news_news.title
+                                , news_news.id         
+                            FROM news_news
+                            INNER JOIN authentication_user_saved_news        
+                                ON news_news.id=authentication_user_saved_news.news_id
+                            WHERE authentication_user_saved_news.user_id={id} )
+                            
+                            UNION ALL
+                            
+                            (SELECT 
+                                news_news.title
+                                , news_news.id         
+                            FROM news_news
+                            INNER JOIN authentication_user_shared_news        
+                                ON news_news.id=authentication_user_shared_news.news_id
+                            WHERE authentication_user_shared_news.user_id={id} )
+                            
+                        ) AS Interact
+                GROUP BY title
+                ORDER BY count DESC
+                """
     interacted = pd.read_sql_query(query, engine)
 
 
@@ -51,16 +85,26 @@ def get_interacted_and_new_news(id):
 
 def Machine(id, page):
     train, test = get_interacted_and_new_news(id)
-    vectorizer = TfidfVectorizer(lowercase=True, ngram_range=(1,2), stop_words='english', max_df=0.95, min_df=0.01)
+    vectorizer = TfidfVectorizer(
+        lowercase=True, ngram_range=(1, 2), stop_words='english')
 
-    train_array= vectorizer.fit_transform(train['title'] ).toarray().mean(axis=0) #.apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
-
-    test_array= vectorizer.transform(test['title']) #.apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
-    similarity= cosine_similarity(train_array.reshape(1, -1), test_array)
-    test['similarity']= similarity.T
+    # .apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
+    train_array = vectorizer.fit_transform(
+        train['title']).toarray()
+    
+    train_array=train_array*train['count'].values.reshape(-1,1)
+    
+    train_array= train_array.mean(axis=0)
+    #print(train_array)
+    # .apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
+    test_array = vectorizer.transform(test['title'])
+    similarity = cosine_similarity(train_array.reshape(1, -1), test_array)
+    test['similarity'] = similarity.T
     test.sort_values(by=['similarity'], inplace=True, ascending=False)
-    test.drop(['similarity'], axis=1, inplace= True)
+    test.drop(['similarity'], axis=1, inplace=True)
     test= test.head(page)
     seen=pd.DataFrame({'user_id':[id]*page, 'news_id':test['id'].values})
     seen.to_sql(name='authentication_user_newsSeen', con=engine, if_exists='append', index=False)
+
     return list(test.T.to_dict().values())
+Machine(1,3)
