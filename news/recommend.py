@@ -5,17 +5,20 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 from sqlalchemy import create_engine
 
+#ssh-keygen -t ed25519 -C "ikpeleambroseobinna@gmail.com" 
+
+host=os.environ['DBHOST']
+username=os.environ['DBUSER']
+dbname=os.environ['DBNAME']
+password=os.environ['DBPASS']
+port=os.environ['DBPORT']
+
+path = f'mysql+mysqldb://{username}:{password}@{host}:{port}/{dbname}'
+
+engine = create_engine(path)
 
 def get_interacted_and_new_news(id):
-    host=os.environ['DBHOST']
-    username=os.environ['DBUSER']
-    dbname=os.environ['DBNAME']
-    password=os.environ['DBPASS']
-    port=os.environ['DBPORT']
 
-    path = f'mysql+mysqldb://{username}:{password}@{host}:{port}/{dbname}'
-    print(path)
-    engine = create_engine(path)
     query = f"""SELECT 
 	                news_news.title
                     , news_news.id         
@@ -30,9 +33,15 @@ def get_interacted_and_new_news(id):
     query=  f'''
             SELECT news_news.*
             FROM news_news
-            LEFT OUTER JOIN authentication_user_newInteractedWith ON news_news.id= authentication_user_newInteractedWith.news_id
-            WHERE (authentication_user_newInteractedWith.user_id <> {id} OR authentication_user_newInteractedWith.user_id IS NULL) AND time_added >= now() - INTERVAL 1 DAY
+            WHERE id NOT IN (SELECT news_id
+                            FROM authentication_user_newInteractedWith
+                            WHERE user_id = {id})
+                        AND id NOT IN (SELECT news_id
+                                        FROM authentication_user_newsSeen
+                                        WHERE user_id = {id})
+                        AND time_added >= now() - INTERVAL 7 DAY
             ORDER BY time_added DESC
+            LIMIT 50
             '''
     last_24_hours_uninteracted_by_user= pd.read_sql_query(query, engine)
 
@@ -51,5 +60,7 @@ def Machine(id, page):
     test['similarity']= similarity.T
     test.sort_values(by=['similarity'], inplace=True, ascending=False)
     test.drop(['similarity'], axis=1, inplace= True)
-
-    return list(test.head(page).T.to_dict().values())
+    test= test.head(page)
+    seen=pd.DataFrame({'user_id':[id]*page, 'news_id':test['id'].values})
+    seen.to_sql(name='authentication_user_newsSeen', con=engine, if_exists='append', index=False)
+    return list(test.T.to_dict().values())
