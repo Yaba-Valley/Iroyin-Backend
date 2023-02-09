@@ -119,3 +119,59 @@ class InvestopediaScraper(Scraper):
         text_content = soup.find('div', class_='article-content')
 
         return md(str(text_content))
+
+
+class ForbesScraper(Scraper):
+    def __init__(self, category='news'):
+        self.url = f'https://www.forbes.com/{category}/'
+        self.title = 'Forbes'
+        self.favicon = 'https://i.forbesimg.com/48X48-F.png'
+        super().__init__(self.title)
+
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            print('scraping', self.url)
+            async with async_client.get(self.url, headers=self.headers) as response:
+                articles = []
+                response_text = await response.text()
+                soup = BeautifulSoup(response_text, 'html.parser')
+
+                for article in soup.find_all("article"):
+                    try:
+                        article_title = article.find(
+                            'a', class_='stream-item__title').text
+                        article_url = article.find(
+                            'a', class_='stream-item__title')['href']
+                        article_image = article.find(
+                            'a', class_='stream-item__image').attrs.get('style').split("url(\"")[1].split('?')[0]
+
+                        articles.append(
+                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
+                    except Exception as e:
+                        print(e)
+
+                for article in soup.find_all('div', class_='card'):
+                    try:
+                        article_title = article.find('h2').text
+                        article_url = article.find('a')['href']
+                        article_image = article.find(
+                            'progressive-image').attrs.get('background-image').split('?')[0]
+
+                        articles.append(
+                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
+                    except Exception as e:
+                        print(e)
+
+                scraped_news.extend(articles)
+                return scraped_news
+        except Exception as e:
+            print(self.url, 'is not working')
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
+            pass
+
+    def scrape_news_content(self, url):
+        res_text = requests.get(url).text
+        soup = BeautifulSoup(res_text, 'html.parser')
+        text_content = soup.find('div', class_='entry-content')
+
+        return md(str(text_content))
