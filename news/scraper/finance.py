@@ -116,17 +116,23 @@ class InvestopediaScraper(Scraper):
     def scrape_news_content(self, url):
         res_text = requests.get(url).text
         soup = BeautifulSoup(res_text, 'html.parser')
-        text_content = soup.find('div', class_='article-content')
+        text_content = soup.find('div', class_='comp article-body-content mntl-sc-page mntl-block')
 
         return md(str(text_content))
 
 
 class ForbesScraper(Scraper):
     def __init__(self, category='news'):
+        
+        """ 
+        category can be either of the following:
+        real-estate, leadership, money, lifestyle, innovation, business, small-business, world-billionaires
+        """
         self.url = f'https://www.forbes.com/{category}/'
         self.title = 'Forbes'
         self.favicon = 'https://i.forbesimg.com/48X48-F.png'
         super().__init__(self.title)
+
 
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
@@ -172,6 +178,6 @@ class ForbesScraper(Scraper):
     def scrape_news_content(self, url):
         res_text = requests.get(url).text
         soup = BeautifulSoup(res_text, 'html.parser')
-        text_content = soup.find('div', class_='entry-content')
+        text_content = soup.find('div', class_='article-body')
 
         return md(str(text_content))

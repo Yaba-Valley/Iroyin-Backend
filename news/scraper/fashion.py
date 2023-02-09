@@ -37,8 +37,15 @@ class GlamourScraper(Scraper):
                 return articles
         except Exception as e:
             print(f'{self.url}/topic/{self.topic}')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
+
+    def scrape_news_content(self, url):
+        res_text = requests.get(url).text
+        soup = BeautifulSoup(res_text, 'html.parser')
+        text_content = soup.find('div', class_='body__inner-container')
+
+        return md(str(text_content))
 
 
 class PeopleScraper(Scraper):
@@ -79,7 +86,7 @@ class PeopleScraper(Scraper):
                 return scraped_news
         except Exception as e:
             print(self.url, 'is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):

@@ -2,7 +2,7 @@ from news.scraper.fashion import GlamourScraper, PeopleScraper
 from news.scraper.health import VeryWellMindScraper, VeryWellHealthScraper, VeryWellFamilyScraper, VeryWellFitScraper
 from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
 from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper, BitcoinNewsScraper
-from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
+from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 
 
 INTEREST_TO_SCRAPER_MAP = {
@@ -45,7 +45,10 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('finance'),
         TechTrendsAfricaScraper(category='business'),
         TechTrendsAfricaScraper(category='startups'),
-        InvestopediaScraper('company-news')
+        InvestopediaScraper('company-news'),
+        ForbesScraper('business'),
+        ForbesScraper('small-business'),
+        ForbesScraper('world-billionaires'),
     ],
     "FASHION": [
         GlamourScraper(topic='skin'),
@@ -56,6 +59,7 @@ INTEREST_TO_SCRAPER_MAP = {
         PeopleScraper(topic='beauty'),
         PeopleScraper(topic='style'),
         PeopleScraper(topic='shopping'),
+        ForbesScraper('lifestyle')
     ],
     "CRYPTO": [
         TheNextWebScraper(category='hardfork'),
@@ -77,12 +81,18 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('apps'),
         TechCrunchScraper('hardware'),
         TechCrunchScraper('security'),
-        FreeCodeCampScraper()
+        FreeCodeCampScraper(),
+        ForbesScraper('innovation'),
     ],
     'FINANCE': [
         FinanceSamuraiScraper(),
         InvestopediaScraper('market-news'),
-        InvestopediaScraper('personal-finance-news')
+        InvestopediaScraper('personal-finance-news'),
+        ForbesScraper('leadership'),
+        ForbesScraper('money'),
+    ],
+    'REAL ESTATE': [
+        ForbesScraper('real-estate'),
     ],
     'PROGRAMMING': [],
     'MEN\'S FASHION': [],

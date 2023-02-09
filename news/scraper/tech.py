@@ -423,8 +423,6 @@ class BitcoinNewsScraper(Scraper):
                     else:
                         article_image = article_image.attrs.get('srcset').split(', ')[-1].split(' ')[0]
 
-                    print(article_title, article_image, article_url)
-                    
                     articles.append(
                         {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
 

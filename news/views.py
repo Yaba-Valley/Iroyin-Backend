@@ -8,7 +8,7 @@ from .models import Interest, News
 from .recommend import Machine
 from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
-from news.scraper.fashion import PeopleScraper
+from news.scraper.fashion import PeopleScraper, GlamourScraper
 from news.scraper.health import VeryWellMindScraper
 from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
 from authentication.models import User
@@ -58,10 +58,10 @@ class Search_News(APIView):
         else:
             try:
                 title_qs = News.objects.filter(
-                    title__icontains=title).order_by('-time_added')
+                    title__icontains=title)
                 website_name_qs = News.objects.filter(
-                    website_name__icontains=title).order_by('-time_added')
-                union_qs = title_qs.union(website_name_qs)[0:10]
+                    website_name__icontains=title)
+                union_qs = title_qs.union(website_name_qs).order_by('-time_added')[0:20]
 
                 search_news = [news.serialize() for news in union_qs]
 
@@ -170,8 +170,10 @@ class Get_News_Content(APIView):
                 text_content = FreeCodeCampScraper().scrape_news_content(url=url)
             elif news.website_name == 'FinanceSamurai':
                 text_content = FinanceSamuraiScraper().scrape_news_content(url=url)
-            elif news.website_favicon == 'Investopedia':
+            elif news.website_name == 'Investopedia':
                 text_content = InvestopediaScraper().scrape_news_content(url=url)
+            elif news.website_name == 'Glamour':
+                text_content = GlamourScraper().scrape_news_content(url = url)
 
         news.read_count += 1
         if not text_content == 'None':

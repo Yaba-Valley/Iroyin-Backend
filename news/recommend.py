@@ -75,7 +75,6 @@ def get_interacted_and_new_news(id):
                                         WHERE user_id = {id})
                         AND time_added >= now() - INTERVAL 7 DAY
             ORDER BY time_added DESC
-            LIMIT 50
             '''
     last_7_days_uninteracted_by_user = pd.read_sql_query(query, engine)
 
