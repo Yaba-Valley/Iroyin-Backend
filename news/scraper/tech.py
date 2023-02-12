@@ -39,12 +39,18 @@ class FreeCodeCampScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url + '/news is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         article_content = soup.find('section', class_='post-content')
 
         return md(str(article_content))
@@ -123,17 +129,21 @@ class TechCrunchScraper(Scraper):
                 return scraped_news
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url, headers=self.headers).text
         soup = BeautifulSoup(response_text, 'html.parser')
 
-        featured_img = soup.find('img', class_='article__featured-image')
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         article_content = soup.find('div', class_='article-content')
 
-        return md(str(featured_img) + str(article_content))
+        return md(str(article_content))
 
 
 class TechTrendsAfricaScraper(Scraper):
@@ -184,12 +194,18 @@ class TechTrendsAfricaScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         article_content = soup.find(
             'div', class_='content-inner  jeg_link_underline')
 
@@ -231,7 +247,7 @@ class GizModoScraper:
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
 
@@ -293,12 +309,17 @@ class TheNextWebScraper(Scraper):
                 return scraped_news
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url=url).text
         soup = BeautifulSoup(response_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
 
         article_content = soup.find(
             'main', class_='c-article__main max-lg:mb-xxl')
@@ -344,12 +365,18 @@ class GlassDoorScraper:
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
         soup = BeautifulSoup(response_text)
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         article = soup.find('article', class_='article css-avgnsc css-vtrr42')
         return md(str(article))
 
@@ -387,7 +414,7 @@ class NewsBlockScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
 
@@ -397,8 +424,7 @@ class BitcoinNewsScraper(Scraper):
         self.url = 'https://news.bitcoin.com'
         self.title = 'Bitcoin News'
         self.favicon_url = 'https://static.news.bitcoin.com/wp-content/uploads/2019/07/favicon-3.png'
-        
-        
+
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             articles = []
@@ -410,18 +436,18 @@ class BitcoinNewsScraper(Scraper):
                 for article in soup.select('.story'):
                     article_title = article.find('h6')
                     if article_title is not None:
-                        article_title = article_title.text;
+                        article_title = article_title.text
                     else:
                         article_title = article.find('h5').text
-                        
-                        
+
                     article_url = article.find('a')['href']
                     article_image = article.find('img')
-                                        
+
                     if article_image is None:
                         article_image = ''
                     else:
-                        article_image = article_image.attrs.get('srcset').split(', ')[-1].split(' ')[0]
+                        article_image = article_image.attrs.get(
+                            'srcset').split(', ')[-1].split(' ')[0]
 
                     articles.append(
                         {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
@@ -430,13 +456,17 @@ class BitcoinNewsScraper(Scraper):
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
         soup = BeautifulSoup(response_text)
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+            
         article = soup.find('article', class_='article css-avgnsc css-vtrr42')
         return md(str(article))
-
-

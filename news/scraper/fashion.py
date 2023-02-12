@@ -43,6 +43,12 @@ class GlamourScraper(Scraper):
     def scrape_news_content(self, url):
         res_text = requests.get(url).text
         soup = BeautifulSoup(res_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         text_content = soup.find('div', class_='body__inner-container')
 
         return md(str(text_content))
@@ -92,6 +98,12 @@ class PeopleScraper(Scraper):
     def scrape_news_content(self, url):
         res_text = requests.get(url).text
         soup = BeautifulSoup(res_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         text_content = soup.find('div', class_='article-content')
 
         return md(str(text_content))

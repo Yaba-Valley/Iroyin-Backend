@@ -47,6 +47,11 @@ class VeryWellMindScraper(Scraper):
         res_text = requests.get(url).text
         soup = BeautifulSoup(res_text, 'html.parser')
 
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         article_content = soup.find(
             'div', class_='comp structured-content article-content expert-content right-rail__offset lock-journey health-sc-page mntl-sc-page mntl-block')
 
@@ -74,7 +79,7 @@ class VeryWellFitScraper(VeryWellMindScraper):
 
 
 class VeryWellFamilyScraper(VeryWellMindScraper):
-    
+
     def __init__(self) -> None:
         VeryWellMindScraper.__init__(self)
         self.url = 'https://www.verywellfamily.com/family-news-4844932'

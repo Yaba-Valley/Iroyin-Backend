@@ -67,7 +67,7 @@ class PunchScraper(Scraper):
 
         except Exception as e:
             print(self.url, 'is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
 
@@ -104,12 +104,17 @@ class GoalDotComScraper(Scraper):
                 return headlines
         except Exception as e:
             print(f'{self.url}/en-ng/news/1 is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
         soup = BeautifulSoup(response_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
 
         text_content = soup.find('div', class_='article_content__XFYIz')
 
@@ -140,12 +145,17 @@ class SkySportScraper(Scraper):
                 return headlines
         except Exception as e:
             print(f'{self.url} is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
 
         article_content = soup.find(
             'div', class_='sdc-article-body sdc-article-body--lead')
@@ -177,12 +187,17 @@ class EPLScraper(Scraper):
                 return headlines
         except Exception as e:
             print(f'{self.url}/news is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
     def scrape_news_content(self, url):
         res_text = requests.get(url=url).text
         soup = BeautifulSoup(res_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
 
         article_content = soup.find('section', class_='standardArticle')
         return md(str(article_content))
@@ -224,7 +239,7 @@ class LaLigaScraper(Scraper):
                 return articles
         except Exception as e:
             print(f'{self.url}/en-ES/news is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
 
@@ -277,5 +292,5 @@ class BundesligaScraper(Scraper):
                 return articles
         except Exception as e:
             print(f'{self.url}/en/bundesliga is not working')
-            failed_scrapers.append({ 'url': self.url, 'error': str(e) })
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass

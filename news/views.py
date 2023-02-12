@@ -10,7 +10,7 @@ from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScr
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from news.scraper.fashion import PeopleScraper, GlamourScraper
 from news.scraper.health import VeryWellMindScraper
-from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
+from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 from authentication.models import User
 
 
@@ -61,7 +61,8 @@ class Search_News(APIView):
                     title__icontains=title)
                 website_name_qs = News.objects.filter(
                     website_name__icontains=title)
-                union_qs = title_qs.union(website_name_qs).order_by('-time_added')[0:20]
+                union_qs = title_qs.union(
+                    website_name_qs).order_by('-time_added')[0:20]
 
                 search_news = [news.serialize() for news in union_qs]
 
@@ -173,7 +174,9 @@ class Get_News_Content(APIView):
             elif news.website_name == 'Investopedia':
                 text_content = InvestopediaScraper().scrape_news_content(url=url)
             elif news.website_name == 'Glamour':
-                text_content = GlamourScraper().scrape_news_content(url = url)
+                text_content = GlamourScraper().scrape_news_content(url=url)
+            elif news.website_name == 'Forbes':
+                text_content = ForbesScraper().scrape_news_content(url=url)
 
         news.read_count += 1
         if not text_content == 'None':
