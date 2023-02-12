@@ -9,7 +9,7 @@ from .recommend import Machine
 from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from news.scraper.fashion import PeopleScraper, GlamourScraper
-from news.scraper.health import VeryWellMindScraper
+from news.scraper.health import VeryWellMindScraper, VeryWellFamilyScraper, VeryWellFitScraper, VeryWellHealthScraper
 from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 from authentication.models import User
 
@@ -159,6 +159,12 @@ class Get_News_Content(APIView):
                 text_content = GlassDoorScraper().scrape_news_content(url=url)
             elif news.website_name == 'VeryWellMind':
                 text_content = VeryWellMindScraper().scrape_news_content(url=url)
+            elif news.website_favicon == 'VeryWellHealth':
+                text_content = VeryWellHealthScraper().scrape_news_content(url=url)
+            elif news.website_name == 'VeryWellFit':
+                text_content = VeryWellFitScraper().scrape_news_content(url=url)
+            elif news.website_name == 'VeryWellFamily':
+                text_content = VeryWellFamilyScraper().scrape_news_content(url=url)
             elif news.website_name == 'Sky Sports':
                 text_content = SkySportScraper().scrape_news_content(url=url)
             elif news.website_name == 'Premier League':
