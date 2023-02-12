@@ -142,7 +142,7 @@ class Get_All_Interests(APIView):
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
 
-class Get_News_Content(APIView):
+class Get_News_Details(APIView):
     def get(self, request):
         url = request.GET.get('url')
         news = News.objects.get(url=url)
@@ -189,7 +189,8 @@ class Get_News_Content(APIView):
             news.text_content = text_content
             news.save()
 
-            return JsonResponse({'text': text_content, 'status': 200})
+            return JsonResponse({'title': news.title, 'url': news.url, 'img': news.img, 'metadata': {
+                'website': news.website_name, 'favicon': news.website_favicon}, 'text_content': text_content, 'is_saved': request.user.saved_news.contains(news), 'is_liked': request.user.liked_news.contains(news), 'status': 200})
         else:
             return JsonResponse({'text': None, 'status': 400, 'message': 'Unable to retrieve web content'}, status=400)
 
