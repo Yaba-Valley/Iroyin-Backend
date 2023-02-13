@@ -85,7 +85,7 @@ class Indicate_Interaction(APIView):
         negative is when the effect is going to decrease the value in the database eg, dislking a news or removing a saved news
         
         
-        the `action` field is either of the following: READ, LIKE, SAVE, SHARE
+        the `action` field is either of the following: READ, LIKE, SAVE, SHARE, DISLIKE
         """
 
         action = request_body['action']
@@ -112,6 +112,18 @@ class Indicate_Interaction(APIView):
                     active_user.saved_news.remove(current_news)
             elif action.upper() == 'READ':
                 active_user.newInteractedWith.add(current_news)
+            elif action.upper() == 'DISLIKE':
+                #remove any relationship between the news and the user
+                try:
+                    active_user.shared_news.remove(current_news)
+                    active_user.liked_news.remove(current_news)
+                    active_user.saved_news.remove(current_news)
+                    active_user.newInteractedWith.remove(current_news)
+                except News.DoesNotExist:
+                    print('news does not exist')
+                
+                # the only relationship that should exist is the negative relationship of dislike
+                active_user.disliked_news.add(current_news)
             else:
                 active_user.newInteractedWith.add(current_news)
 
