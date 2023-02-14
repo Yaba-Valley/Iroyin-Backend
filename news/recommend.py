@@ -84,9 +84,9 @@ def Machine(id, page):
         # .apply(lambda x: clean_text(x, flg_stemm=False, flg_lemm=True, lst_stopwords=None))
         train_array = vectorizer.fit_transform(
             train['title']).toarray()
-        train['count']= (0.6*train['saves'].fillna(0))+ (0.4*train['likes'].fillna(0))+ (0.2*train['interactions'].fillna(0)) + (0.0001*train['dislikes'].fillna(0))
+        train['count']= (0.6*train['saves'].fillna(0))+ (0.4*train['likes'].fillna(0))+ (0.2*train['interactions'].fillna(0)) + (0.00001*train['dislikes'].fillna(0))
         
-        train['count']= (train['count']-train['count'].mean())/train['count'].std()
+        #train['count']= (train['count']-train['count'].mean())/train['count'].std()
         
         train_array=train_array*train['count'].values.reshape(-1,1)
         
