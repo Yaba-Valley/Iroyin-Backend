@@ -23,14 +23,14 @@ class Get_News(APIView):
         news_per_page = int(request.GET.get('news_per_page'))
         # first value should be 1
         page_number = int(request.GET.get('page_number'))
-
+        
         try:
             recommended = Machine(request.user.id, news_per_page)
             news_for_frontend = []
 
             for news in recommended:
                 news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
-                                         'website': news['website_name'], 'favicon': news['website_favicon']}})
+                                         'website': news['website_name'], 'favicon': news['website_favicon'], 'time_added': news['time_added']}})
 
             return JsonResponse({
                 'news': news_for_frontend,
