@@ -30,4 +30,4 @@ class News(models.Model):
         return self.title + ' (' + str(self.read_count) + ' reads)'
 
     def serialize(self):
-        return {'title': self.title, 'url': self.url, 'img': self.img, 'metadata': {'website': self.website_name, 'favicon': self.website_favicon}}
+        return {'title': self.title, 'url': self.url, 'img': self.img, 'metadata': {'website': self.website_name, 'favicon': self.website_favicon, 'time_added': self.time_added}}
