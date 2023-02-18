@@ -81,7 +81,6 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('apps'),
         TechCrunchScraper('hardware'),
         TechCrunchScraper('security'),
-        FreeCodeCampScraper(),
         ForbesScraper('innovation'),
     ],
     'FINANCE': [
@@ -94,7 +93,9 @@ INTEREST_TO_SCRAPER_MAP = {
     'REAL ESTATE': [
         ForbesScraper('real-estate'),
     ],
-    'PROGRAMMING': [],
+    'PROGRAMMING': [
+        FreeCodeCampScraper()
+    ],
     'MEN\'S FASHION': [],
     'WOMEN\'S FASHION': [],
     'AFRICA': [],
