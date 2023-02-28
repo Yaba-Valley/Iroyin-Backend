@@ -1,7 +1,7 @@
 from news.scraper.fashion import GlamourScraper, PeopleScraper
 from news.scraper.health import VeryWellMindScraper, VeryWellHealthScraper, VeryWellFamilyScraper, VeryWellFitScraper
 from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
-from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper, BitcoinNewsScraper
+from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper, BitcoinNewsScraper, GizModoScraper, QuartzScraper
 from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 
 
@@ -82,6 +82,15 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('hardware'),
         TechCrunchScraper('security'),
         ForbesScraper('innovation'),
+        GizModoScraper(),
+        GizModoScraper('tech'),
+        GizModoScraper('science'),
+        GizModoScraper('earther'),
+        GizModoScraper('io9'),
+        QuartzScraper('latest'),
+        QuartzScraper('technology'),
+        QuartzScraper('work'),
+        QuartzScraper('sustainability')
     ],
     'FINANCE': [
         FinanceSamuraiScraper(),
@@ -89,6 +98,8 @@ INTEREST_TO_SCRAPER_MAP = {
         InvestopediaScraper('personal-finance-news'),
         ForbesScraper('leadership'),
         ForbesScraper('money'),
+        QuartzScraper('finance and investing'),
+        QuartzScraper('economics')
     ],
     'REAL ESTATE': [
         ForbesScraper('real-estate'),

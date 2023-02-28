@@ -213,17 +213,18 @@ class TechTrendsAfricaScraper(Scraper):
 
 
 class GizModoScraper:
-    def __init__(self):
+    def __init__(self, category = ''):
         self.url = 'https://gizmodo.com/'
         self.title = 'Gizmodo'
+        self.category = category
         self.favicon_url = 'https://i.kinja-img.com/gawker-media/image/upload/h_60,w_60/fdj3buryz5nuzyf2k620.png'
 
         Scraper.__init__(self, 'GizModo Scraper')
 
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
-            print(self.url)
-            async with async_client.get(self.url) as response:
+            print(self.url + self.category)
+            async with async_client.get(self.url + self.category) as response:
                 html_text = await response.text()
                 soup = BeautifulSoup(html_text, 'html.parser')
 
@@ -461,7 +462,7 @@ class BitcoinNewsScraper(Scraper):
 
     def scrape_news_content(self, url):
         response_text = requests.get(url).text
-        soup = BeautifulSoup(response_text)
+        soup = BeautifulSoup(response_text, 'html.parser')
 
         scripts = soup.find_all('script')
 
@@ -469,4 +470,60 @@ class BitcoinNewsScraper(Scraper):
             script.decompose()
             
         article = soup.find('article', class_='article css-avgnsc css-vtrr42')
+        return md(str(article))
+
+
+class QuartzScraper(Scraper):
+    """ 
+    category is either [
+        latest,finance-and-investing,economics,technology,sustainability,lifestyle,work
+    ]
+    """
+    def __init__(self, category = 'latest') -> None:
+        Scraper.__init__(self, 'Quartz')
+        self.url = 'https://qz.com/'
+        self.title = 'Quartz'
+        self.category = category
+        self.favicon_url = 'https://i.kinja-img.com/gawker-media/image/upload/c_fill,f_auto,fl_progressive,g_center,h_80,q_80,w_80/4716932d29f4ef6064940c18eaab1f3d.png'
+
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            articles = []
+            print(self.url + self.category)
+            async with async_client.get(self.url + self.category) as response:
+                html_text = await response.text()
+                soup = BeautifulSoup(html_text, 'html.parser')
+
+                for article in soup.select('article'):
+                    # if self.category == 'work':
+                    #     article_title = article.find('h4').text
+                    #     article_url = article.find('a')['href']
+                    #     article_image = 
+                    article_title = article.find('h2').text
+                    article_url = article.find('a')['href']
+                    article_image_element = article.find('img')
+                    article_image_splitted = article_image_element.attrs.get(
+                        'data-src').split('/c_fill,f_auto,g_center,h_80,q_60,w_80')
+                    article_image = ''.join(article_image_splitted)
+
+                    articles.append(
+                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
+            pass
+
+    def scrape_news_content(self, url):
+        response_text = requests.get(url).text
+        soup = BeautifulSoup(response_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+            
+        article = soup.find('div', id='js_movable-ads-post-contents')
         return md(str(article))
