@@ -12,6 +12,7 @@ from news.scraper.fashion import PeopleScraper, GlamourScraper
 from news.scraper.health import VeryWellMindScraper, VeryWellFamilyScraper, VeryWellFitScraper, VeryWellHealthScraper
 from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 from authentication.models import User
+from news.utils import intersect_queryset_from_list
 
 
 class Get_News(APIView):
@@ -23,7 +24,7 @@ class Get_News(APIView):
         news_per_page = int(request.GET.get('news_per_page'))
         # first value should be 1
         page_number = int(request.GET.get('page_number'))
-        
+
         try:
             recommended = Machine(request.user.id, news_per_page)
             news_for_frontend = []
@@ -57,6 +58,29 @@ class Search_News(APIView):
             return Response({'res': []}, status=200)
         else:
             try:
+                all_words_queryset = []
+
+                for word in title.split(' '):
+                    if len(word) == 1:
+                        continue
+                    elif len(word) <= 3:
+                        all_words_queryset.append(
+                            News.objects.filter(title__icontains=f" {word}").union(
+                                News.objects.filter(title__icontains=f"{word} ")).union(
+                                News.objects.filter(title__icontains=f"\'{word}")).union(
+                                News.objects.filter(title__icontains=f"{word}\'")).union(
+                                News.objects.filter(title__icontains=f"\"{word}")).union(
+                                News.objects.filter(title__icontains=f"{word}\"")).union(
+                                News.objects.filter(title__icontains=f"‘{word}")).union(
+                                News.objects.filter(title__icontains=f"{word}’"))
+                        )
+                    else:
+                        all_words_queryset.append(
+                            News.objects.filter(title__icontains=word))
+
+                contains_all_words_queryset = intersect_queryset_from_list(
+                    all_words_queryset, News)
+
                 title_qs = News.objects.filter(
                     title__icontains=title)
                 website_name_qs = News.objects.filter(
@@ -113,7 +137,7 @@ class Indicate_Interaction(APIView):
             elif action.upper() == 'READ':
                 active_user.newInteractedWith.add(current_news)
             elif action.upper() == 'DISLIKE':
-                #remove any relationship between the news and the user
+                # remove any relationship between the news and the user
                 try:
                     active_user.shared_news.remove(current_news)
                     active_user.liked_news.remove(current_news)
@@ -121,7 +145,7 @@ class Indicate_Interaction(APIView):
                     active_user.newInteractedWith.remove(current_news)
                 except News.DoesNotExist:
                     print('news does not exist')
-                
+
                 # the only relationship that should exist is the negative relationship of dislike
                 active_user.disliked_news.add(current_news)
             else:

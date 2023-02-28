@@ -74,7 +74,6 @@ def get_interacted_and_new_news(id):
 
     return interacted, last_7_days_uninteracted_by_user
 
-
 def Machine(id, page):
     train, test = get_interacted_and_new_news(id)
     if train.shape[0]>5:

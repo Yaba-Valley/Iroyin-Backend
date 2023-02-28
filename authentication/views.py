@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_decode
 from .models import User
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken, TokenError
+from rest_framework.permissions import IsAuthenticated
 
 
 @csrf_exempt
@@ -229,3 +230,28 @@ def verify_token(request):
         return JsonResponse({'message': 'Invalid Token - Expired or Invalid', 'success': False}, status=400)
     except Exception as e:
         return JsonResponse({'message': 'Authorization header not set properly', 'success': False}, status=400)
+
+
+class Set_Push_Notification_Token(APIView):
+
+    authentication_classes = [IsAuthenticated]
+
+    def post(self, request):
+        push_token = request.POST.get('push_token')
+        user = User.objects.get(id=request.user.id)
+        user.push_notification_token = push_token
+        user.save()
+
+        return JsonResponse({'success': True, 'errors': [], 'message': 'Successfully added device token'})
+
+
+class Logout(APIView):
+
+    authentication_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = User.objects.get(id=request.user.id)
+        user.push_notification_token = ''
+        user.save()
+
+        return JsonResponse({'success': True, 'errors': [], 'message': 'Logged out successfully'})

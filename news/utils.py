@@ -50,7 +50,7 @@ _ProactorBasePipeTransport.__del__ = silence_event_loop_closed(
     _ProactorBasePipeTransport.__del__)
 
 
-async def fetch_news_async(scrapers, news=[], send_mail = False):
+async def fetch_news_async(scrapers, news=[], send_mail=False):
 
     start_time = time.time()
     tasks = []
@@ -66,7 +66,7 @@ async def fetch_news_async(scrapers, news=[], send_mail = False):
 
         time_taken = math.floor(time.time() - start_time)
         print('TIME TAKEN:', time_taken)
-        
+
         if send_mail:
             email_text = render_to_string(
                 'scraperInfo.html', {'failed_scrapers': failed_scrapers, 'time_taken': time_taken})
@@ -105,8 +105,69 @@ def get_all_scrapers():
     return scrapers
 
 
-def test_scraper(scraper, send_mail = False):
+def test_scraper(scraper, send_mail=False):
     news = []
-    asyncio.run(fetch_news_async(scrapers=[scraper], news=news, send_mail = send_mail))
+    asyncio.run(fetch_news_async(
+        scrapers=[scraper], news=news, send_mail=send_mail))
 
     return news
+
+
+def send_notification(device_token, message, data):
+    from exponent_server_sdk import PushClient, PushMessage, PushServerError, PushTicketError, DeviceNotRegisteredError
+    from requests.exceptions import ConnectionError, HTTPError
+    
+    response = None
+
+    try:
+        response = PushClient().publish(
+            PushMessage(to=device_token,
+                        body=message,
+                        data=data))
+        print(response)
+    except PushServerError as exc:
+        print('push server error', exc)
+        exit(0)
+    except (ConnectionError, HTTPError) as exc:
+        print('http/connection error', exc)
+        exit(0)
+
+    try:
+        response.validate_response()
+    except DeviceNotRegisteredError:
+        from authentication.models import User
+        
+        user = User.objects.get(push_notification_token = device_token)
+        user.push_token = ''; user.save()
+    except PushTicketError as exc:
+        print('push ticket error', exc)
+        exit(0)
+
+
+def unionize_queryset_from_list(list_of_querysets):
+    if len(list_of_querysets) == 0: return
+    
+    first_queryset = list_of_querysets[0]
+    current_queryset = first_queryset
+    
+    for i in range(1, len(list_of_querysets)):
+        current_queryset = current_queryset.union(list_of_querysets[i])
+    
+    return current_queryset
+
+
+def intersect_queryset_from_list(list_of_querysets, model):
+    if len(list_of_querysets) == 0: return
+    
+    first_queryset = list_of_querysets[0]
+    current_id_values = set(first_queryset.values_list('id', flat = True))
+    
+    for i in range(1, len(list_of_querysets)):
+        ith_id_values = set(list_of_querysets[i].values_list('id', flat = True))
+        current_id_values.intersection_update(ith_id_values)
+        
+    
+    interesected_queryset = model.objects.filter(id__in = current_id_values)
+        
+    return interesected_queryset
+    

@@ -68,10 +68,16 @@ class User(AbstractBaseUser):
     newInteractedWith = models.ManyToManyField(
         to=News, related_name='readers_interacted', verbose_name='News User Interacted With')
     interests = models.ManyToManyField(to=Interest, related_name='users')
-    saved_news = models.ManyToManyField(to = News, related_name = 'savers', verbose_name="news saved")
-    liked_news = models.ManyToManyField(to = News, related_name = 'likers', verbose_name = 'news liked')
-    disliked_news = models.ManyToManyField(to = News, related_name = 'dislikers', verbose_name = 'news disliked')
-    shared_news = models.ManyToManyField(to = News, related_name = 'sharers', verbose_name = 'news shared')
+    saved_news = models.ManyToManyField(
+        to=News, related_name='savers', verbose_name="news saved")
+    liked_news = models.ManyToManyField(
+        to=News, related_name='likers', verbose_name='news liked')
+    disliked_news = models.ManyToManyField(
+        to=News, related_name='dislikers', verbose_name='news disliked')
+    shared_news = models.ManyToManyField(
+        to=News, related_name='sharers', verbose_name='news shared')
+    push_notification_token = models.CharField(
+        max_length=50, verbose_name='Push Notification Token', default='')
 
     USERNAME_FIELD = 'email'
 
