@@ -79,10 +79,10 @@ class Search_News(APIView):
                             News.objects.filter(title__icontains=word))
 
                 contains_all_words_queryset = intersect_queryset_from_list(
-                    all_words_queryset, News)
+                    all_words_queryset, News).union(News.objects.filter(website_name__icontains=title)).order_by('-time_added')
 
-
-                search_news = [news.serialize() for news in contains_all_words_queryset]
+                search_news = [news.serialize()
+                               for news in contains_all_words_queryset]
 
                 return Response({'res': list(search_news)})
             except News.DoesNotExist:
