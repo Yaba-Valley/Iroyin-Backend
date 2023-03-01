@@ -251,8 +251,9 @@ class Request_Password_Reset(APIView):
         try:
             user = User.objects.get(email=user_email)
             TokenGenerator().send_password_reset_mail(request, user)
-        except User.DoesNotExist:
-            return JsonResponse({'message': 'Failed to reset password. User does not exist'}, 404)
+                
+        except Exception:
+            return JsonResponse({'message': 'Failed to reset password. User does not exist'}, status = 404)
 
         return JsonResponse({'message': 'request successful'}, status=200)
 
