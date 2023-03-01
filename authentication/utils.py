@@ -48,7 +48,7 @@ def send_email(subject, body, receipients):
 
 class TokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
-        return (text_type(user.pk) + text_type(timestamp) + text_type(user.is_active))
+        return (text_type(user.pk) + text_type(timestamp) + text_type(user.is_active) + text_type(user.password))
 
     def send_account_activation_mail(self, request, user):
 
