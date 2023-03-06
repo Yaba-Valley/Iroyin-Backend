@@ -20,41 +20,38 @@ engine = create_engine(path)
 
 def get_interacted_and_new_news(id):
 
-    query = f"""SELECT 
-                n.*, 
-                l.likes, 
-                i.interactions, 
-                s.saves,
-                d.dislikes
+    query = f"""
+                SELECT 
+                    n.*, 
+                    COALESCE(l.likes, 0) AS likes, 
+                    COALESCE(i.interactions, 0) AS interactions, 
+                    COALESCE(s.saves, 0) AS saves,
+                    COALESCE(d.dislikes, 0) AS dislikes
                 FROM 
-                news_news n 
+                    news_news n 
                 LEFT JOIN (
-                    SELECT news_id, COUNT(*) AS likes
+                    SELECT news_id, COUNT(CASE WHEN user_id = {id} THEN 1 END) AS likes
                     FROM authentication_user_liked_news
-                    WHERE user_id = {id}
                     GROUP BY news_id
                 ) l ON n.id = l.news_id
                 LEFT JOIN (
-                    SELECT news_id, COUNT(*) AS interactions
+                    SELECT news_id, COUNT(CASE WHEN user_id = {id} THEN 1 END) AS interactions
                     FROM authentication_user_newInteractedWith
-                    WHERE user_id = {id}
                     GROUP BY news_id
                 ) i ON n.id = i.news_id
                 LEFT JOIN (
-                    SELECT news_id, COUNT(*) AS saves
+                    SELECT news_id, COUNT(CASE WHEN user_id = {id} THEN 1 END) AS saves
                     FROM authentication_user_saved_news
-                    WHERE user_id = {id}
                     GROUP BY news_id
                 ) s ON n.id = s.news_id
                 LEFT JOIN (
-                    SELECT news_id, COUNT(*) AS dislikes
+                    SELECT news_id, COUNT(CASE WHEN user_id = {id} THEN 1 END) AS dislikes
                     FROM authentication_user_disliked_news
-                    WHERE user_id = {id}
                     GROUP BY news_id
                 ) d ON n.id = d.news_id
-                HAVING 
-                COALESCE(likes, 0) + COALESCE(interactions, 0) + COALESCE(saves, 0)+ COALESCE(dislikes, 0) > 0
-                                """
+                WHERE 
+                    COALESCE(l.likes, 0) + COALESCE(i.interactions, 0) + COALESCE(s.saves, 0) + COALESCE(d.dislikes, 0) > 0
+            """
     interacted = pd.read_sql_query(query, engine)
     
 
