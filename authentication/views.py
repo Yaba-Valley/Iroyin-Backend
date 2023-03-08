@@ -275,7 +275,7 @@ class Reset_Password(APIView):
             user = User.objects.get(id=user_id)
 
             if TokenGenerator().check_token(token=token, user=user):
-                redirect_url = f'{host}{route}?resetPasswordToken={token}&userId={user_id}'
+                redirect_url = f'{host}{route}?passwordResetToken={token}&userId={user_id}'
                 return render(request, 'redirect_to_app.html', {'redirect_url': redirect_url})
             else:
                 return HttpResponse('400 - Invalid Token')
@@ -285,19 +285,19 @@ class Reset_Password(APIView):
 
 
     # the post request is to handle the actual password change
-    def post(self, request):
+    def post(self, request, uid, token):
         request_body = json.loads(request.body.decode('utf-8'))
         # new password string
         new_password = request_body['new_password'].strip()
         # confirm password string
         confirm_new_password = request_body['confirm_new_password'].strip()
         user_id = request_body['user_id']  # expected to be a number
-        token = request_body['reset_token'].strip()  # password reset token
-
+        reset_token = request_body['reset_token'].strip()  # password reset token
+        
         user = User.objects.get(id=user_id)
 
         # token is valid
-        if not TokenGenerator().check_token(user=user, token=token):
+        if not TokenGenerator().check_token(user=user, token=reset_token):
             return JsonResponse({'message': 'Invalid token. Request password reset again'}, status=400)
 
         # passwords match
