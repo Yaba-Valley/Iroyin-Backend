@@ -13,6 +13,7 @@ from news.scraper.health import VeryWellMindScraper, VeryWellFamilyScraper, Very
 from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 from authentication.models import User
 from news.utils import intersect_queryset_from_list
+import urllib
 
 
 class Get_News(APIView):
@@ -289,7 +290,10 @@ class Redirect_To_App(APIView):
         host = request.GET.get('host')
 
         news = News.objects.get(url=news_url)
+        safe = "~()*!.'"
 
-        expo_url = f'{host}{route}?title={news.title}&url={news.url}&img={news.img}&favicon={news.website_favicon}&website={news.website_name}'
+        expo_url = f'{host}{route}?title={urllib.parse.quote(news.title, safe = safe)}&url={urllib.parse.quote(news.url, safe = safe)}&img={urllib.parse.quote(news.img, safe = safe)}&favicon={urllib.parse.quote(news.website_favicon, safe = safe)}&website={urllib.parse.quote(news.website_name, safe = safe)}'
+
+        print(expo_url)
 
         return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})

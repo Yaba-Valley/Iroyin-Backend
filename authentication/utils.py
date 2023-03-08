@@ -65,13 +65,13 @@ class TokenGenerator(PasswordResetTokenGenerator):
 
         return res.status_code
 
-    def send_password_reset_mail(self, request, user):
+    def send_password_reset_mail(self, request, user, host, route):
 
         site = get_current_site(request).name
         token = self.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         template_string = render_to_string(
-            'requestpasswordreset.html', {'user': user, 'uid': uid, 'token': token, 'site': site})
+            'requestpasswordreset.html', {'user': user, 'uid': uid, 'token': token, 'site': site, 'host': host, 'route': route})
         
         res = send_email('Reset your password', template_string, [
             {'email': user.email, 'fullName': f"{user.first_name} {user.last_name}"}

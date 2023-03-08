@@ -248,12 +248,15 @@ class Request_Password_Reset(APIView):
 
     def get(self, request):
         user_email = request.GET.get('email')
+        host = request.GET.get('host')
+        route = request.GET.get('route')
+        
         try:
             user = User.objects.get(email=user_email)
-            TokenGenerator().send_password_reset_mail(request, user)
-                
+            TokenGenerator().send_password_reset_mail(request, user, host, route)
+
         except Exception:
-            return JsonResponse({'message': 'Failed to reset password. User does not exist'}, status = 404)
+            return JsonResponse({'message': 'Failed to reset password. User does not exist'}, status=404)
 
         return JsonResponse({'message': 'request successful'}, status=200)
 
@@ -265,20 +268,23 @@ class Reset_Password(APIView):
     def get(self, request, uid, token):
         user_id = force_str(urlsafe_base64_decode(uid))
         user_id = int(user_id)
+        host = request.GET.get('host')
+        route = request.GET.get('route')
 
         try:
             user = User.objects.get(id=user_id)
 
             if TokenGenerator().check_token(token=token, user=user):
-                return render(request, 'openresetpasswordscreen.html', {'token': token, 'id': user_id})
+                redirect_url = f'{host}{route}?resetPasswordToken={token}&userId={user_id}'
+                return render(request, 'redirect_to_app.html', {'redirect_url': redirect_url})
             else:
                 return HttpResponse('400 - Invalid Token')
 
         except User.DoesNotExist:
             return HttpResponse('404 - Not Found')
 
-    # the post request is to handle the actual password change
 
+    # the post request is to handle the actual password change
     def post(self, request):
         request_body = json.loads(request.body.decode('utf-8'))
         # new password string
