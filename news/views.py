@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
+from .screenshot import get_image
 from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
 from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from news.scraper.fashion import PeopleScraper, GlamourScraper
@@ -297,3 +298,14 @@ class Redirect_To_App(APIView):
         print(expo_url)
 
         return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})
+
+class Screenshot(APIView):
+
+    def get(self, request):
+        favicon= request.GET.get('favicon')
+        img= request.GET.get('img')
+        website= request.GET.get('website')
+        title= request.GET.get('title')
+        date= request.GET.get('date')
+        
+        return get_image(favicon, img, website, title, date)

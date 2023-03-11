@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import requests
 from io import BytesIO
 import textwrap
+from datetime import datetime
 
 def generate_screenshot(favicon_link, thumbnail_link, newssource, headline, date):
     wrapper= textwrap.TextWrapper(width=30)
@@ -108,14 +109,19 @@ def generate_screenshot(favicon_link, thumbnail_link, newssource, headline, date
 #generate_screenshot('https://external-content.duckduckgo.com/ip3/gazettengr.com.ico', 'https://gazettengr.com/wp-content/uploads/WhatsApp-Image-2023-03-01-at-11.37.18-PM.jpeg', 'Peoples Gazette', 'Nigerian stocks fall on Tinubu’s emergence as president-elect', 'Thur Mar 2, 2023' )
 
 
-def get_image(request):
+def get_image(favicon, img, website, title, date):
     # Get the screenshot
-    image = generate_screenshot() #pass parameter
+    #favicon=https://external-content.duckduckgo.com/ip3/gazettengr.com.ico&img=https://gazettengr.com/wp-content/uploads/WhatsApp-Image-2023-03-01-at-11.37.18-PM.jpeg&website=Peoples Gazette&title=Nigerian stocks fall on Tinubu’s emergence as president-elect&date=Thur Mar 2, 2023
+    #image= generate_screenshot('https://external-content.duckduckgo.com/ip3/gazettengr.com.ico', 'https://gazettengr.com/wp-content/uploads/WhatsApp-Image-2023-03-01-at-11.37.18-PM.jpeg', 'Peoples Gazette', 'Nigerian stocks fall on Tinubu’s emergence as president-elect', 'Thur Mar 2, 2023' )
+    image = generate_screenshot(favicon, img, website, title, date) #pass parameter
 
     # Convert the image to a file object
     buffer = io.BytesIO()
     image.save(buffer, format='PNG')
     buffer.seek(0)
 
+    filename= str(datetime.today())
+    filename= filename.replace(' ', '').replace('-', '').replace(':', '').replace('.', '')
+    filename='Newsway_image_'+filename+'.png'
     # Return the file object as a file response
-    return FileResponse(buffer, as_attachment=True, filename='ReadNews-image.png')
+    return FileResponse(buffer, as_attachment=True, filename=filename)

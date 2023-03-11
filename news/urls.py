@@ -18,6 +18,7 @@ urlpatterns = [
     path('news/get-details/', views.Get_News_Details.as_view(),
          name='get news details'),
     path('news/redirect', views.Redirect_To_App.as_view(), name='redirect to app'),
+    path('news/screenshot/', views.Screenshot.as_view(), name='screenshot a news'),
 
     # STATICS
     path('interests/all', views.Get_All_Interests.as_view(),
