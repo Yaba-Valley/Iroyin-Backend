@@ -68,7 +68,7 @@ def generate_screenshot(favicon_link, thumbnail_link, newssource, headline, date
 
     # Calculate the position of newssource, on top of headline and below the favicon
     new_newssource=f'  {newssource} • '
-    newssource_font = ImageFont.truetype("arial.ttf", 15)
+    newssource_font = ImageFont.truetype("ARIAL.TTF", 15)
     newssource_width, newssource_height = newssource_font.getsize(new_newssource)
     
     newssource_x = favicon_x+favicon_radius
