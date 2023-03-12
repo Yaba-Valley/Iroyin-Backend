@@ -307,5 +307,6 @@ class Screenshot(APIView):
         website= request.GET.get('website')
         title= request.GET.get('title')
         date= request.GET.get('date')
+        mode= request.GET.get('mode')
         
         return get_image(favicon, img, website, title, date)
