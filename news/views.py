@@ -309,4 +309,4 @@ class Screenshot(APIView):
         date= request.GET.get('date')
         mode= request.GET.get('mode')
         
-        return get_image(favicon, img, website, title, date)
+        return get_image(favicon, img, website, title, date, mode)
