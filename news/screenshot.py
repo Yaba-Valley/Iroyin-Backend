@@ -23,11 +23,11 @@ def generate_image(favicon_link, thumbnail_link, newssource, headline, date, mod
     favicon_radius = 25
 
     if mode == 'dark':
-        readnews = Image.open('readnewslogo-dark-mode.png').convert('RGBA')
+        readnews = Image.open('Newsway-Logo-dark.png').convert('RGBA')
     else:
         # put the light mode link here
-        readnews = Image.open('readnewslogo-dark-mode.png').convert('RGBA')
-    readnews_width = 80
+        readnews = Image.open('Newsway-Logo-light.png').convert('RGBA')
+    readnews_width = 100
     readnews_height = readnews_width//4
     readnews = readnews.resize((readnews_width, readnews_height))
 
