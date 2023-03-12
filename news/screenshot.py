@@ -86,7 +86,7 @@ def generate_image(favicon_link, thumbnail_link, newssource, headline, date, mod
 
     # Calculate the position of newssource, on top of headline and below the favicon
     new_newssource = f'  {newssource} • '
-    newssource_font = ImageFont.truetype("arial.ttf", 12)
+    newssource_font = ImageFont.truetype("ARIAL.TTF", 12)
     newssource_width, newssource_height = newssource_font.getsize(
         new_newssource)
 
@@ -126,7 +126,7 @@ def generate_image(favicon_link, thumbnail_link, newssource, headline, date, mod
                   fill=(0, 0, 0), font=newssource_font)
 
     # Draw the date
-    date_font = ImageFont.truetype("arial.ttf", 12)
+    date_font = ImageFont.truetype("ARIAL.TTF", 12)
     if mode == 'dark':
         draw.text((newssource_x+newssource_width, newssource_y),
                   date, fill=(255, 255, 255), font=date_font)
@@ -155,7 +155,7 @@ def generate_image(favicon_link, thumbnail_link, newssource, headline, date, mod
     final_image_height = bg_image.size[1]+500
     if mode == 'dark':
         final_image = Image.new(
-            'RGB', (final_image_width, final_image_height), (30, 30, 30))
+            'RGB', (final_image_width, final_image_height), (60, 60, 60))
     else:
         final_image = Image.new(
             'RGB', (final_image_width, final_image_height), (195, 195, 195))
