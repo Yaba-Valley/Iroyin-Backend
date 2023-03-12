@@ -10,6 +10,9 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
 }
 
+arial_font_url = 'https://firebasestorage.googleapis.com/v0/b/portfolio-36ef9.appspot.com/o/ARIAL.TTF?alt=media&token=4f63b71e-154d-4005-8de7-6d576dcc1a18'
+blatant_font_url = 'https://firebasestorage.googleapis.com/v0/b/portfolio-36ef9.appspot.com/o/Blatant.otf?alt=media&token=1fc5a140-615d-4b79-86da-808d675f0110'
+
 
 def generate_image(favicon_link, thumbnail_link, newssource, headline, date, mode):
 
