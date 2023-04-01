@@ -1,0 +1,20 @@
+we are talking about their final location
+
+type 1:
+    1. image is in a seperate container from text and link
+    2. the text and link are in the same container or the link may be in a container that has the container 
+        housing the text
+    e.g bbc
+type 2:
+    1. the image , the text and link are in the same container
+    e.g usa today
+
+
+
+card\n			u-clickable-area\n			\n			card--feature-switch\n			card--premium
+			
+			
+			
+			
+			
+			 
