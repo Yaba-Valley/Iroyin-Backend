@@ -6,12 +6,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
-from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
-from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
-from news.scraper.fashion import PeopleScraper
-from news.scraper.health import VeryWellMindScraper
-from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper
+from .screenshot import get_image
+from scrapers.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
+from scrapers.sports import GoalDotComScraper, SkySportScraper, EPLScraper
+from scrapers.fashion import PeopleScraper, GlamourScraper
+from scrapers.health import VeryWellMindScraper, VeryWellFamilyScraper, VeryWellFitScraper, VeryWellHealthScraper
+from scrapers.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 from authentication.models import User
+from news.utils import intersect_queryset_from_list
+import urllib
 
 
 class Get_News(APIView):
@@ -30,7 +33,7 @@ class Get_News(APIView):
 
             for news in recommended:
                 news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
-                                         'website': news['website_name'], 'favicon': news['website_favicon']}})
+                                         'website': news['website_name'], 'favicon': news['website_favicon'], 'time_added': news['time_added']}})
 
             return JsonResponse({
                 'news': news_for_frontend,
@@ -57,12 +60,31 @@ class Search_News(APIView):
             return Response({'res': []}, status=200)
         else:
             try:
-                title_qs = News.objects.filter(title__icontains=title)
-                website_name_qs = News.objects.filter(
-                    website_name__icontains=title)
-                union_qs = title_qs.union(website_name_qs)[0:10]
+                all_words_queryset = []
 
-                search_news = [news.serialize() for news in union_qs]
+                for word in title.split(' '):
+                    if len(word) == 1:
+                        continue
+                    elif len(word) <= 3:
+                        all_words_queryset.append(
+                            News.objects.filter(title__icontains=f" {word}").union(
+                                News.objects.filter(title__icontains=f"{word} ")).union(
+                                News.objects.filter(title__icontains=f"\'{word}")).union(
+                                News.objects.filter(title__icontains=f"{word}\'")).union(
+                                News.objects.filter(title__icontains=f"\"{word}")).union(
+                                News.objects.filter(title__icontains=f"{word}\"")).union(
+                                News.objects.filter(title__icontains=f"‘{word}")).union(
+                                News.objects.filter(title__icontains=f"{word}’"))
+                        )
+                    else:
+                        all_words_queryset.append(
+                            News.objects.filter(title__icontains=word))
+
+                contains_all_words_queryset = intersect_queryset_from_list(
+                    all_words_queryset, News).union(News.objects.filter(website_name__icontains=title)).order_by('-time_added')
+
+                search_news = [news.serialize()
+                               for news in contains_all_words_queryset]
 
                 return Response({'res': list(search_news)})
             except News.DoesNotExist:
@@ -83,7 +105,7 @@ class Indicate_Interaction(APIView):
         negative is when the effect is going to decrease the value in the database eg, dislking a news or removing a saved news
         
         
-        the `action` field is either of the following: READ, LIKE, SAVE, SHARE
+        the `action` field is either of the following: READ, LIKE, SAVE, SHARE, DISLIKE
         """
 
         action = request_body['action']
@@ -110,6 +132,18 @@ class Indicate_Interaction(APIView):
                     active_user.saved_news.remove(current_news)
             elif action.upper() == 'READ':
                 active_user.newInteractedWith.add(current_news)
+            elif action.upper() == 'DISLIKE':
+                # remove any relationship between the news and the user
+                try:
+                    active_user.shared_news.remove(current_news)
+                    active_user.liked_news.remove(current_news)
+                    active_user.saved_news.remove(current_news)
+                    active_user.newInteractedWith.remove(current_news)
+                except News.DoesNotExist:
+                    print('news does not exist')
+
+                # the only relationship that should exist is the negative relationship of dislike
+                active_user.disliked_news.add(current_news)
             else:
                 active_user.newInteractedWith.add(current_news)
 
@@ -140,7 +174,7 @@ class Get_All_Interests(APIView):
         return JsonResponse({'success': False, 'errors': 'Request Not Allowed'}, status=405)
 
 
-class Get_News_Content(APIView):
+class Get_News_Details(APIView):
     def get(self, request):
         url = request.GET.get('url')
         news = News.objects.get(url=url)
@@ -157,6 +191,12 @@ class Get_News_Content(APIView):
                 text_content = GlassDoorScraper().scrape_news_content(url=url)
             elif news.website_name == 'VeryWellMind':
                 text_content = VeryWellMindScraper().scrape_news_content(url=url)
+            elif news.website_favicon == 'VeryWellHealth':
+                text_content = VeryWellHealthScraper().scrape_news_content(url=url)
+            elif news.website_name == 'VeryWellFit':
+                text_content = VeryWellFitScraper().scrape_news_content(url=url)
+            elif news.website_name == 'VeryWellFamily':
+                text_content = VeryWellFamilyScraper().scrape_news_content(url=url)
             elif news.website_name == 'Sky Sports':
                 text_content = SkySportScraper().scrape_news_content(url=url)
             elif news.website_name == 'Premier League':
@@ -169,15 +209,20 @@ class Get_News_Content(APIView):
                 text_content = FreeCodeCampScraper().scrape_news_content(url=url)
             elif news.website_name == 'FinanceSamurai':
                 text_content = FinanceSamuraiScraper().scrape_news_content(url=url)
-            elif news.website_favicon == 'Investopedia':
+            elif news.website_name == 'Investopedia':
                 text_content = InvestopediaScraper().scrape_news_content(url=url)
+            elif news.website_name == 'Glamour':
+                text_content = GlamourScraper().scrape_news_content(url=url)
+            elif news.website_name == 'Forbes':
+                text_content = ForbesScraper().scrape_news_content(url=url)
 
         news.read_count += 1
         if not text_content == 'None':
             news.text_content = text_content
             news.save()
 
-            return JsonResponse({'text': text_content, 'status': 200})
+            return JsonResponse({'title': news.title, 'url': news.url, 'img': news.img, 'metadata': {
+                'website': news.website_name, 'favicon': news.website_favicon}, 'text_content': text_content, 'is_saved': request.user.saved_news.contains(news), 'is_liked': request.user.liked_news.contains(news), 'status': 200})
         else:
             return JsonResponse({'text': None, 'status': 400, 'message': 'Unable to retrieve web content'}, status=400)
 
@@ -246,7 +291,22 @@ class Redirect_To_App(APIView):
         host = request.GET.get('host')
 
         news = News.objects.get(url=news_url)
+        safe = "~()*!.'"
 
-        expo_url = f'{host}{route}?title={news.title}&url={news.url}&img={news.img}&favicon={news.website_favicon}&website={news.website_name}'
+        expo_url = f'{host}{route}?title={urllib.parse.quote(news.title, safe = safe)}&url={urllib.parse.quote(news.url, safe = safe)}&img={urllib.parse.quote(news.img, safe = safe)}&favicon={urllib.parse.quote(news.website_favicon, safe = safe)}&website={urllib.parse.quote(news.website_name, safe = safe)}'
+
+        print(expo_url)
 
         return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})
+
+class Screenshot(APIView):
+
+    def get(self, request):
+        favicon= request.GET.get('favicon')
+        img= request.GET.get('img')
+        website= request.GET.get('website')
+        title= request.GET.get('title')
+        date= request.GET.get('date')
+        mode= request.GET.get('mode')
+        
+        return get_image(favicon, img, website, title, date, mode)

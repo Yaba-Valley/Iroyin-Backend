@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Interest, News
+from .models import Interest, News, Website
 
 # Register your models here.
 
@@ -12,4 +12,5 @@ class NewsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(News, NewsAdmin)
+admin.site.register(Website)
 

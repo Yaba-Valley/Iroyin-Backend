@@ -48,12 +48,12 @@ def send_email(subject, body, receipients):
 
 class TokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
-        return (text_type(user.pk) + text_type(timestamp) + text_type(user.is_active))
+        return (text_type(user.pk) + text_type(timestamp) + text_type(user.is_active) + text_type(user.password))
 
     def send_account_activation_mail(self, request, user):
 
         site = get_current_site(request).name
-        token = TokenGenerator().make_token(user)
+        token = self.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         template_string = render_to_string('activateAccount.html', {
                                            'user': user, 'uid': uid, 'token': token, 'site': site})
@@ -65,4 +65,18 @@ class TokenGenerator(PasswordResetTokenGenerator):
 
         return res.status_code
 
-    # test silly push
+    def send_password_reset_mail(self, request, user, host, route):
+
+        site = get_current_site(request).name
+        token = self.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        template_string = render_to_string(
+            'requestpasswordreset.html', {'user': user, 'uid': uid, 'token': token, 'site': site, 'host': host, 'route': route})
+        
+        res = send_email('Reset your password', template_string, [
+            {'email': user.email, 'fullName': f"{user.first_name} {user.last_name}"}
+        ])
+        
+        print(res)
+        
+        return res.status_code

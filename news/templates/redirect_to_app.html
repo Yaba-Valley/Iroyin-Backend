@@ -7,9 +7,9 @@
     <title>Document</title>
 </head>
 <body>
-    <p>Redirecting... </p>
-    <script>
-        window.location.href = decodeURI("{{ redirect_url }}")
-    </script>
+    <a href = "{{ redirect_url }}">Open App</a>
+    <!--- <script>
+        window.location.href = encodeURI("{{ redirect_url }}")
+    </script> -->
 </body>
 </html>
