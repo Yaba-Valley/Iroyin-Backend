@@ -58,14 +58,14 @@ class Website(models.Model):
                     website_name=self.general_name,
                     favicon=self.website_favicon,
                     smallest_article_element=self.smallest_article_element,
-                    class_of_smallest_article_element=self.class_of_smallest_article_element,
+                    class_of_smallest_article_element=self.class_of_smallest_article_element or None,
                     smallest_title_element=self.smallest_title_element,
-                    class_of_smallest_title_element=self.class_of_smallest_title_element,
+                    class_of_smallest_title_element=self.class_of_smallest_title_element or None,
                     smallest_image_element=self.smallest_image_element,
-                    class_of_smallest_image_element=self.class_of_smallest_image_element,
+                    class_of_smallest_image_element=self.class_of_smallest_image_element or None,
                     image_holder_attr=self.image_holder_attr,
                     smallest_link_element_with_class=self.smallest_link_element,
-                    class_of_smallest_link_element=self.class_of_smallest_link_element,
+                    class_of_smallest_link_element=self.class_of_smallest_link_element or None,
                     prepend_image_url=self.preprend_image_url,
                     prepend_url=self.prepend_news_url
                 )
@@ -81,7 +81,7 @@ class Website(models.Model):
             'website': self.general_name,
             'favicon': self.website_favicon,
         }
-    
+
     def __str__(self) -> str:
         return f'{self.general_name} - {self.sub_category}'
 
