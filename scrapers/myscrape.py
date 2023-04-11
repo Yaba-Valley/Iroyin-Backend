@@ -69,8 +69,9 @@ def scraper(website_text,
             class_of_smallest_title_element,
             favicon,
             website_name,
+            website_object,
             prepend_image_url='',
-            prepend_url=''
+            prepend_url='',
             ):
     
     soup = BeautifulSoup(website_text, 'html.parser')
@@ -126,10 +127,7 @@ def scraper(website_text,
                 'title': title,
                 'url': url,
                 'img': image,
-                'metadata': {
-                    'website': website_name,
-                    'favicon': favicon
-                }
+                'website': website_object
             }
 
             results.append(article)

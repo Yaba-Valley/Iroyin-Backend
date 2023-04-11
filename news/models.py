@@ -27,25 +27,25 @@ class Website(models.Model):
     smallest_article_element = models.CharField(
         max_length=10, verbose_name='News Container HTML Element', default='')
     class_of_smallest_article_element = models.CharField(
-        max_length=500, verbose_name='Class of News Container HTML Element', default='')
+        max_length=500, verbose_name='Class of News Container HTML Element', default='', blank=True)
     smallest_link_element = models.CharField(
         max_length=10, verbose_name='News Link HTML Element', default='')
     class_of_smallest_link_element = models.CharField(
-        max_length=500, verbose_name='Class of News Link HTML Element', default='')
+        max_length=500, verbose_name='Class of News Link HTML Element', default='', blank=True)
     smallest_image_element = models.CharField(
         max_length=10, verbose_name='News Image HTML Element', default='')
     class_of_smallest_image_element = models.CharField(
-        max_length=500, verbose_name='Class of News Image HTML Element', default='')
+        max_length=500, verbose_name='Class of News Image HTML Element', default='', blank=True)
     smallest_title_element = models.CharField(
         max_length=10, verbose_name='News title HTML Element', default='')
     class_of_smallest_title_element = models.CharField(
-        max_length=500, verbose_name='Class of News title HTML Element', default='')
+        max_length=500, verbose_name='Class of News title HTML Element', default='', blank=True)
     image_holder_attr = models.CharField(
         max_length=500, verbose_name='Image Holder Attribute (src,data-src,srcset,etc.)', default='src')
     preprend_image_url = models.CharField(
-        max_length=500, verbose_name='Prepend Image URL', default='')
+        max_length=500, verbose_name='Prepend Image URL', default='', blank=True)
     prepend_news_url = models.CharField(
-        max_length=500, verbose_name='Prepend News URL', default='')
+        max_length=500, verbose_name='Prepend News URL', default='', blank=True)
 
     async def scrape(self, async_client, scraped_articles, failed_websites):
         try:
@@ -67,7 +67,8 @@ class Website(models.Model):
                     smallest_link_element_with_class=self.smallest_link_element,
                     class_of_smallest_link_element=self.class_of_smallest_link_element or None,
                     prepend_image_url=self.preprend_image_url,
-                    prepend_url=self.prepend_news_url
+                    prepend_url=self.prepend_news_url,
+                    website_object = self,
                 )
 
                 scraped_articles.extend(articles)
@@ -92,16 +93,15 @@ class News(models.Model):
     img = models.URLField(
         default='https://media.istockphoto.com/vectors/news-vector-id918880270?k=20&m=918880270&s=612x612&w=0&h=bDcgr9jhiRYCPMUhVdLKD5ouIc5daM4qMcaPPapppQI=')
     read_count = models.BigIntegerField(default=0)
-    categories = models.ManyToManyField(to=Interest)
     time_added = models.DateTimeField(auto_now_add=True)
-    text_content = models.TextField(default='')
+    text_content = models.TextField(default='', blank=True)
     website = models.ForeignKey(
-        to=Website, related_name='news', on_delete=models.DO_NOTHING, null=True)
+        to=Website, related_name='news', on_delete=models.DO_NOTHING, null=True, blank=True)
 
     # website_name = models.TextField(default='Unknown')
     # website_favicon = models.URLField(
     # default='')
-    entities = models.TextField(default='')
+    entities = models.TextField(default='', blank=True)
     """ 
     the entities field is used by the machine learning model, entities is basically a big string separated by commas - to denote different entities
     """
