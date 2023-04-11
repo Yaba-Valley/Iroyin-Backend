@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from .base import Scraper
 import requests
 from markdownify import markdownify as md
+from .myscrape import scraper
 
 
 class FreeCodeCampScraper(Scraper):
@@ -18,25 +19,24 @@ class FreeCodeCampScraper(Scraper):
             print(self.url + '/news')
             async with async_client.get(self.url + '/news', headers=self.headers) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
-                news = soup.find_all('article', {'class': 'post-card'})
 
-                articles = []
+                news = scraper(website_text=html_text,
+                               smallest_article_element='article',
+                               class_of_smallest_article_element='post-card',
+                               smallest_title_element='h2',
+                               class_of_smallest_title_element='post-card-title',
+                               smallest_link_element_with_class='a',
+                               class_of_smallest_link_element='post-card-image-link',
+                               smallest_image_element='a',
+                               class_of_smallest_image_element='post-card-image-link',
+                               image_holder_attr='srcset',
+                               prepend_url='https://freecodecamp.com/news',
+                               website_name=self.title,
+                               favicon=self.favicon_url
+                               )
 
-                for article in news:
-                    article_title = article.find(
-                        'h2', {'class': 'post-card-title'}).text
-                    article_image = article.select_one(
-                        '.post-card-image-link img')['src']
-                    article_url = article.find(
-                        'h2', {'class': 'post-card-title'}).find('a')['href']
-
-                    articles.append({'title': article_title.strip(), 'url': self.url +
-                                    article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-
-                scraped_news.extend(articles)
-                # print(articles)
-                return articles
+                scraped_news.extend(news)
+                return news
         except Exception as e:
             print(self.url + '/news is not working')
             failed_scrapers.append({'url': self.url, 'error': str(e)})
@@ -95,38 +95,23 @@ class TechCrunchScraper(Scraper):
             print(self.url)
             async with async_client.get(self.url, headers=self.headers) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
-                all_articles = soup.find_all('div', {'class': 'post-block'})
 
-                articles = []
+                news = scraper(website_name=self.title,
+                               website_text=html_text,
+                               smallest_article_element='div',
+                               class_of_smallest_article_element='post-block post-block--image post-block--unread',
+                               smallest_link_element_with_class='a',
+                               class_of_smallest_link_element='post-block__title__link',
+                               smallest_image_element='img',
+                               class_of_smallest_image_element=None,
+                               smallest_title_element='a',
+                               class_of_smallest_title_element='post-block__title__link',
+                               favicon=self.favicon_url,
+                               image_holder_attr='src'
+                               )
 
-                for article in all_articles:
-
-                    article_title_element = article.find(
-                        'a', {'class': 'post-block__title__link'})
-                    article_title = ''
-
-                    if article_title_element is not None:
-                        article_title = article_title_element.text
-
-                    article_url_element = article.find(
-                        'a', {'class': 'post-block__title__link'})
-                    article_url = ''
-
-                    if article_url_element is not None:
-                        article_url = article_title_element['href']
-
-                    article_image_element = article.find('img')
-                    article_image = ''
-
-                    if article_image_element is not None:
-                        article_image = article_image_element['src']
-
-                    articles.append(
-                        {'title': article_title.strip(), 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-
-                scraped_news.extend(articles)
-                return scraped_news
+                scraped_news.extend(news)
+                return news
         except Exception as e:
             print(self.url + ' is not working')
             failed_scrapers.append({'url': self.url, 'error': str(e)})
@@ -169,31 +154,26 @@ class TechTrendsAfricaScraper(Scraper):
             print(self.url)
             async with async_client.get(self.url, headers=self.headers) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
 
-                news = soup.find_all('article')
-
-                articles = []
-
-                for article in news:
-                    article_title = article.select_one('.jeg_post_title').text
-                    article_url = article.select_one(
-                        '.jeg_post_title').find('a')['href']
-
-                    if article.find('img') == None:
-                        article_image = article.find(
-                            'div', {'class': 'thumbnail-container thumbnail-background'})['data-src']
-                    else:
-                        article_image = article.find('img')['data-src']
-
-                    articles.append(
-                        {'title': article_title.strip(), 'url': article_url, 'img': article_image.split('?')[0], 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                articles = scraper(website_text=html_text,
+                                   smallest_article_element='article',
+                                   class_of_smallest_article_element='jeg_post jeg_pl_lg_2 format-standard',
+                                   smallest_link_element_with_class='h3',
+                                   class_of_smallest_link_element='jeg_post_title',
+                                   smallest_title_element='h3',
+                                   class_of_smallest_title_element='jeg_post_title',
+                                   image_holder_attr='data-src',
+                                   class_of_smallest_image_element='thumbnail-container animate-lazy size-715',
+                                   smallest_image_element='div',
+                                   website_name=self.title,
+                                   favicon=self.favicon_url
+                                   )
 
                 scraped_news.extend(articles)
-                # print(articles)
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
+            print(e)
             failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
@@ -213,7 +193,7 @@ class TechTrendsAfricaScraper(Scraper):
 
 
 class GizModoScraper:
-    def __init__(self, category = ''):
+    def __init__(self, category=''):
         self.url = 'https://gizmodo.com/'
         self.title = 'Gizmodo'
         self.category = category
@@ -226,28 +206,25 @@ class GizModoScraper:
             print(self.url + self.category)
             async with async_client.get(self.url + self.category) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
 
-                news = soup.find_all('article')
-
-                articles = []
-
-                for article in news:
-                    try:
-                        article_title = article.select_one('h4').text
-                        article_url = article.select_one('a')['href']
-                        article_image = article.select_one('img')['src']
-
-                        articles.append({'title': article_title.strip(),
-                                        'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-
-                    except:
-                        continue
+                articles = scraper(website_text=html_text,
+                                   website_name=self.title,
+                                   favicon=self.favicon_url,
+                                   smallest_article_element='article',
+                                   class_of_smallest_article_element='sc-1pw4fyi-6 laejkp sc-1e59qvl-0 sc-1e59qvl-1 yrIlL gwBFdc js_post_item',
+                                   smallest_link_element_with_class='a',
+                                   class_of_smallest_link_element='sc-1out364-0 dPMosf sc-1pw4fyi-5 eJvgGf js_link',
+                                   smallest_image_element='img',
+                                   class_of_smallest_image_element='',
+                                   smallest_title_element='h4',
+                                   class_of_smallest_title_element='sc-1qoge05-0 nvHxA',
+                                   image_holder_attr='src'
+                                   )
 
                 scraped_news.extend(articles)
                 return articles
         except Exception as e:
-            print(self.url + ' is not working')
+            print(self.url + ' is not working', e)
             failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
@@ -272,39 +249,22 @@ class TheNextWebScraper(Scraper):
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
             print(self.url + self.category)
-            articles = []
             async with async_client.get(self.url + self.category) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
-
-                all_articles = soup.find_all('article')
-
-                try:
-                    for article in all_articles:
-                        if ''.join(article.attrs['class']).find('c-listArticle') != -1:
-                            article_title = article.select_one(
-                                'h4').text.strip()
-                            article_url = self.url + \
-                                article.select_one('h4').find('a')['href']
-                            article_image = article.select_one('img').attrs.get(
-                                'data-src') or article.select_one('img').attrs.get('src')
-
-                            articles.append(
-                                {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-
-                        else:
-                            article_title = article.select_one(
-                                'h3').text.strip()
-                            article_url = self.url + \
-                                article.select_one('a')['href']
-                            article_image = article.select_one('img').attrs.get(
-                                'data-src') or article.select_one('img').attrs.get('src')
-
-                            articles.append(
-                                {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-
-                except Exception as e:
-                    pass
+                articles = scraper(
+                    website_text=html_text,
+                    website_name=self.title,
+                    favicon=self.favicon_url,
+                    smallest_article_element='article',
+                    class_of_smallest_article_element='c-listArticle',
+                    image_holder_attr='srcset',
+                    smallest_image_element='noscript',
+                    class_of_smallest_image_element=None,
+                    smallest_link_element_with_class='a',
+                    class_of_smallest_link_element='title_link',
+                    smallest_title_element='h4',
+                    class_of_smallest_title_element='c-listArticle__heading'
+                )
 
                 scraped_news.extend(articles)
                 return scraped_news
@@ -342,27 +302,22 @@ class GlassDoorScraper:
             print(self.url + '/blog')
             async with async_client.get(self.url + '/blog') as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
-
-                for article in soup.select('.post'):
-                    article_title = article.select_one('h3').text
-                    article_url = self.url + article.select_one('a')['href']
-                    article_image = article.select_one(
-                        '.css-6uzs0z')['style'].split('url(')[1].split(')')[0]
-
-                    articles.append(
-                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
-
-                for article in soup.select('.featured-article'):
-                    article_title = article.select_one('h2').text
-                    article_url = article.select_one('a')['href']
-                    article_image = article.select_one('img')['src']
-
-                    articles.append(
-                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                articles = scraper(website_text=html_text,
+                                   website_name=self.title,
+                                   favicon=self.favicon_url,
+                                   smallest_article_element='div',
+                                   class_of_smallest_article_element='post',
+                                   smallest_image_element='div',
+                                   class_of_smallest_image_element='css-6uzs0z',
+                                   image_holder_attr='style',
+                                   smallest_link_element_with_class='a',
+                                   class_of_smallest_link_element='d-flex flex-column css-y96yjg',
+                                   class_of_smallest_title_element=None,
+                                   smallest_title_element='h3',
+                                   prepend_url=self.url)
 
                 scraped_news.extend(articles)
-                # print(articles)
+                print(articles)
                 return articles
         except Exception as e:
             print(self.url + ' is not working')
@@ -428,30 +383,23 @@ class BitcoinNewsScraper(Scraper):
 
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
-            articles = []
             print(self.url)
             async with async_client.get(self.url) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
 
-                for article in soup.select('.story'):
-                    article_title = article.find('h6')
-                    if article_title is not None:
-                        article_title = article_title.text
-                    else:
-                        article_title = article.find('h5').text
-
-                    article_url = article.find('a')['href']
-                    article_image = article.find('img')
-
-                    if article_image is None:
-                        article_image = ''
-                    else:
-                        article_image = article_image.attrs.get(
-                            'srcset').split(', ')[-1].split(' ')[0]
-
-                    articles.append(
-                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                articles = scraper(website_name=self.title,
+                                   favicon=self.favicon_url,
+                                   website_text=html_text,
+                                   smallest_article_element='div',
+                                   class_of_smallest_article_element='story',
+                                   smallest_image_element='img',
+                                   class_of_smallest_image_element='story__img',
+                                   smallest_link_element_with_class='a',
+                                   class_of_smallest_link_element='',
+                                   smallest_title_element='h6',
+                                   class_of_smallest_title_element='story__title',
+                                   image_holder_attr='srcset'
+                                   )
 
                 scraped_news.extend(articles)
                 return articles
@@ -468,7 +416,7 @@ class BitcoinNewsScraper(Scraper):
 
         for script in scripts:
             script.decompose()
-            
+
         article = soup.find('article', class_='article css-avgnsc css-vtrr42')
         return md(str(article))
 
@@ -479,7 +427,8 @@ class QuartzScraper(Scraper):
         latest,finance-and-investing,economics,technology,sustainability,lifestyle,work
     ]
     """
-    def __init__(self, category = 'latest') -> None:
+
+    def __init__(self, category='latest') -> None:
         Scraper.__init__(self, 'Quartz')
         self.url = 'https://qz.com/'
         self.title = 'Quartz'
@@ -488,26 +437,24 @@ class QuartzScraper(Scraper):
 
     async def scrape(self, async_client, scraped_news, failed_scrapers):
         try:
-            articles = []
             print(self.url + self.category)
             async with async_client.get(self.url + self.category) as response:
                 html_text = await response.text()
-                soup = BeautifulSoup(html_text, 'html.parser')
 
-                for article in soup.select('article'):
-                    # if self.category == 'work':
-                    #     article_title = article.find('h4').text
-                    #     article_url = article.find('a')['href']
-                    #     article_image = 
-                    article_title = article.find('h2').text
-                    article_url = article.find('a')['href']
-                    article_image_element = article.find('img')
-                    article_image_splitted = article_image_element.attrs.get(
-                        'data-src').split('/c_fill,f_auto,g_center,h_80,q_60,w_80')
-                    article_image = ''.join(article_image_splitted)
-
-                    articles.append(
-                        {'title': article_title, 'img': article_image, 'url': article_url, 'metadata': {'website': self.title, 'favicon': self.favicon_url}})
+                articles = scraper(
+                    website_name=self.title,
+                    favicon=self.favicon_url,
+                    website_text=html_text,
+                    smallest_article_element='article',
+                    class_of_smallest_article_element='js_post_item',
+                    smallest_title_element='h2',
+                    class_of_smallest_title_element='sc-759qgu-0 cwUChs sc-cw4lnv-6 lgbIVS',
+                    smallest_link_element_with_class='a',
+                    class_of_smallest_link_element='sc-1out364-0 dPMosf js_link',
+                    smallest_image_element='picture',
+                    class_of_smallest_image_element='lazy-picture',
+                    image_holder_attr='data-src'
+                )
 
                 scraped_news.extend(articles)
                 return articles
@@ -524,6 +471,54 @@ class QuartzScraper(Scraper):
 
         for script in scripts:
             script.decompose()
-            
+
+        article = soup.find('div', id='js_movable-ads-post-contents')
+        return md(str(article))
+
+
+class AxiosScraper(Scraper):
+    def __init__(self) -> None:
+        Scraper.__init__(self, 'Axios')
+        self.url = 'https://www.axios.com/'
+        self.title = 'Axios'
+        self.favicon_url = 'https://www.axios.com/images/a_favicon-228.png'
+
+    async def scrape(self, async_client, scraped_news, failed_scrapers):
+        try:
+            print(self.url)
+            async with async_client.get(self.url) as response:
+                html_text = await response.text()
+
+                articles = scraper(website_text=html_text,
+                                   website_name=self.title,
+                                   favicon=self.favicon_url,
+                                   smallest_article_element='div',
+                                   class_of_smallest_article_element='gtmView grid-layout border-b border-accent-blue-tint pb-6 sm:pb-10 last:border-b-0',
+                                   smallest_title_element='h2',
+                                   class_of_smallest_title_element='col-1-13 m-0',
+                                   smallest_link_element_with_class='h2',
+                                   class_of_smallest_link_element='col-1-13 m-0',
+                                   smallest_image_element='figure',
+                                   class_of_smallest_image_element='StoryImage_caption__oW2Fs m-0 pt-6 col-1-13',
+                                   image_holder_attr='srcset',
+                                   prepend_url=self.url
+                                   )
+
+                scraped_news.extend(articles)
+                return articles
+        except Exception as e:
+            print(self.url + ' is not working')
+            failed_scrapers.append({'url': self.url, 'error': str(e)})
+            pass
+
+    def scrape_news_content(self, url):
+        response_text = requests.get(url).text
+        soup = BeautifulSoup(response_text, 'html.parser')
+
+        scripts = soup.find_all('script')
+
+        for script in scripts:
+            script.decompose()
+
         article = soup.find('div', id='js_movable-ads-post-contents')
         return md(str(article))

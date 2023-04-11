@@ -1,8 +1,8 @@
-from news.scraper.fashion import GlamourScraper, PeopleScraper
-from news.scraper.health import VeryWellMindScraper, VeryWellHealthScraper, VeryWellFamilyScraper, VeryWellFitScraper
-from news.scraper.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
-from news.scraper.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper, BitcoinNewsScraper, GizModoScraper, QuartzScraper
-from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
+from scrapers.fashion import GlamourScraper, PeopleScraper
+from scrapers.health import VeryWellMindScraper, VeryWellHealthScraper, VeryWellFamilyScraper, VeryWellFitScraper
+from scrapers.sports import BundesligaScraper, EPLScraper, GoalDotComScraper, LaLigaScraper, PunchScraper, SkySportScraper
+from scrapers.tech import GlassDoorScraper, TechCrunchScraper, TechTrendsAfricaScraper, TheNextWebScraper, FreeCodeCampScraper, BitcoinNewsScraper, GizModoScraper, QuartzScraper, AxiosScraper
+from scrapers.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 
 
 INTEREST_TO_SCRAPER_MAP = {
@@ -21,6 +21,7 @@ INTEREST_TO_SCRAPER_MAP = {
         TechCrunchScraper('politics'),
         TechCrunchScraper('nigeria'),
         InvestopediaScraper('political-news'),
+        AxiosScraper(),
     ],
     "BUSINESS": [
         PunchScraper(topic='business'),

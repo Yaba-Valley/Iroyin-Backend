@@ -2,6 +2,7 @@ from .base import Scraper
 from bs4 import BeautifulSoup
 import requests
 from markdownify import markdownify as md
+from .myscrape import scraper
 
 
 class FinanceSamuraiScraper(Scraper):
@@ -18,23 +19,37 @@ class FinanceSamuraiScraper(Scraper):
             async with async_client.get(self.url, headers=self.headers) as response:
                 articles = []
                 response_text = await response.text()
-                soup = BeautifulSoup(response_text, 'html.parser')
+                # soup = BeautifulSoup(response_text, 'html.parser')
+                
+                scraper(
+                    website_name=self.title,
+                    favicon=self.favicon,
+                    smallest_article_element='article',
+                    class_of_smallest_article_element='post',
+                    smallest_title_element='h2',
+                    class_of_smallest_title_element='entry-title',
+                    smallest_link_element_with_class='h2',
+                    class_of_smallest_link_element='entry-title',
+                    image_holder_attr='srcset',
+                    smallest_image_element='img',
+                    class_of_smallest_image_element='entry-image attachment-post'
+                )
 
-                for article in soup.find_all("article"):
-                    try:
-                        article_title = article.find(
-                            'h2', class_='entry-title').text
-                        print(article.find('img'))
-                        srcset = article.find('img').attrs.get(
-                            'data-lazy-srcset')
-                        print(srcset)
-                        article_image = srcset.split(', ')[-1].split(' ')[0]
-                        article_url = article.find('a')['href']
+                # for article in soup.find_all("article"):
+                #     try:
+                #         article_title = article.find(
+                #             'h2', class_='entry-title').text
+                #         print(article.find('img'))
+                #         srcset = article.find('img').attrs.get(
+                #             'data-lazy-srcset')
+                #         print(srcset)
+                #         article_image = srcset.split(', ')[-1].split(' ')[0]
+                #         article_url = article.find('a')['href']
 
-                        articles.append(
-                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
-                    except Exception as e:
-                        print(e)
+                #         articles.append(
+                #             {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
+                #     except Exception as e:
+                #         print(e)
 
                 scraped_news.extend(articles)
                 return scraped_news

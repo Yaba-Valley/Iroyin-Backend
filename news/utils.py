@@ -4,8 +4,8 @@ import math
 import time
 from functools import wraps
 from asyncio.proactor_events import _ProactorBasePipeTransport
-from news.scraper.interest_scraper import INTEREST_TO_SCRAPER_MAP
-from news.scraper.base import Scraper as BaseScraper
+from scrapers.interest_scraper import INTEREST_TO_SCRAPER_MAP
+from scrapers.base import Scraper as BaseScraper
 from django.template.loader import render_to_string
 from authentication.utils import send_email
 

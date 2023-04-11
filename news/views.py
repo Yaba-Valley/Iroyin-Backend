@@ -7,11 +7,11 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
 from .recommend import Machine
 from .screenshot import get_image
-from news.scraper.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
-from news.scraper.sports import GoalDotComScraper, SkySportScraper, EPLScraper
-from news.scraper.fashion import PeopleScraper, GlamourScraper
-from news.scraper.health import VeryWellMindScraper, VeryWellFamilyScraper, VeryWellFitScraper, VeryWellHealthScraper
-from news.scraper.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
+from scrapers.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
+from scrapers.sports import GoalDotComScraper, SkySportScraper, EPLScraper
+from scrapers.fashion import PeopleScraper, GlamourScraper
+from scrapers.health import VeryWellMindScraper, VeryWellFamilyScraper, VeryWellFitScraper, VeryWellHealthScraper
+from scrapers.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
 from authentication.models import User
 from news.utils import intersect_queryset_from_list
 import urllib

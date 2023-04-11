@@ -55,7 +55,7 @@ class GlamourScraper(Scraper):
 
 
 class PeopleScraper(Scraper):
-    def __init__(self, topic=False):
+    def __init__(self, topic=''):
 
         if topic:
             self.url = f"https://people.com/{topic}"
