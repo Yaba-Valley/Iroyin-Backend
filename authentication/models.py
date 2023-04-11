@@ -112,3 +112,11 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+
+
+class SearchQuery(models.Model):
+    query = models.CharField(max_length=1000, verbose_name='Query')
+    user = models.ForeignKey(
+        to=User, related_name='search_queries', on_delete=models.CASCADE)
+    time_added = models.DateTimeField(
+        verbose_name='Time Queried', auto_now_add=True)

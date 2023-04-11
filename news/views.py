@@ -12,7 +12,7 @@ from scrapers.sports import GoalDotComScraper, SkySportScraper, EPLScraper
 from scrapers.fashion import PeopleScraper, GlamourScraper
 from scrapers.health import VeryWellMindScraper, VeryWellFamilyScraper, VeryWellFitScraper, VeryWellHealthScraper
 from scrapers.finance import FinanceSamuraiScraper, InvestopediaScraper, ForbesScraper
-from authentication.models import User
+from authentication.models import User, SearchQuery
 from news.utils import intersect_queryset_from_list
 import urllib
 
@@ -85,6 +85,10 @@ class Search_News(APIView):
 
                 search_news = [news.serialize()
                                for news in contains_all_words_queryset]
+                
+                # save the search query
+                SearchQuery.objects.create(user = request.user, query = title)
+                
 
                 return Response({'res': list(search_news)})
             except News.DoesNotExist:
