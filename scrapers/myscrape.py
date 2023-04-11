@@ -73,13 +73,11 @@ def scraper(website_text,
             prepend_url=''
             ):
     
-
     soup = BeautifulSoup(website_text, 'html.parser')
-    
 
     all_articles = soup.find_all(
         smallest_article_element, class_=class_of_smallest_article_element)
-    
+
     print('hello', len(all_articles))
 
     results = []
@@ -89,35 +87,40 @@ def scraper(website_text,
             title = article.find(smallest_title_element,
                                  class_=class_of_smallest_title_element).text.strip()
 
-            print('TITLE:', title)
+            # print('TITLE:', title)
 
             if smallest_link_element_with_class != 'a':
                 url = prepend_url+article.find(smallest_link_element_with_class,
                                                class_=class_of_smallest_link_element).find('a').attrs.get('href')
+            elif (class_of_smallest_link_element == class_of_smallest_article_element) and (smallest_link_element_with_class == smallest_article_element):
+                url = prepend_url + article.attrs.get('href')
             else:
                 url = prepend_url+article.find(smallest_link_element_with_class,
                                                class_=class_of_smallest_link_element).attrs.get('href')
 
-            print('HREF:', url)
-            
+            # print('HREF:', url)
+
             if image_holder_attr == 'style':
-                image = article.find(smallest_image_element, class_ = class_of_smallest_image_element).attrs.get('style').split('url(')[-1].split(')')[0]
+                image = article.find(smallest_image_element, class_=class_of_smallest_image_element).attrs.get(
+                    'style').split('url(')[-1].split(')')[0]
             else:
                 if smallest_image_element != 'img':
                     image = article.find(smallest_image_element,
-                                        class_=class_of_smallest_image_element).find('img').attrs.get(image_holder_attr or 'src')
+                                         class_=class_of_smallest_image_element).find('img').attrs.get(image_holder_attr or 'src')
                 else:
                     image = article.find(
                         smallest_image_element, class_=class_of_smallest_image_element).attrs.get(image_holder_attr or 'src')
 
                 if image_holder_attr.__contains__('srcset'):
-                    image = prepend_image_url + image.split(',')[-1].strip().split(' ')[0]
-                    
+                    image = prepend_image_url + \
+                        image.split(', ')[-1].strip().split(' ')[0]
+
             image = image.split('?')[0]
             if image.__contains__('c_fill,f_auto,g_center,h_80,q_60,w_80'):
-                image = image.split('/c_fill,f_auto,g_center,h_80,q_60,w_80')[0] + image.split('/c_fill,f_auto,g_center,h_80,q_60,w_80')[1]
+                image = image.split('/c_fill,f_auto,g_center,h_80,q_60,w_80')[
+                    0] + image.split('/c_fill,f_auto,g_center,h_80,q_60,w_80')[1]
 
-            print('IMAGE:', image)
+            # print('IMAGE:', image)
 
             article = {
                 'title': title,
@@ -129,14 +132,13 @@ def scraper(website_text,
                 }
             }
 
-            print(article)
-
             results.append(article)
 
         except Exception as e:
             print('the error is', e)
 
+    print(results)
     return results
 
 
-# from news.utils import test_scraper; from scrapers.tech import AxiosScraper; test_scraper(AxiosScraper())
+# from news.utils import test_scraper; from scrapers.finance import InvestopediaScraper; test_scraper(InvestopediaScraper())

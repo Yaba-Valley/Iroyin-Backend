@@ -20,8 +20,9 @@ class FinanceSamuraiScraper(Scraper):
                 articles = []
                 response_text = await response.text()
                 # soup = BeautifulSoup(response_text, 'html.parser')
-                
+
                 scraper(
+                    website_text=response_text,
                     website_name=self.title,
                     favicon=self.favicon,
                     smallest_article_element='article',
@@ -30,31 +31,16 @@ class FinanceSamuraiScraper(Scraper):
                     class_of_smallest_title_element='entry-title',
                     smallest_link_element_with_class='h2',
                     class_of_smallest_link_element='entry-title',
-                    image_holder_attr='srcset',
+                    image_holder_attr='data-lazy-srcset',
                     smallest_image_element='img',
                     class_of_smallest_image_element='entry-image attachment-post'
                 )
 
-                # for article in soup.find_all("article"):
-                #     try:
-                #         article_title = article.find(
-                #             'h2', class_='entry-title').text
-                #         print(article.find('img'))
-                #         srcset = article.find('img').attrs.get(
-                #             'data-lazy-srcset')
-                #         print(srcset)
-                #         article_image = srcset.split(', ')[-1].split(' ')[0]
-                #         article_url = article.find('a')['href']
-
-                #         articles.append(
-                #             {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
-                #     except Exception as e:
-                #         print(e)
-
                 scraped_news.extend(articles)
+                print(articles)
                 return scraped_news
         except Exception as e:
-            print(self.url, 'is not working')
+            print(self.url, 'is not working', e)
             failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
@@ -111,26 +97,26 @@ class InvestopediaScraper(Scraper):
             async with async_client.get(self.url, headers=self.headers) as response:
                 articles = []
                 response_text = await response.text()
-                soup = BeautifulSoup(response_text, 'html.parser')
+                # soup = BeautifulSoup(response_text, 'html.parser')
 
-                print(len(soup.find_all("a", class_="mntl-card")))
-
-                for article in soup.find_all("a", class_="mntl-card"):
-                    try:
-                        article_title = article.find(
-                            'span', class_='card__title').text
-                        article_image = article.find(
-                            'img').attrs.get('data-src')
-                        article_url = article['href']
-                        articles.append(
-                            {'title': article_title, 'url': article_url, 'img': article_image, 'metadata': {'website': self.title, 'favicon': self.favicon}})
-                    except Exception as e:
-                        print(e)
+                articles = scraper(website_text=response_text,
+                                   website_name=self.title,
+                                   favicon=self.favicon,
+                                   smallest_article_element='a',
+                                   class_of_smallest_article_element='mntl-card',
+                                   smallest_link_element_with_class='a',
+                                   class_of_smallest_link_element='mntl-card',
+                                   smallest_image_element='img',
+                                   class_of_smallest_image_element='img--noscript card__img universal-image__image',
+                                   smallest_title_element='span',
+                                   class_of_smallest_title_element='card__title-text',
+                                   image_holder_attr='src'
+                                   )
 
                 scraped_news.extend(articles)
                 return scraped_news
         except Exception as e:
-            print(self.url, 'is not working')
+            print(self.url, 'is not working', e)
             failed_scrapers.append({'url': self.url, 'error': str(e)})
             pass
 
