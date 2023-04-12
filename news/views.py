@@ -33,23 +33,27 @@ class Get_News(APIView):
 
         # try: 
         recommended = Machine(request.user.id, news_per_page)
-        news_for_frontend = []
+        print(recommended)
+        
+        return JsonResponse(recommended, status=200)
+        # news_for_frontend = []
 
-        for news in recommended:
-            website = next(filter(lambda website: website.id == int(
-                recommended['website_id']), all_websites), None)
-            metadata = website.generate_metadata()
-            metadata['time_added'] = website['time_added']
-            news_for_frontend.append(
-                {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
+        # for news in recommended:
+        #     website = next(filter(lambda website: website.id == int(
+        #         recommended['website_id']), all_websites), None)
+        #     print(website)
+        #     metadata = website.generate_metadata()
+        #     metadata['time_added'] = website['time_added']
+        #     news_for_frontend.append(
+        #         {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
 
-        return JsonResponse({
-            'news': news_for_frontend,
-            'current_page': page_number,
-            'next_page': page_number + 1,
-            'per_page': news_per_page,
-            'total_pages': round(News.objects.count() / news_per_page)
-        })
+        # return JsonResponse({
+        #     'news': news_for_frontend,
+        #     'current_page': page_number,
+        #     'next_page': page_number + 1,
+        #     'per_page': news_per_page,
+        #     'total_pages': round(News.objects.count() / news_per_page)
+        # })
 
         # except Exception as e:
             # print(e)
