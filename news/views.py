@@ -35,7 +35,7 @@ class Get_News(APIView):
         recommended = Machine(request.user.id, news_per_page)
         print(recommended)
         
-        return JsonResponse(recommended, status=200)
+        return JsonResponse(recommended, status=200, safe=False)
         # news_for_frontend = []
 
         # for news in recommended:
