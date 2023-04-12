@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Interest, News
+from .models import Interest, News, Website
 from .recommend import Machine
 from .screenshot import get_image
 from scrapers.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
@@ -27,13 +27,21 @@ class Get_News(APIView):
         # first value should be 1
         page_number = int(request.GET.get('page_number'))
 
+        print(news_per_page, page_number)
+
+        all_websites = list(Website.objects.all())
+
         try:
             recommended = Machine(request.user.id, news_per_page)
             news_for_frontend = []
 
             for news in recommended:
-                news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
-                                         'website': news['website_name'], 'favicon': news['website_favicon'], 'time_added': news['time_added']}})
+                website = next(filter(lambda website: website.id == int(
+                    recommended['website_id']), all_websites), None)
+                metadata = website.generate_metadata()
+                metadata['time_added'] = website['time_added']
+                news_for_frontend.append(
+                    {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
 
             return JsonResponse({
                 'news': news_for_frontend,
@@ -45,7 +53,7 @@ class Get_News(APIView):
 
         except Exception as e:
             print(e)
-            return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>')
+            return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>',  status=500)
 
 
 class Search_News(APIView):
@@ -85,10 +93,9 @@ class Search_News(APIView):
 
                 search_news = [news.serialize()
                                for news in contains_all_words_queryset]
-                
+
                 # save the search query
-                SearchQuery.objects.create(user = request.user, query = title)
-                
+                SearchQuery.objects.create(user=request.user, query=title)
 
                 return Response({'res': list(search_news)})
             except News.DoesNotExist:
@@ -303,14 +310,15 @@ class Redirect_To_App(APIView):
 
         return render(request, 'redirect_to_app.html', {'redirect_url': expo_url})
 
+
 class Screenshot(APIView):
 
     def get(self, request):
-        favicon= request.GET.get('favicon')
-        img= request.GET.get('img')
-        website= request.GET.get('website')
-        title= request.GET.get('title')
-        date= request.GET.get('date')
-        mode= request.GET.get('mode')
-        
+        favicon = request.GET.get('favicon')
+        img = request.GET.get('img')
+        website = request.GET.get('website')
+        title = request.GET.get('title')
+        date = request.GET.get('date')
+        mode = request.GET.get('mode')
+
         return get_image(favicon, img, website, title, date, mode)

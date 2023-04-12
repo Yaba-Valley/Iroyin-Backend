@@ -98,9 +98,6 @@ class News(models.Model):
     website = models.ForeignKey(
         to=Website, related_name='news', on_delete=models.DO_NOTHING, null=True, blank=True)
 
-    # website_name = models.TextField(default='Unknown')
-    # website_favicon = models.URLField(
-    # default='')
     entities = models.TextField(default='', blank=True)
     """ 
     the entities field is used by the machine learning model, entities is basically a big string separated by commas - to denote different entities

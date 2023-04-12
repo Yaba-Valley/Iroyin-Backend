@@ -81,7 +81,7 @@ async def fetch_news_async(scrapers, news=[], send_mail=False):
                     },
                     {
                         'email': 'ikpeleambroseobinna@gmail.com',
-                        'fullName': 'Ikepele Ambrose'
+                        'fullName': 'Ikpele Ambrose'
                     },
                     {
                         'email': 'odeogberinoluwadamilola@gmail.com',
