@@ -87,7 +87,7 @@ class Search_News(APIView):
                             News.objects.filter(title__icontains=word))
 
                 contains_all_words_queryset = intersect_queryset_from_list(
-                    all_words_queryset, News).union(News.objects.filter(website__general_name__icontains=title)).order_by('-time_added')
+                    all_words_queryset, News).union(News.objects.filter(website__general_name__icontains=title)).union(News.objects.filter(website__categories__name__icontains=word)).order_by('-time_added')
 
                 search_news = [news.serialize()
                                for news in contains_all_words_queryset]
@@ -157,7 +157,7 @@ class Indicate_Interaction(APIView):
                 active_user.newInteractedWith.add(current_news)
 
         except Http404:
-            return JsonResponse({'message': f'News with url {news_url} does not exist', 'success': False})
+            return JsonResponse({'message': f'News with url {news_url} does not exist', 'success': False}, status=404)
         return JsonResponse({'message': 'Interaction has been recorded', 'success': True})
 
 
@@ -170,8 +170,6 @@ class Get_All_Interests(APIView):
     """
 
     def get(self, request):
-
-        print(request.user)
         try:
             interest_names = [{'name': interest.name, 'id': interest.id}
                               for interest in Interest.objects.all()]

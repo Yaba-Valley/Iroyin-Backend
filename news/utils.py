@@ -82,10 +82,6 @@ async def fetch_news_async(scrapers, news=[], send_mail=False):
                     {
                         'email': 'ikpeleambroseobinna@gmail.com',
                         'fullName': 'Ikpele Ambrose'
-                    },
-                    {
-                        'email': 'odeogberinoluwadamilola@gmail.com',
-                        'fullName': 'Oluwadamilola Odeogberin'
                     }
                 ]
             )
@@ -116,7 +112,7 @@ def test_scraper(scraper, send_mail=False):
 def send_notification(device_token, message, data):
     from exponent_server_sdk import PushClient, PushMessage, PushServerError, PushTicketError, DeviceNotRegisteredError
     from requests.exceptions import ConnectionError, HTTPError
-    
+
     response = None
 
     try:
@@ -136,38 +132,39 @@ def send_notification(device_token, message, data):
         response.validate_response()
     except DeviceNotRegisteredError:
         from authentication.models import User
-        
-        user = User.objects.get(push_notification_token = device_token)
-        user.push_token = ''; user.save()
+
+        user = User.objects.get(push_notification_token=device_token)
+        user.push_token = ''
+        user.save()
     except PushTicketError as exc:
         print('push ticket error', exc)
         exit(0)
 
 
 def unionize_queryset_from_list(list_of_querysets):
-    if len(list_of_querysets) == 0: return
-    
+    if len(list_of_querysets) == 0:
+        return
+
     first_queryset = list_of_querysets[0]
     current_queryset = first_queryset
-    
+
     for i in range(1, len(list_of_querysets)):
         current_queryset = current_queryset.union(list_of_querysets[i])
-    
+
     return current_queryset
 
 
 def intersect_queryset_from_list(list_of_querysets, model):
-    if len(list_of_querysets) == 0: return
-    
+    if len(list_of_querysets) == 0:
+        return
+
     first_queryset = list_of_querysets[0]
-    current_id_values = set(first_queryset.values_list('id', flat = True))
-    
+    current_id_values = set(first_queryset.values_list('id', flat=True))
+
     for i in range(1, len(list_of_querysets)):
-        ith_id_values = set(list_of_querysets[i].values_list('id', flat = True))
+        ith_id_values = set(list_of_querysets[i].values_list('id', flat=True))
         current_id_values.intersection_update(ith_id_values)
-        
-    
-    interesected_queryset = model.objects.filter(id__in = current_id_values)
-        
+
+    interesected_queryset = model.objects.filter(id__in=current_id_values)
+
     return interesected_queryset
-    

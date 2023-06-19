@@ -201,11 +201,8 @@ def verify_token(request):
     try:
         if token:
             access_token = AccessToken(token)
-            print(token)
             user = get_object_or_404(
                 User, id=access_token.payload['user_id'])
-
-            print(user)
 
             return JsonResponse(
                 {
@@ -233,7 +230,7 @@ def verify_token(request):
 
 class Set_Push_Notification_Token(APIView):
 
-    authentication_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         push_token = request.POST.get('push_token')
@@ -248,9 +245,9 @@ class Request_Password_Reset(APIView):
 
     def get(self, request):
         user_email = request.GET.get('email')
-        host = request.GET.get('host')
-        route = request.GET.get('route')
-        
+        host = request.GET.get('host') or 'exp://172.20.10.2:19000/--/'
+        route = request.GET.get('route') or 'Auth/ResetPassword'
+
         try:
             user = User.objects.get(email=user_email)
             TokenGenerator().send_password_reset_mail(request, user, host, route)
@@ -283,7 +280,6 @@ class Reset_Password(APIView):
         except User.DoesNotExist:
             return HttpResponse('404 - Not Found')
 
-
     # the post request is to handle the actual password change
     def post(self, request, uid, token):
         request_body = json.loads(request.body.decode('utf-8'))
@@ -292,8 +288,9 @@ class Reset_Password(APIView):
         # confirm password string
         confirm_new_password = request_body['confirm_new_password'].strip()
         user_id = request_body['user_id']  # expected to be a number
-        reset_token = request_body['reset_token'].strip()  # password reset token
-        
+        # password reset token
+        reset_token = request_body['reset_token'].strip()
+
         user = User.objects.get(id=user_id)
 
         # token is valid

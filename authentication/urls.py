@@ -5,6 +5,8 @@ from rest_framework_simplejwt import views as jwt_views
 urlpatterns = [
     path('login/', views.login, name='login'),
     path('register/', views.register, name='register'),
+    path('set-push-notification-token', views.Set_Push_Notification_Token.as_view(),
+         name='set push notification token'),
     path('activate-account/<str:uid>/<str:token>/',
          views.Activate_Account.as_view(), name='activate account'),
     path('request-password-reset/', views.Request_Password_Reset.as_view(),
