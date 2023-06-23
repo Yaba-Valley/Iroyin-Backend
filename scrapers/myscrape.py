@@ -53,12 +53,17 @@ def scraper(website_text,
                 image = article.find(smallest_image_element, class_=class_of_smallest_image_element).attrs.get(
                     'style').split('url(')[-1].split(')')[0]
             else:
-                if smallest_image_element != 'img':
+                if smallest_image_element != 'img' and smallest_image_element != 'lazy-image':
                     image = article.find(smallest_image_element,
                                          class_=class_of_smallest_image_element).find('img').attrs.get(image_holder_attr or 'src')
                 else:
-                    image = prepend_image_url + article.find(
+                    image = article.find(
                         smallest_image_element, class_=class_of_smallest_image_element).attrs.get(image_holder_attr or 'src')
+                    
+                    if image.startswith('//'):
+                        image = image.removeprefix('//')
+                            
+                    image = prepend_image_url + image;
 
                 if image_holder_attr.__contains__('srcset'):
                     image = prepend_image_url + \
@@ -69,7 +74,7 @@ def scraper(website_text,
                 image = image.split('/c_fill,f_auto,g_center,h_80,q_60,w_80')[
                     0] + image.split('/c_fill,f_auto,g_center,h_80,q_60,w_80')[1]
                 
-            print(image)
+            
 
             article = {
                 'title': title,
@@ -82,6 +87,7 @@ def scraper(website_text,
 
         except Exception as e:
             print('the error is', e)
+            pass
 
     # print(results)
     return results
