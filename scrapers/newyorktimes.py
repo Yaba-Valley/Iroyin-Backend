@@ -3,7 +3,7 @@ from news.models import Website
 import requests
 
 
-request_text = requests.get('https://www.healthline.com/mental-health').text
+request_text = requests.get('https://www.healthline.com/mental-health/mind-and-body').text
 
 news = myscrape.scraper(
     website_text=request_text,
@@ -20,7 +20,7 @@ news = myscrape.scraper(
     prepend_image_url='https://',
     favicon='',
     website_name='Healthline',
-    website_object=Website.objects.first()
+    website_object=Website.objects.last()
 )
 
 print(news)

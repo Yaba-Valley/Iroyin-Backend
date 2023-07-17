@@ -26,7 +26,7 @@ def fetch_news():
 
 def start():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(fetch_news, 'interval', minutes=60)  # every hour
+    scheduler.add_job(fetch_news, 'interval', minutes=240)  # every four hours
     scheduler.start()
 
 
