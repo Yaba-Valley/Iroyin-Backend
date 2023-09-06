@@ -19,7 +19,9 @@ from rest_framework.permissions import IsAuthenticated
 @csrf_exempt
 def login(request):
     if request.method == "POST":
+        print(request.body)
         request_body = json.loads(request.body.decode('utf-8'))
+        print(request_body, type(request_body))
         email = request_body['email'].strip()
         password = request_body['password'].strip()
 
@@ -197,6 +199,7 @@ class Activate_Account(APIView):
 
 def verify_token(request):
     token = request.GET.get('token')
+    print(token)
 
     try:
         if token:
