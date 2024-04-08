@@ -109,4 +109,4 @@ class News(models.Model):
     def serialize(self):
         website_metadata = self.website.generate_metadata()
         website_metadata['time_added'] = self.time_added
-        return {'title': self.title, 'url': self.url, 'img': self.img, 'reads': self.read_count, 'metadata': website_metadata}
+        return {'title': self.title, 'url': self.url, 'img': self.img, 'reads': self.read_count, 'metadata': website_metadata, 'text_content': self.text_content}

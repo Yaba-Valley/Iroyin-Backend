@@ -28,30 +28,33 @@ class Get_News(APIView):
         page_number = int(request.GET.get('page_number'))
 
         all_websites = list(Website.objects.all())
+        news_count = News.objects.count()
+        
+        return JsonResponse({'news': [n.serialize() for n in News.objects.all()[news_count - news_per_page:news_count]]})
 
-        try:
-            recommended = Machine(request.user.id, news_per_page)
-            news_for_frontend = []
+        # try:
+        #     recommended = Machine(request.user.id, news_per_page)
+        #     news_for_frontend = []
 
-            for news in recommended:
-                website = next(filter(lambda website: website.id == int(
-                    news['website_id']), all_websites), None)
-                metadata = website.generate_metadata()
-                metadata['time_added'] = news['time_added']
-                news_for_frontend.append(
-                    {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
+        #     for news in recommended:
+        #         website = next(filter(lambda website: website.id == int(
+        #             news['website_id']), all_websites), None)
+        #         metadata = website.generate_metadata()
+        #         metadata['time_added'] = news['time_added']
+        #         news_for_frontend.append(
+        #             {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
 
-            return JsonResponse({
-                'news': news_for_frontend,
-                'current_page': page_number,
-                'next_page': page_number + 1,
-                'per_page': news_per_page,
-                'total_pages': round(News.objects.count() / news_per_page)
-            })
+        #     return JsonResponse({
+        #         'news': news_for_frontend,
+        #         'current_page': page_number,
+        #         'next_page': page_number + 1,
+        #         'per_page': news_per_page,
+        #         'total_pages': round(News.objects.count() / news_per_page)
+        #     })
 
-        except Exception as e:
-            print(e)
-            return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>',  status=500)
+        # except Exception as e:
+        #     print(e)
+        #     return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>',  status=500)
 
 
 class Search_News(APIView):
@@ -188,48 +191,54 @@ class Get_News_Details(APIView):
         text_content = news.text_content
 
         if text_content == '' or text_content == 'None':
-            if news.website_name == 'TechCrunch':
+            if news.website.general_name == 'TechCrunch':
                 text_content = TechCrunchScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Goal.com':
+            elif news.website.general_name == 'Goal.com':
                 text_content = GoalDotComScraper().scrape_news_content(url=url)
-            elif news.website_name == 'People.com':
+            elif news.website.general_name == 'People.com':
                 text_content = PeopleScraper().scrape_news_content(url=url)
-            elif news.website_name == 'GlassDoor':
+            elif news.website.general_name == 'GlassDoor':
                 text_content = GlassDoorScraper().scrape_news_content(url=url)
-            elif news.website_name == 'VeryWellMind':
+            elif news.website.general_name == 'VeryWellMind':
                 text_content = VeryWellMindScraper().scrape_news_content(url=url)
             elif news.website_favicon == 'VeryWellHealth':
                 text_content = VeryWellHealthScraper().scrape_news_content(url=url)
-            elif news.website_name == 'VeryWellFit':
+            elif news.website.general_name == 'VeryWellFit':
                 text_content = VeryWellFitScraper().scrape_news_content(url=url)
-            elif news.website_name == 'VeryWellFamily':
+            elif news.website.general_name == 'VeryWellFamily':
                 text_content = VeryWellFamilyScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Sky Sports':
+            elif news.website.general_name == 'Sky Sports':
                 text_content = SkySportScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Premier League':
+            elif news.website.general_name == 'Premier League':
                 text_content = EPLScraper().scrape_news_content(url=url)
-            elif news.website_name == 'The Next Web':
+            elif news.website.general_name == 'The Next Web':
                 text_content = TheNextWebScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Tech Trends Africa':
+            elif news.website.general_name == 'Tech Trends Africa':
                 text_content = TechTrendsAfricaScraper().scrape_news_content(url=url)
-            elif news.website_name == 'FreeCodeCamp':
+            elif news.website.general_name == 'FreeCodeCamp':
                 text_content = FreeCodeCampScraper().scrape_news_content(url=url)
-            elif news.website_name == 'FinanceSamurai':
+            elif news.website.general_name == 'FinanceSamurai':
                 text_content = FinanceSamuraiScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Investopedia':
+            elif news.website.general_name == 'Investopedia':
                 text_content = InvestopediaScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Glamour':
+            elif news.website.general_name == 'Glamour':
                 text_content = GlamourScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Forbes':
+            elif news.website.general_name == 'Forbes':
                 text_content = ForbesScraper().scrape_news_content(url=url)
 
         news.read_count += 1
         if not text_content == 'None':
             news.text_content = text_content
             news.save()
+            
+            res = news.serialize()
+            res['is_saved'] = request.user.saved_news.contains(news)
+            res['is_liked'] = request.user.liked_news.contains(news)
+            res['status'] = 200
+            
+            print(res)
 
-            return JsonResponse({'title': news.title, 'url': news.url, 'img': news.img, 'metadata': {
-                'website': news.website_name, 'favicon': news.website_favicon}, 'text_content': text_content, 'is_saved': request.user.saved_news.contains(news), 'is_liked': request.user.liked_news.contains(news), 'status': 200})
+            return JsonResponse(res, status = 200)
         else:
             return JsonResponse({'text': None, 'status': 400, 'message': 'Unable to retrieve web content'}, status=400)
 
