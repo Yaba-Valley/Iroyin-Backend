@@ -31,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'iroyin-backend-env.eba-wmgpq2d7.us-west-2.elasticbeanstalk.com', 'localhost', '.ngrok-free.app']
+    'readnews.azurewebsites.net', 'localhost']
 
 # Application definition
 
