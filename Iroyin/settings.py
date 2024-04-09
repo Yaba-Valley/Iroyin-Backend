@@ -28,7 +28,7 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'readnews.azurewebsites.net', 'localhost']
@@ -86,18 +86,18 @@ WSGI_APPLICATION = 'Iroyin.wsgi.application'
 
 AUTH_USER_MODEL = 'authentication.User'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': env('DBNAME'),
-#         'USER': env('DBUSER'),
-#         'PASSWORD': env('DBPASS'),
-#         'HOST': env('DBHOST'),
-#         'PORT': env('DBPORT'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('DBNAME'),
+        'USER': env('DBUSER'),
+        'PASSWORD': env('DBPASS'),
+        'HOST': env('DBHOST'),
+        'PORT': env('DBPORT'),
+    }
+}
 
-if True:
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
