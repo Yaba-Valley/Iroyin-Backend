@@ -33,8 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'readnews.azurewebsites.net', 'localhost']
 
-CSRF_TRUSTED_ORIGINS = [
-    'readnews.azurewebsites.net', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://readnews.azurewebsites.net']
 
 # Application definition
 
