@@ -30,7 +30,10 @@ class Get_News(APIView):
         all_websites = list(Website.objects.all())
         news_count = News.objects.count()
         
-        return JsonResponse({'news': [n.serialize() for n in News.objects.all()[news_count - news_per_page:news_count]]})
+        return JsonResponse({
+            'news': [n.serialize() for n in News.objects.all()[(page_number - 1) * news_per_page : page_number * news_per_page]],
+            'next_page': page_number + 1
+            })
 
         # try:
         #     recommended = Machine(request.user.id, news_per_page)
@@ -235,8 +238,6 @@ class Get_News_Details(APIView):
             res['is_saved'] = request.user.saved_news.contains(news)
             res['is_liked'] = request.user.liked_news.contains(news)
             res['status'] = 200
-            
-            print(res)
 
             return JsonResponse(res, status = 200)
         else:
