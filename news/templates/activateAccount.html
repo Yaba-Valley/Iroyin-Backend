@@ -5,5 +5,5 @@
     <p>Your account has been successfully created. However we need to verify your email address before you can enjoy our amazing services.</p>
     <p>Click the orange button below to activate your account. <br />If the button does not work, copy the this link and paste it in your browser: <a href = "http://{{ site }}{% url 'activate account' uid token %}">http://{{ site }}{% url 'activate account' uid token %}</a></p>
     <p>If you don't recognize this activity, please ignore😊</p>
-    <a href = "http://{{ site }}{% url 'activate account' uid token %}"><button>Activate your account</button></a>
+    <a href = "{{ request.scheme }}://{{ site }}{% url 'activate account' uid token %}"><button>Activate your account</button></a>
 {% endblock content %}
