@@ -29,35 +29,30 @@ class Get_News(APIView):
 
         all_websites = list(Website.objects.all())
         news_count = News.objects.count()
-        
-        return JsonResponse({
-            'news': [n.serialize() for n in News.objects.all()[(page_number - 1) * news_per_page : page_number * news_per_page]],
-            'next_page': page_number + 1
+
+        try:
+            recommended = Machine(request.user.id, news_per_page)
+            news_for_frontend = []
+
+            for news in recommended:
+                website = next(filter(lambda website: website.id == int(
+                    news['website_id']), all_websites), None)
+                metadata = website.generate_metadata()
+                metadata['time_added'] = news['time_added']
+                news_for_frontend.append(
+                    {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
+
+            return JsonResponse({
+                'news': news_for_frontend,
+                'current_page': page_number,
+                'next_page': page_number + 1,
+                'per_page': news_per_page,
+                'total_pages': round(News.objects.count() / news_per_page)
             })
 
-        # try:
-        #     recommended = Machine(request.user.id, news_per_page)
-        #     news_for_frontend = []
-
-        #     for news in recommended:
-        #         website = next(filter(lambda website: website.id == int(
-        #             news['website_id']), all_websites), None)
-        #         metadata = website.generate_metadata()
-        #         metadata['time_added'] = news['time_added']
-        #         news_for_frontend.append(
-        #             {'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': metadata})
-
-        #     return JsonResponse({
-        #         'news': news_for_frontend,
-        #         'current_page': page_number,
-        #         'next_page': page_number + 1,
-        #         'per_page': news_per_page,
-        #         'total_pages': round(News.objects.count() / news_per_page)
-        #     })
-
-        # except Exception as e:
-        #     print(e)
-        #     return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>',  status=500)
+        except Exception as e:
+            print(e)
+            return HttpResponse(f'<h1>THere is an error <hr /> {e}</h1>',  status=500)
 
 
 class Search_News(APIView):

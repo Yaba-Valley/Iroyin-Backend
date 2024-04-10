@@ -6,11 +6,7 @@ from .models import Interest, News, Website
 
 admin.site.register(Interest)
 
-class NewsAdmin(admin.ModelAdmin):
-    search_fields = ['title']
-    show_full_result_count = True
-
-
-admin.site.register(News, NewsAdmin)
+admin.site.register(News)
 admin.site.register(Website)
+
 
