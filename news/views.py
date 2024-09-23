@@ -29,11 +29,8 @@ class Get_News(APIView):
 
         try:
             # recommended = Machine(request.user.id, news_per_page)
-            news_for_frontend = list(News.objects.all()[0:30])
-
-            # for news in recommended:
-                # news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
-                                        #  'website': news['website_name'], 'favicon': news['website_favicon'], 'time_added': news['time_added']}})
+            news_to_return = News.objects.all()[(page_number - 1) * news_per_page:page_number * news_per_page]
+            news_for_frontend = [news.serialize() for news in news_to_return]
 
             return JsonResponse({
                 'news': news_for_frontend,
@@ -180,49 +177,54 @@ class Get_News_Details(APIView):
         news = News.objects.get(url=url)
         text_content = news.text_content
 
-        if text_content == '' or text_content == 'None':
-            if news.website_name == 'TechCrunch':
-                text_content = TechCrunchScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Goal.com':
-                text_content = GoalDotComScraper().scrape_news_content(url=url)
-            elif news.website_name == 'People.com':
-                text_content = PeopleScraper().scrape_news_content(url=url)
-            elif news.website_name == 'GlassDoor':
-                text_content = GlassDoorScraper().scrape_news_content(url=url)
-            elif news.website_name == 'VeryWellMind':
-                text_content = VeryWellMindScraper().scrape_news_content(url=url)
-            elif news.website_favicon == 'VeryWellHealth':
-                text_content = VeryWellHealthScraper().scrape_news_content(url=url)
-            elif news.website_name == 'VeryWellFit':
-                text_content = VeryWellFitScraper().scrape_news_content(url=url)
-            elif news.website_name == 'VeryWellFamily':
-                text_content = VeryWellFamilyScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Sky Sports':
-                text_content = SkySportScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Premier League':
-                text_content = EPLScraper().scrape_news_content(url=url)
-            elif news.website_name == 'The Next Web':
-                text_content = TheNextWebScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Tech Trends Africa':
-                text_content = TechTrendsAfricaScraper().scrape_news_content(url=url)
-            elif news.website_name == 'FreeCodeCamp':
-                text_content = FreeCodeCampScraper().scrape_news_content(url=url)
-            elif news.website_name == 'FinanceSamurai':
-                text_content = FinanceSamuraiScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Investopedia':
-                text_content = InvestopediaScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Glamour':
-                text_content = GlamourScraper().scrape_news_content(url=url)
-            elif news.website_name == 'Forbes':
-                text_content = ForbesScraper().scrape_news_content(url=url)
+        # if text_content == '' or text_content == 'None':
+        #     if news == 'TechCrunch':
+        #         text_content = TechCrunchScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Goal.com':
+        #         text_content = GoalDotComScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'People.com':
+        #         text_content = PeopleScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'GlassDoor':
+        #         text_content = GlassDoorScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'VeryWellMind':
+        #         text_content = VeryWellMindScraper().scrape_news_content(url=url)
+        #     elif news.website_favicon == 'VeryWellHealth':
+        #         text_content = VeryWellHealthScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'VeryWellFit':
+        #         text_content = VeryWellFitScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'VeryWellFamily':
+        #         text_content = VeryWellFamilyScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Sky Sports':
+        #         text_content = SkySportScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Premier League':
+        #         text_content = EPLScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'The Next Web':
+        #         text_content = TheNextWebScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Tech Trends Africa':
+        #         text_content = TechTrendsAfricaScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'FreeCodeCamp':
+        #         text_content = FreeCodeCampScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'FinanceSamurai':
+        #         text_content = FinanceSamuraiScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Investopedia':
+        #         text_content = InvestopediaScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Glamour':
+        #         text_content = GlamourScraper().scrape_news_content(url=url)
+        #     elif news.website_name == 'Forbes':
+        #         text_content = ForbesScraper().scrape_news_content(url=url)
 
-        news.read_count += 1
+        # news.read_count += 1
         if not text_content == 'None':
             news.text_content = text_content
             news.save()
 
-            return JsonResponse({'title': news.title, 'url': news.url, 'img': news.img, 'metadata': {
-                'website': news.website_name, 'favicon': news.website_favicon}, 'text_content': text_content, 'is_saved': request.user.saved_news.contains(news), 'is_liked': request.user.liked_news.contains(news), 'status': 200})
+            news_json = news.serialize()
+            news_json['text_content'] = None
+            news_json['is_saved'] = request.user.saved_news.contains(news)
+            news_json['is_liked'] = request.user.liked_news.contains(news)
+            news_json['status'] = 200
+
+            return JsonResponse(news_json)
         else:
             return JsonResponse({'text': None, 'status': 400, 'message': 'Unable to retrieve web content'}, status=400)
 
