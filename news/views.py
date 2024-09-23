@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Interest, News
-from .recommend import Machine
+# from .recommend import Machine
 from .screenshot import get_image
 from scrapers.tech import TechCrunchScraper, GlassDoorScraper, TheNextWebScraper, TechTrendsAfricaScraper, FreeCodeCampScraper
 from scrapers.sports import GoalDotComScraper, SkySportScraper, EPLScraper
@@ -28,12 +28,12 @@ class Get_News(APIView):
         page_number = int(request.GET.get('page_number'))
 
         try:
-            recommended = Machine(request.user.id, news_per_page)
-            news_for_frontend = []
+            # recommended = Machine(request.user.id, news_per_page)
+            news_for_frontend = list(News.objects.all()[0:30])
 
-            for news in recommended:
-                news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
-                                         'website': news['website_name'], 'favicon': news['website_favicon'], 'time_added': news['time_added']}})
+            # for news in recommended:
+                # news_for_frontend.append({'title': news['title'], 'url': news['url'], 'img': news['img'], 'metadata': {
+                                        #  'website': news['website_name'], 'favicon': news['website_favicon'], 'time_added': news['time_added']}})
 
             return JsonResponse({
                 'news': news_for_frontend,

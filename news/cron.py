@@ -30,4 +30,5 @@ def start():
     scheduler.start()
 
 
-# fetch_news()
+fetch_news()
+start()

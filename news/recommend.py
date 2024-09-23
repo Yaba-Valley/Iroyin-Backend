@@ -13,7 +13,7 @@ dbname=os.environ['DBNAME']
 password=os.environ['DBPASS']
 port=os.environ['DBPORT']
 
-path = f'mysql+mysqldb://{username}:{password}@{host}:{port}/{dbname}'
+path = f'postgresql+pyscopg2://{username}:{password}@{host}:{port}/{dbname}'
 
 engine = create_engine(path)
 
